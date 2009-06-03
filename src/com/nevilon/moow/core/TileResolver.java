@@ -91,7 +91,7 @@ public class TileResolver {
 	
 	
 
-	private synchronized void updateMap(RawTile tile, Bitmap bitmap) {
+	private void updateMap(RawTile tile, Bitmap bitmap) {
 		physicMap.update(bitmap, tile);
 	}
 
@@ -101,16 +101,20 @@ public class TileResolver {
 	 * @param tile
 	 * @return
 	 */
-	public Bitmap getTile(final RawTile tile, boolean useCache) {
+	public void getTile(final RawTile tile, boolean useCache) {
 		Bitmap bitmap = null;
 		if (useCache) {
-			//bitmap = cacheProvider.getTile(tile);
+			bitmap = cacheProvider.getTile(tile);
+			if(bitmap!=null){
+				updateMap(tile, bitmap);
+				return;
+			}
 		}
-		if (bitmap == null) {
+	//	if (bitmap == null) {
 			// асинхронная загрузка
 			LocalStorageWrapper.get(tile, localLoaderHandler);
-		}
-		return bitmap;
+		//} 
+		//return bitmap;
 	}
 
 	public void setMapSource(int sourceId) {
