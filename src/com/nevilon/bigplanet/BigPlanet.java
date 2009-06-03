@@ -176,14 +176,9 @@ public class BigPlanet extends Activity {
 				R.drawable.tools);
 		sub.add(2, 11, 1, R.string.CACHE_MAP_MENU);
 		sub.add(2, 12, 1, R.string.SEARCH_MENU);
-		sub.add(2, 13, 1, R.string.ABOUT_MENU);
+		sub.add(2, 13, 10, R.string.ABOUT_MENU);
 		sub.add(2, 14, 1, R.string.MAP_SOURCE_MENU);
 		sub.add(2, 15, 0, R.string.NETWORK_MODE_MENU);
-
-		// add network mode menu
-		// add settings menu
-		// menu.add(0, 4,0, "Settings");
-		// add bookmark menu
 
 		return true;
 	}
