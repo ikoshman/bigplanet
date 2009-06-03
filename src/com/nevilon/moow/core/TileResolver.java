@@ -16,7 +16,7 @@ public class TileResolver {
 
 	private LocalStorageWrapper localProvider = new LocalStorageWrapper();
 
-	private BitmapCacheWrapper cacheProvider = new BitmapCacheWrapper();
+	//private BitmapCacheWrapper cacheProvider = new BitmapCacheWrapper();
 
 	private Handler scaledHandler;
 
@@ -37,7 +37,7 @@ public class TileResolver {
 						localProvider.put(tile, data, mapStrategy.getId());
 						Bitmap bmp = LocalStorageWrapper.get(tile, mapStrategy
 								.getId());
-						cacheProvider.putToCache(tile, bmp);
+						//cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
 
@@ -49,8 +49,9 @@ public class TileResolver {
 
 			@Override
 			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
+				decCounter();
 				if (isScaled) {
-					cacheProvider.putToScaledCache(tile, bitmap);
+					//cacheProvider.putToScaledCache(tile, bitmap);
 				}
 				updateMap(tile, bitmap);
 			}
@@ -61,13 +62,18 @@ public class TileResolver {
 
 			@Override
 			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
-				count--;
-				if (bitmap != null && !isScaled) {
-					cacheProvider.putToCache(tile, bitmap);
+				decCounter();
+				if (bitmap != null) {
+					//cacheProvider.putToCache(tile, bitmap);
 					updateMap(tile, bitmap);
 				} else {
-					new Thread(new TileScaler(tile, scaledHandler, mapStrategy
-							.getId())).start();
+					
+					//bitmap = cacheProvider.getScaledTile(tile);
+					
+						incCounter();
+						new Thread(new TileScaler(tile, scaledHandler, mapStrategy
+								.getId())).start();
+					
 					load(tile);
 				}
 			}
@@ -79,7 +85,19 @@ public class TileResolver {
 
 	private void load(RawTile tile) {
 		tileLoader.load(tile);
-
+	}
+	
+	private void incCounter(){
+		synchronized (this) {
+			count++;
+		}
+	}
+	
+	
+	private void decCounter(){
+		synchronized (this) {
+			count--;
+		}
 	}
 
 	private synchronized void updateMap(RawTile tile, Bitmap bitmap) {
@@ -95,15 +113,13 @@ public class TileResolver {
 	public Bitmap getTile(final RawTile tile, boolean useCache) {
 		Bitmap bitmap = null;
 		if (useCache) {
-			bitmap = cacheProvider.getTile(tile);
+			//bitmap = cacheProvider.getTile(tile);
 		}
 		if (bitmap == null) {
-			count++;
+			incCounter();
 			// асинхронная загрузка
 			LocalStorageWrapper.get(tile, localLoaderHandler, mapStrategy
 					.getId());
-		} else {
-			System.out.println("found in cache");
 		}
 		return bitmap;
 	}
