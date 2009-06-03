@@ -242,9 +242,10 @@ public class PhysicMap {
 
 	
 	private void updateMap(){
-		//if(tileResolver.loaded ==9){
+		System.out.println("counter " + tileResolver.loaded);
+		if(tileResolver.loaded ==9){
 			updateScreenCommand.execute();
-		//}
+		}
 	}
 	
 	private int getDistance(int tileCount) {
@@ -295,7 +296,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void  loadCells(RawTile tile) {
-		//tileResolver.loaded = 0;
+		tileResolver.loaded = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;

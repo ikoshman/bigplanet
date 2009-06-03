@@ -23,7 +23,7 @@ public class TileResolver {
 
 	private int strategyId = -1;
 	
-	//public int loaded = 0;
+	public int loaded = 0;
 
 	public TileResolver(final PhysicMap physicMap) {
 		this.physicMap = physicMap;
@@ -46,8 +46,8 @@ public class TileResolver {
 			@Override
 			public synchronized void handle(RawTile tile, Bitmap bitmap,
 					boolean isScaled) {
+				loaded++;
 				if (bitmap != null) {
-					//loaded++;
 					updateMap(tile, bitmap);
 					if (isScaled) {
 						cacheProvider.putToScaledCache(tile, bitmap);
@@ -64,7 +64,7 @@ public class TileResolver {
 					boolean isScaled) {
 				if (bitmap != null) { // если тайл есть в файловом кеше
 					if(tile.s == strategyId && tile.z == physicMap.getZoomLevel()){
-						//loaded++;
+						loaded++;
 					}
 					updateMap(tile, bitmap);
 					cacheProvider.putToCache(tile, bitmap);
@@ -73,7 +73,7 @@ public class TileResolver {
 					if (bitmap == null) {
 						new Thread(new TileScaler(tile, scaledHandler)).start();
 					} else { // скалированый тайл из кеша
-						//loaded++;
+						loaded++;
 						updateMap(tile, bitmap);
 					}
 					load(tile);
@@ -115,7 +115,7 @@ public class TileResolver {
 		Bitmap bitmap = cacheProvider.getTile(tile);
 		if (bitmap != null) {
 			// возврат тайла
-			//loaded++;
+			loaded++;
 			updateMap(tile, bitmap);
 		} else {
 
