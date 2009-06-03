@@ -32,9 +32,6 @@ public class TileResolver {
 					public void handle(RawTile tile, byte[] data) {
 						LocalStorageWrapper.put(tile, data, strategyId);
 						Bitmap bmp = LocalStorageWrapper.get(tile, strategyId);
-						if(bmp == null){
-							System.out.println("1111");
-						}
 						cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
@@ -104,7 +101,7 @@ public class TileResolver {
 	public Bitmap getTile(final RawTile tile, boolean useCache) {
 		Bitmap bitmap = null;
 		if (useCache) {
-			bitmap = cacheProvider.getTile(tile);
+			//bitmap = cacheProvider.getTile(tile);
 		}
 		if (bitmap == null) {
 			// асинхронная загрузка
@@ -114,8 +111,8 @@ public class TileResolver {
 	}
 
 	public void setMapSource(int sourceId) {
-		Preferences.put(Preferences.MAP_SOURCE, String.valueOf(sourceId));
-	 	MapStrategy mapStrategy = MapStrategyFactory.getStrategy(sourceId);
+		cacheProvider.gc();
+		MapStrategy mapStrategy = MapStrategyFactory.getStrategy(sourceId);
 		this.strategyId = sourceId;
 		tileLoader.setMapStrategy(mapStrategy);
 	}

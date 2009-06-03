@@ -281,6 +281,7 @@ public class PhysicMap {
 	
 	public void changeMapSource(int sourceId) {
 		tileProvider.setMapSource(sourceId);
+		cells = new Bitmap[3][3];
 		loadCells(defTile);
 	}
 	

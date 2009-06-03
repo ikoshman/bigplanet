@@ -37,7 +37,10 @@ public class MoowMap extends Activity {
 		int width = display.getWidth();
 		
 		mapControl = new MapControl(this, width, height, Preferences.getTile());
+		int mapSourceId = Preferences.getSourceId();
+		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
 		mapControl.getPhysicalMap().globalOffset =  Preferences.getOffset();
+		mapControl.getPhysicalMap().getTileResolver().setUseNet(Preferences.getUseNet());
 		setContentView(mapControl);
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
@@ -46,7 +49,9 @@ public class MoowMap extends Activity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);  
 		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
-		Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);			
+		Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);
+		//int mapSourceId = mapControl.getPhysicalMap().getTileResolver().getMapSourceId();
+		//Preferences.putSourceId(mapSourceId);
 		mapControl.clear();
 		mapControl = null;
 		System.gc();
@@ -56,9 +61,11 @@ public class MoowMap extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		RawTile defTile = Preferences.getTile();
+		int mapSourceId = Preferences.getSourceId();
+		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
+		mapControl.getPhysicalMap().globalOffset = Preferences.getOffset();
 		mapControl.getPhysicalMap().setDefTile(defTile);
 		mapControl.getPhysicalMap().reloadTiles();
-		mapControl.getPhysicalMap().globalOffset = Preferences.getOffset();
 	}
 	@Override
 	protected void onDestroy(){
@@ -84,7 +91,7 @@ public class MoowMap extends Activity {
 
 	
 	@Override public boolean onPrepareOptionsMenu(Menu menu) {
-		boolean useNet = Boolean.valueOf(Preferences.get(Preferences.NETWORK_MODE));
+		boolean useNet = Preferences.getUseNet();
 		menu.findItem(11).setEnabled(useNet);
 		return true; 
 	}
@@ -143,8 +150,7 @@ public class MoowMap extends Activity {
 		modesRadioGroup
 				.addView(buildRadioButton("Online ", 1), 0, layoutParams);
 
-		boolean useNet = Boolean.valueOf(Preferences
-				.get(Preferences.NETWORK_MODE));
+		boolean useNet = Preferences.getUseNet();
 		int checked = 0;
 		if(useNet){
 			checked = 1; 
@@ -157,8 +163,7 @@ public class MoowMap extends Activity {
 						boolean useNet = checkedId == 1;
 						mapControl.getPhysicalMap().getTileResolver()
 								.setUseNet(useNet);
-						Preferences.put(Preferences.NETWORK_MODE, String
-								.valueOf(useNet));
+						Preferences.putUseNet(useNet);
 						networkModeDialog.hide();
 					}
 
@@ -201,11 +206,12 @@ public class MoowMap extends Activity {
 							.getDescription(), id), 0, layoutParams);
 		}
 
-		sourcesRadioGroup.check(mapControl.getMapSourceId());
+		sourcesRadioGroup.check(Preferences.getSourceId());
 
 		sourcesRadioGroup
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 					public void onCheckedChanged(RadioGroup group, int checkedId) {
+						Preferences.putSourceId(checkedId);
 						mapControl.changeMapSource(checkedId);
 						mapSourceDialog.hide();
 					}

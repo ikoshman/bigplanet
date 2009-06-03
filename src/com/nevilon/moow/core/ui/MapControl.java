@@ -141,9 +141,6 @@ public class MapControl extends RelativeLayout {
 		pmap.changeMapSource(sourceId);
 	}
 	
-	public int getMapSourceId(){
-		return pmap.getMapSourceId();
-	}
 	
 	public PhysicMap getPhysicalMap(){
 		return pmap;
