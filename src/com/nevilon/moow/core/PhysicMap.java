@@ -69,11 +69,12 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	public void zoom(int d, int e, int z) {
-		defTile = new RawTile(d-1, e-1, z);
+	public void zoom(int x, int y, int z) {
+		defTile = new RawTile(x-1, y-1, z);
 		loadCells(defTile);
 	}
 
+	
 	/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
 	 * крайней левой верхней)
