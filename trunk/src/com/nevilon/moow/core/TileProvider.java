@@ -30,6 +30,7 @@ public class TileProvider {
 		if(useCache){
 			tmpBitmap = inMemoryCache.get(tile);
 			if (tmpBitmap!=null){
+				System.out.println("loaded from mem cache");
 				returnTile(tmpBitmap, tile);
 			}
 		}
@@ -43,6 +44,7 @@ public class TileProvider {
 		} else {
 			//if(!requestQueue.contains(tile)){
 				tileLoader.load(tile);
+				System.out.println("request to server");
 				requestQueue.add(tile);
 			
 		//	}
