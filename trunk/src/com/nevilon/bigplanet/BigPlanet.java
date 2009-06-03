@@ -56,7 +56,11 @@ public class BigPlanet extends Activity {
 	public static final int GO_TO_LOCATION = 20;
 
 	private static final String BOOKMARK_DATA = "bookmark";
+	
+	private static int MY_LOCATION_ZOOM = 1;
 
+	private static int SEARCH_ZOOM = 7;
+	
 	private Toast textMessage;
 
 	/*
@@ -136,7 +140,7 @@ public class BigPlanet extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
 		case GO_TO_LOCATION:
-			int z = 5;
+			int z = SEARCH_ZOOM;
 			Place place = (Place) data.getSerializableExtra("place");
 			mm.addMarker(place, z,false, MarkerManager.SEARCH_MARKER);
 			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
@@ -331,7 +335,7 @@ public class BigPlanet extends Activity {
 						locationManager.removeUpdates(this);
 						if (!inHome) {
 							inHome = true;
-							goToMyLocation(location);
+							goToMyLocation(location,MY_LOCATION_ZOOM);
 						}
 					}
 
@@ -349,7 +353,7 @@ public class BigPlanet extends Activity {
 		if (!inHome) {
 			Location tmpLocation = locationManager.getLastKnownLocation(provider);
 			if(tmpLocation!=null){
-				goToMyLocation(tmpLocation);
+				goToMyLocation(tmpLocation,MY_LOCATION_ZOOM);
 			} else{
 				Toast.makeText(this, "Unable to get current location",3000 ).show();
 			}
@@ -357,21 +361,19 @@ public class BigPlanet extends Activity {
 		}
 	}
 
-	private void goToMyLocation(Location location) {
+	private void goToMyLocation(Location location, int zoom) {
 		double lat = location.getLatitude();
 		double lon = location.getLongitude();
-
-		int z = 1;
 		com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(lat,
-				lon, z);
+				lon, zoom);
 		com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
-				.getPixelOffsetInTile(lat, lon, z);
-		mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
+				.getPixelOffsetInTile(lat, lon, zoom);
+		mapControl.goTo((int) p.x, (int) p.y, zoom, (int) off.x, (int) off.y);
 
 		Place place = new Place();
 		place.setLat(lat);
 		place.setLon(lon);
-		mm.addMarker(place, z,true,MarkerManager.MY_LOCATION_MARKER);
+		mm.addMarker(place, zoom,true,MarkerManager.MY_LOCATION_MARKER);
 	}
 
 	private void showSearch() {
