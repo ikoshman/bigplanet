@@ -58,16 +58,12 @@ public class LocalStorage {
 	public void put(RawTile tile, byte[] data) {
 		String path = buildPath(tile.getX(),tile.getY(), tile.getZ());
 		File fullPath = new File(path);
-		InputStream inStream = new ByteArrayInputStream(data);
 		fullPath.mkdirs();
 		fullPath = new File(path + "tile.png");
 		try {
 			FileOutputStream outStream = new FileOutputStream(fullPath);
-			int c;
-			while ((c = inStream.read()) != -1) {
-				outStream.write(c);
-			}
-			inStream.close();
+			outStream.write(data);
+			outStream.flush();
 			outStream.close();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -20,7 +20,7 @@ public class TileLoader{
 
 	public synchronized void tileLoaded(RawTile tile, byte[] data){
 		this.tileProvider.putToStorage(tile,data);
-		this.tileProvider.getTile(tile, true);
+		this.tileProvider.getTile(tile);
 	}
 	
 	private  class ThreadLoader extends Thread{
@@ -42,7 +42,7 @@ public class TileLoader{
 	            throw new IOException("This is not a binary file. "+tile.getX()+" "+ tile.getY()+" "+ tile.getZ());
 	        }
 	        InputStream raw = uc.getInputStream();
-	        InputStream in = new BufferedInputStream(raw);
+	        InputStream in = new BufferedInputStream(raw,65535);
 	        byte[] data = new byte[contentLength];
 	        int bytesRead = 0;
 	        int offset = 0;
