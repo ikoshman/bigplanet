@@ -7,9 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 /**
  * Реализация файлового кеша Для хранения тайлов используется дерево
  * 
@@ -110,7 +107,7 @@ public class LocalStorage {
 		fullPath = new File(path + "tile.tl");
 		try {
 			BufferedOutputStream outStream = new BufferedOutputStream(
-					new FileOutputStream(fullPath), 4096);
+					new FileOutputStream(fullPath), 65536);
 			outStream.write(data);
 			outStream.flush();
 			outStream.close();
@@ -130,7 +127,6 @@ public class LocalStorage {
 	public BufferedInputStream get(RawTile tile) {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File tileFile = new File(path + "/tile.tl");
-		//TODO try to use decodeFile
 		if (tileFile.exists()) {
 			try {
 				BufferedInputStream io = new BufferedInputStream(new FileInputStream(tileFile),

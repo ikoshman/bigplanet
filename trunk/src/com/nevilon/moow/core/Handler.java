@@ -1,7 +1,5 @@
 package com.nevilon.moow.core;
 
-import android.graphics.Bitmap;
-
 /**
  * Обработчик сообщений от потока
  * 
@@ -14,9 +12,6 @@ public abstract class Handler {
 	};
 
 	public void handle(RawTile tile, byte[] data) {
-	};
-	
-	public void handle(RawTile tile, Bitmap bitmap){
 	};
 
 }
