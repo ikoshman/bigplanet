@@ -1,5 +1,7 @@
 package com.nevilon.bigplanet.core;
 
+import com.nevilon.bigplanet.core.ui.BitmapUtils;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -251,7 +253,7 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-				cells[i][j] = null;
+				cells[i][j] = BitmapUtils.drawBackground(16, 256, 256);
 				tileProvider.getTile(new RawTile(x, y, tile.z, tileProvider
 						.getMapSourceId()), true);
 			}
