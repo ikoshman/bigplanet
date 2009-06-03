@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class BitmapCache {
 	
-	private ExpiredHashMap cacheMap = new ExpiredHashMap(20);
+	private ExpiredHashMap cacheMap = new ExpiredHashMap(40);
 
 	
 	public void put(RawTile tile, Bitmap bitmap){
@@ -45,10 +45,14 @@ public class BitmapCache {
 		}
 		
 		public synchronized void put(RawTile tile, Bitmap bitmap){
+			if (expCacheMap.size()>maxSize){
+				clear();
+			}
 			expCacheMap.put(new ExpRawTile(tile,System.currentTimeMillis()), bitmap);
 		}
 		
 		public Bitmap get(RawTile tile){
+			System.out.println("size "+ expCacheMap.size());
 			return expCacheMap.get(tile);
 		}
 		
@@ -56,18 +60,16 @@ public class BitmapCache {
 		 * Удаляет определенную часть самых старых элементов в кеше
 		 */
 		public void clear(){
-			if (maxSize == expCacheMap.keySet().size()){
 				Iterator<ExpRawTile> it = expCacheMap.keySet().iterator();
 				List<ExpRawTile> listToSort = new ArrayList<ExpRawTile>();
 				while(it.hasNext()){
 					listToSort.add(it.next());
 				}
 				Collections.sort(listToSort);
-				for(int i=0;i<10;i++){
+				for(int i=0;i<expCacheMap.size()/2;i++){
 					expCacheMap.remove(listToSort.get(i));
 				}
 				Log.i("CACHE", "clean");
-			}
 		}
 		
 		private class ExpRawTile extends RawTile implements Comparable<ExpRawTile>{

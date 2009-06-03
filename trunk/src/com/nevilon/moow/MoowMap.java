@@ -48,6 +48,7 @@ public class MoowMap extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		System.out.println("created");
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, MAP_HEIGHT));

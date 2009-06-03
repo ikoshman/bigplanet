@@ -212,6 +212,7 @@ public class PhysicMap {
 	 * Очистка in-memory кеша
 	 */
 	public void gc() {
+		System.out.println("gc");
 		tileProvider.inMemoryCache.gc();
 	}
 
