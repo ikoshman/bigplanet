@@ -65,7 +65,11 @@ public class DAO {
 	        initialValues.put(DAO.COLUMN_OFFSETY, bookmark.getOffsetY());
 	        // save to database
 	        db.insert(DAO.TABLE_GEOBOOKMARKS, null, initialValues);
-	        System.out.println(getBookmarks().size());
+	}
+	
+	
+	public void removeGeoBookmark(int geoBookmarkId){
+		db.delete(TABLE_GEOBOOKMARKS, COLUMN_ID + "=" + geoBookmarkId, null);
 	}
 	
 	public List<GeoBookmark> getBookmarks(){
