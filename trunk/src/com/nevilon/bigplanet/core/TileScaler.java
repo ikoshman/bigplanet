@@ -109,7 +109,7 @@ public class TileScaler{
 						bitmap.getPixels(pixels, 0, tileSize, offsetParentX,
 								offsetParentY, tileSize, tileSize);
 						bitmap = Bitmap.createBitmap(pixels, tileSize, tileSize,
-								Config.RGB_565);
+								Config.ARGB_8888);
 						pixels = null;
 						return Bitmap.createScaledBitmap(bitmap, 256, 256, false);
 					}

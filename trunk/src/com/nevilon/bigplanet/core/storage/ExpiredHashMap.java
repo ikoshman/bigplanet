@@ -33,9 +33,6 @@ public class ExpiredHashMap {
 	}
 
 	public synchronized void put(RawTile tile, Bitmap bitmap) {
-		// if (expCacheMap.size() >= maxSize) {
-		// gc();
-		// }
 		expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),
 				bitmap);
 	}
