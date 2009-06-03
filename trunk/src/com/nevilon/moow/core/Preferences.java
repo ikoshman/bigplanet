@@ -9,13 +9,15 @@ public class Preferences {
 	private static SharedPreferences prefs;
 
 	public static final String MAP_SOURCE = "MAP_SOURCE";
+	
+	public static final String NETWORK_MODE = "NETWORK_MODE";
 
 	public static void init(Application app) {
 		prefs = app.getSharedPreferences("global", Context.MODE_PRIVATE);
 	}
 
 	public static String get(String name) {
-		return prefs.getString(name, "");
+		return prefs.getString(name, "0");
 	}
 
 	public static void put(String name, String value) {

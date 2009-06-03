@@ -9,6 +9,7 @@ import com.nevilon.moow.core.storage.BitmapCacheWrapper;
 import com.nevilon.moow.core.storage.LocalStorageWrapper;
 
 public class TileResolver {
+	
 	private TileLoader tileLoader;
 
 	private PhysicMap physicMap;
@@ -121,6 +122,13 @@ public class TileResolver {
 
 	public int getMapSourceId() {
 		return this.strategyId;
+	}
+
+	public void setUseNet(boolean useNet) {
+		tileLoader.setUseNet(useNet);
+		if(useNet){
+			physicMap.reloadTiles();
+		}
 	}
 
 }

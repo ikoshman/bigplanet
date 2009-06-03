@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.nevilon.moow.core.Preferences;
 import com.nevilon.moow.core.providers.MapStrategyFactory;
 import com.nevilon.moow.core.tools.savemap.MapSaverUI;
 import com.nevilon.moow.core.ui.MapControl;
@@ -47,15 +48,19 @@ public class MoowMap extends Activity {
 		SubMenu sub = menu.addSubMenu(0, 1, 0, "Tools");
 		sub.add(2, 11, 1, "Cache map");
 
+		
+		menu.add(0, 3, 0, "Network mode");
+
+		
 		return true;
 	}
 
 	
 	private RadioButton buildRadioButton(String label, int id) {
-		RadioButton mapSource = new RadioButton(this);
-		mapSource.setText(label);
-		mapSource.setId(id);
-		return mapSource;
+		RadioButton btn = new RadioButton(this);
+		btn.setText(label);
+		btn.setId(id);
+		return btn;
 	}
 
 	@Override
@@ -70,13 +75,59 @@ public class MoowMap extends Activity {
 		case 0:
 			selectMapSource();
 			break;
-		case 1:
+		case 3:
+			selectNetworkMode();
 			break;
 		}
 		return false;
 
 	}
 
+	private void selectNetworkMode(){
+		final Dialog networkModeDialog;
+		networkModeDialog = new Dialog(this);
+		networkModeDialog.setCanceledOnTouchOutside(true);
+		networkModeDialog.setCancelable(true);
+		networkModeDialog.setTitle("Select network mode");
+
+		final LinearLayout mainPanel = new LinearLayout(this);
+		mainPanel.setLayoutParams(new LayoutParams(
+				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		mainPanel.setOrientation(LinearLayout.VERTICAL);
+
+		RadioGroup modesRadioGroup = new RadioGroup(this);
+
+		LinearLayout.LayoutParams layoutParams = new RadioGroup.LayoutParams(
+				RadioGroup.LayoutParams.WRAP_CONTENT,
+				RadioGroup.LayoutParams.WRAP_CONTENT);
+
+			modesRadioGroup.addView(buildRadioButton(
+					"Offline",0), 0, layoutParams);
+
+			modesRadioGroup.addView(buildRadioButton(
+					"Online ",1), 0, layoutParams);
+
+			
+		modesRadioGroup.check(Integer.parseInt(Preferences.get(Preferences.NETWORK_MODE)));
+
+		modesRadioGroup
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					public void onCheckedChanged(RadioGroup group,
+							int checkedId) {
+						mapControl.getPhysicalMap().getTileResolver().setUseNet(checkedId == 1);
+						Preferences.put(Preferences.NETWORK_MODE, String.valueOf(checkedId));
+						networkModeDialog.hide();
+					}
+
+				});
+
+		mainPanel.addView(modesRadioGroup);
+		networkModeDialog.setContentView(mainPanel);
+		networkModeDialog.show();	
+		
+		
+	}
+	
 	private void selectMapSource() {
 		final Dialog mapSourceDialog;
 		mapSourceDialog = new Dialog(this);
