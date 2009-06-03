@@ -19,6 +19,7 @@ public class TileUtils {
 		}
 
 		@Override
+		
 		public String toString() {
 			return x + " : " + y;
 		}
@@ -52,10 +53,17 @@ public class TileUtils {
 		 *  2. уменьшить зум, получить координаты тайла и отступ
 		 *  3. по отсутупу получить квадрант в тайле
 		 */
-		GeoLocation location = getBoundingBox(3, 3, 0, 0, 14);
-		GeoPoint tile = getTileXY(location.lat, location.lon, 16);
+		// получение географических координат
+		GeoLocation location = getBoundingBox(9, 7, 0, 0, 13);
+		// получение координат тайла
+		GeoPoint tile = getTileXY(location.lat, location.lon, 14);
 		System.out.println(tile);
-	 	GeoPoint offset =  getPixelXY(location.lon, location.lat, 16);
+		
+		
+		// получение отступа в тайле
+	 	GeoPoint offset =  getPixelXY(location.lon, location.lat, 14);
+	 	
+	 	System.out.println(offset);
 	 	int xc = 0;
 	 	int yc = 0;
 	 	if (offset.x<=128){
@@ -105,7 +113,7 @@ public class TileUtils {
 		double nbTiles = Math.pow(2, 17 - (zoom) );
 		double correctedLong = 180 + lon;
 		double longTileSize = 360 / nbTiles;
-		int tilex = (int) (correctedLong / longTileSize);
+		double tilex =  (correctedLong / longTileSize);
 
 		double correctedLat = 0;
 		if ((lat < -90) || (lat > 90)) {
@@ -117,13 +125,9 @@ public class TileUtils {
 		double mercator = 0.5 * Math.log((1 + Math.sin(phi))
 				/ (1 - Math.sin(phi)));
 		double tiley =  (((1 - (mercator / Math.PI)) / 2) * nbTiles);
-		return new GeoPoint(Math.rint(tilex), Math.rint(tiley)-1);
+		return new GeoPoint(tilex, tiley-1);
 	}
 
-	// @Test
-	public void testCenterPoint() {
-	//	getCenterPoint(100, -50);
-	}
 
 	public static GeoLocation getBoundingBox(double x, double y, double offsetx,
 			double offsety, int zoom) {
@@ -164,8 +168,8 @@ public class TileUtils {
 			lat = lat + latHeight;
 			latHeight = -latHeight;
 		}
-
-		return new GeoLocation(Math.rint(lat), Math.rint(lon));
+		System.out.println(lat + " " + lon);
+		return new GeoLocation(lat, lon);
 		// return new Rectangle2D.Double(lon, lat, lonWidth, latHeight);
 	}
 
@@ -237,25 +241,24 @@ public class TileUtils {
 		double falseNorthing = circumference / 2.0D;
 
 		// Do x
-		int x = (int) (radius * longitude);
+		double x =  (radius * longitude);
 
 		// Correct for false easting
-		x = (int) falseEasting + x;
+		x =  falseEasting + x;
 
-		int tilesXOffset = x / (int) TILE_SIZE;
-		x = x - (int) (tilesXOffset * TILE_SIZE);
+		double tilesXOffset = x /  TILE_SIZE;
+		x = x -  (tilesXOffset * TILE_SIZE);
 
 		// Do y
-		int y = (int) (radius / 2.0 * Math.log((1.0 + Math.sin(latitude))
+		double y =  (radius / 2.0 * Math.log((1.0 + Math.sin(latitude))
 				/ (1.0 - Math.sin(latitude))));
 
 		// Correct for false northing
-		y = (y - (int) falseNorthing) * -1;
+		y = (y -  falseNorthing) * -1;
 
 		// Number of pixels to subtract for tiles skipped (offset)
-		int tilesYOffset = y / (int) TILE_SIZE;
-		y = y - (int) (tilesYOffset * TILE_SIZE);
-
+		double tilesYOffset = y /  TILE_SIZE;
+		y = y - (tilesYOffset * TILE_SIZE);
 		GeoPoint xy = new GeoPoint(x, y);
 		return xy;
 	}
@@ -291,12 +294,10 @@ public class TileUtils {
 
 		if (lonWidth < 0) {
 			lon = lon + lonWidth;
-			lonWidth = -lonWidth;
 		}
 
 		if (latHeight < 0) {
 			lat = lat + latHeight;
-			latHeight = -latHeight;
 		}
 
 		return new GeoLocation(lat, lon);

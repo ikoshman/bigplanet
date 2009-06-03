@@ -75,13 +75,13 @@ public class MoowMap extends Activity {
 						+ pmap.getDefaultTile().getX(), ty
 						+ pmap.getDefaultTile().getY(), otx, oty, zoom);
 
-				/*
+				
 				cpoint = TileUtils.getLatLong(tx+pmap.getDefaultTile().getX(),
 						                      ty+pmap.getDefaultTile().getY(),
 						                      otx,
 						                      oty,
 						                      zoom);
-				*/
+				
 				// увеличение
 				if (direction == 1){
 					zoom--;
