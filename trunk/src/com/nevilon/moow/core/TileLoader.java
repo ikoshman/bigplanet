@@ -17,8 +17,10 @@ import android.util.Log;
  */
 public class TileLoader implements Runnable {
 
-	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?v=w2.99&x={0}&y={1}&zoom={2}";
+	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?x={0}&y={1}&zoom={2}";
 
+	//private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?v=w2.99&x={0}&y={1}&zoom={2}";
+	
 	private Handler handler;
 
 	private int counter = 0;

@@ -74,6 +74,7 @@ public class MoowMap extends Activity {
 		zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				pmap.zoomOut();
+				quickHack();
 				updateZoomControls();
 			}
 		});
