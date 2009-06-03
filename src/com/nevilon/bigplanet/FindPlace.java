@@ -14,12 +14,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import com.nevilon.bigplanet.core.Place;
-import com.nevilon.bigplanet.core.loader.BaseLoader;
-import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
-
-import android.app.Activity;
-import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -29,7 +23,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
@@ -38,47 +31,56 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RelativeLayout.LayoutParams;
 
-public class FindPlace extends ListActivity implements Runnable{
+import com.nevilon.bigplanet.core.Place;
+import com.nevilon.bigplanet.core.loader.BaseLoader;
+import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
+
+public class FindPlace extends ListActivity implements Runnable {
 
 	private String queryString = "";
-    
+
 	private Handler handler;
-	
+
 	private List<Place> places = new ArrayList<Place>();
-	
+
 	private View waitView;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setListAdapter(new SpeechListAdapter(this));
-		
+
 		handler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
-				if(places.size()==0){
+				if (places.size() == 0) {
 					finish();
-					Toast.makeText(FindPlace.this, "Your search for "+"\""+ queryString+"\"" +
-							"did not match any locations", 800).show();
-					
-				}else if(places.size()==1){
+					Toast.makeText(
+							FindPlace.this,
+							"Your search for " + "\"" + queryString + "\""
+									+ "did not match any locations", 800)
+							.show();
+
+				} else if (places.size() == 1) {
 					Intent i = new Intent("com.nevilon.bigplanet.INTENTS.GOTO");
 					i.putExtra("place", places.get(0));
 					sendBroadcast(i);
 					finish();
-				}else {
+				} else {
 					setListAdapter(new SpeechListAdapter(FindPlace.this));
-					getListView().setOnItemClickListener(new OnItemClickListener() {
+					getListView().setOnItemClickListener(
+							new OnItemClickListener() {
 
-						public void onItemClick(AdapterView<?> parent, View view,
-								int position, long id) {
-							Intent i = new Intent("com.nevilon.bigplanet.INTENTS.GOTO");
-							i.putExtra("place", places.get(position));
-							sendBroadcast(i);
-							finish();
-						}
-					});
+								public void onItemClick(AdapterView<?> parent,
+										View view, int position, long id) {
+									Intent i = new Intent(
+											"com.nevilon.bigplanet.INTENTS.GOTO");
+									i.putExtra("place", places.get(position));
+									sendBroadcast(i);
+									finish();
+								}
+							});
 
 					waitView.setVisibility(View.INVISIBLE);
 					setTitle("Search results");
@@ -86,29 +88,27 @@ public class FindPlace extends ListActivity implements Runnable{
 			}
 
 		};
-		
-		final Intent queryIntent = getIntent();
-        final String queryAction = queryIntent.getAction();
-        if (Intent.ACTION_SEARCH.equals(queryAction)) {
-        	 queryString = queryIntent.getStringExtra(SearchManager.QUERY);
-        	 Thread t = new Thread(this);
-     		t.start();
-        }
 
-		
-		LayoutParams l = new LayoutParams(0, 0);
+		final Intent queryIntent = getIntent();
+		final String queryAction = queryIntent.getAction();
+		if (Intent.ACTION_SEARCH.equals(queryAction)) {
+			queryString = queryIntent.getStringExtra(SearchManager.QUERY);
+			Thread t = new Thread(this);
+			t.start();
+		}
+
 		setTitle("Please, wait");
 		waitView = View.inflate(this, R.layout.progress_dialog, null);
 		LayoutParams p = new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT);
-		addContentView(waitView,p);
+		addContentView(waitView, p);
 	}
-	
+
 	public void run() {
 		HttpURLConnection connection = null;
 		try {
-			URL u = new URL("http://maps.google.com/maps/geo?q="
-					+ queryString + "&output=xml");
+			URL u = new URL("http://maps.google.com/maps/geo?q=" + queryString
+					+ "&output=xml");
 			connection = (HttpURLConnection) u.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setReadTimeout(BaseLoader.CONNECTION_TIMEOUT);
@@ -141,7 +141,7 @@ public class FindPlace extends ListActivity implements Runnable{
 		}
 
 	}
-	
+
 	private class SpeechListAdapter extends BaseAdapter {
 
 		public SpeechListAdapter(Context context) {
@@ -184,8 +184,7 @@ public class FindPlace extends ListActivity implements Runnable{
 	private class SpeechView extends LinearLayout {
 		public SpeechView(Context context, String name, String description) {
 			super(context);
-			View v = View
-					.inflate(FindPlace.this, R.layout.geobookmark, null);
+			View v = View.inflate(FindPlace.this, R.layout.geobookmark, null);
 			nameLabel = (TextView) v.findViewById(android.R.id.text1);
 			nameLabel.setText(name);
 
