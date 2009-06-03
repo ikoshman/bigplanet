@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -300,11 +301,7 @@ public class BigPlanet extends Activity {
 		case 15:
 			selectNetworkMode();
 			break;
-		case 4:
-			// showSettingsMenu();
-			break;
-
-		case 12:
+	    case 12:
 			showSearch();
 			break;
 		case 13:
@@ -323,9 +320,12 @@ public class BigPlanet extends Activity {
 
 	private void showMyLocation() {
 		inHome = false;
-		List<String> providers = locationManager.getProviders(true);
-		if (providers.size() > 0) {
-			String provider = providers.get(0);
+		Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		criteria.setAltitudeRequired(false);
+		criteria.setSpeedRequired(false);
+		String provider = locationManager.getBestProvider(criteria, true);
+		if (provider !=null) {
 			locationManager.requestLocationUpdates(provider, 1, 1,
 					new LocationListener() {
 
