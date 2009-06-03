@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.nevilon.bigplanet.core.Place;
@@ -50,7 +51,7 @@ public class FindLocation extends ListActivity implements Runnable {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setListAdapter(new SpeechListAdapter(FindLocation.this));
-		getListView().setPadding(2, 50, 0, 0);
+		getListView().setPadding(2, 52, 0, 0);
 		
 		LayoutParams p = new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT);
@@ -84,17 +85,15 @@ public class FindLocation extends ListActivity implements Runnable {
 
 		};
 		
-		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
+		getListView().setOnItemClickListener(new OnItemClickListener(){
 
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
+			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Intent intent = new Intent();
 				intent.putExtra("place", places.get(position));
 				setResult(BigPlanet.GO_TO_LOCATION,intent);
-				finish();
-				return false;
+				finish();		
 			}
-			
 		});
 
 	}
