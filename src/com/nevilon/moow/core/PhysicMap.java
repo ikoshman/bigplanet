@@ -26,9 +26,16 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	public void update(Bitmap bitmap, RawTile tile){
-		if(tile.getX()-defTile.getX()<=2 &&
-				tile.getY()-defTile.getY()<=2){
-			cells[tile.getX()-defTile.getX()][tile.getY()-defTile.getY()] = bitmap;		
+		int dx = tile.getX()-defTile.getX();
+		int dy = tile.getY()-defTile.getY(); 
+		if(dx<=2 && dy<=2){
+			if(dx>=0 && dy>=0){
+				try{
+				cells[dx][dy] = bitmap;		
+				} catch(Exception e){
+					System.out.println("dx " + dx +" dy " + dy);
+				}
+			}
 		}
 		
 	}

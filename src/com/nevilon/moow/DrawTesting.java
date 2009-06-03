@@ -29,6 +29,7 @@ public class DrawTesting extends Activity {
 	private int nL = -1;
 	private int nR = -1;
 	private int nB = -1;
+	private int nT = -1;
 
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
@@ -73,6 +74,7 @@ public class DrawTesting extends Activity {
 		boolean movedR = false;
 		boolean movedL = false;
 		boolean movedB = false;
+		boolean movedT = false;
 
 		// обработка перемещения вправо
 		if (isMovedRight()) {
@@ -118,6 +120,21 @@ public class DrawTesting extends Activity {
 		} else {
 			nB = 0;
 		}
+		
+		// обработка перемещения вверх
+		if (isMovedTop()) {
+			if (previousMovePoint.y > nextMovePoint.y) {
+				globalOffset.y += (256);
+				pmap.moveTop();
+				movedT = true;
+			}
+
+		}
+		if (!movedT) {
+			nT = (int) Math.ceil((globalOffset.y + 256+480) / 256);
+		} else {
+			nT = 0;
+		}
 
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
@@ -151,6 +168,12 @@ public class DrawTesting extends Activity {
 	private boolean isMovedBottom() {
 		return inMove && nB != -1
 				&& Math.abs(Math.ceil((globalOffset.y + 256) / 256) - nB) == 1;
+	}
+	
+	// проверка, передвино ли вниз
+	private boolean isMovedTop() {
+		return inMove && nT != -1
+				&& Math.abs(Math.ceil((globalOffset.y - 256+480) / 256) - nT) == 1;
 	}
 
 	class Panel extends View {
