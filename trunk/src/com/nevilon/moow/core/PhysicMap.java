@@ -40,15 +40,8 @@ public class PhysicMap {
 
 	}
 
-	public void move(int dx, int dy){
-		//System.out.println(dx);
-		//if(defTile.x-dx<=0){
-		//	dx = (int) (Math.pow(2, 17-defTile.z) - Math.abs(dx))-1;
-		//	reload(dx, defTile.y-dy, defTile.z);
-		//} else {
-			reload(defTile.x -dx,defTile.y - dy, defTile.z);
-
-		//}
+	public void move(int dx, int dy){	
+		reload(defTile.x -dx,defTile.y - dy, defTile.z);
 	}
 	
 	public Bitmap[][] getCells() {
@@ -61,13 +54,6 @@ public class PhysicMap {
 
 	
 	private void reload(int x, int y, int z){
-		/**
-		 * использование загруженных битмапов
-		 * 
-		 */
-		if(defTile.z == z){
-			//for(int i=)
-		}
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;

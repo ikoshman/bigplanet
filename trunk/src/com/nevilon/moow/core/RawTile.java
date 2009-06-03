@@ -1,5 +1,10 @@
 package com.nevilon.moow.core;
 
+/**
+ * Представляет параметры тайла
+ * @author hudvin
+ *
+ */
 public class RawTile {
 	
 	public int x,y,z;

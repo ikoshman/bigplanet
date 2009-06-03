@@ -7,19 +7,38 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+/**
+ * Реализация файлового кеша
+ * Для хранения тайлов используется дерево
+ * @author hudvin
+ *
+ */
 public class LocalStorage {
 
+	/**
+	 * Корневой каталог для файлового кеша
+	 */
 	private static final String root_dir_location = "/sdcard/moow/";
 	
+	/**
+	 * Конструктор
+	 * Инициализация файлового кеша(если необходимо)
+	 */
 	public LocalStorage() {
 		init();
 	}
 
+	
+	/**
+	 * Очистка файлового кеша
+	 */
 	public void clear() {
-		File dir = new File(root_dir_location);
-		deleteDir(dir);
+		deleteDir(new File(root_dir_location));
 	}
 
+	/**
+	 * Инициализация файлового кеша
+	 */
 	private void init() {
 		File dir = new File(root_dir_location);
 		if (!(dir.exists() && dir.isDirectory())) {
@@ -27,6 +46,11 @@ public class LocalStorage {
 		}
 	}
 
+	/**
+	 * Удаляет (рекурсивно) каталог и все его содержимое
+	 * @param dir
+	 * @return
+	 */
 	private boolean deleteDir(File dir) {
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
@@ -40,6 +64,13 @@ public class LocalStorage {
 		return dir.delete();
 	}
 
+	/**
+	 * Построение пути сохранения для тайла
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
 	private String buildPath(int x, int y, int z) {
 		String intPath = String.valueOf(z) + String.valueOf(x)
 				+ String.valueOf(y);
@@ -52,6 +83,11 @@ public class LocalStorage {
 		return path.toString();
 	}
 
+	/**
+	 * Сохраняет тайл в файловый кеш
+	 * @param tile параметры тайла
+	 * @param data параметры тайла
+	 */
 	public void put(RawTile tile, byte[] data) {
 		String path = buildPath(tile.x,tile.y, tile.z);
 		File fullPath = new File(path);
@@ -67,7 +103,12 @@ public class LocalStorage {
 		}
 
 	}
-
+	
+	/**
+	 * Возвращает заданный тайл или null(если не найден)
+	 * @param tile параметры тайла
+	 * @return тайл
+	 */
 	public BufferedInputStream get(RawTile tile) {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File tileFile = new File(path + "/tile.tl");
