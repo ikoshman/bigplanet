@@ -2,13 +2,6 @@
 <resources>
     <string name="app_name">Big Planet</string>
 
-    <string name="OPENSTREET_VECTOR"></string>    
-    <string name="YANDEX_SATELLITE"></string>
-    <string name="YANDEX_VECTOR"></string>
-    <string name="GOOGLE_SATELLITE"></string>
-    <string name="GOOGLE_VECTOR"></string>
-    
-    
     <string name="EDIT_MENU">Edit</string>
     <string name="DELETE_MENU">Delete</string>
     
@@ -17,12 +10,12 @@
     <string name="OK_LABEL">OK</string>
     <string name="CANCEL_LABEL">Cancel</string>
     
-    <string name="REMOVE_BOOKMARK_TITLE">Bookmark removing</string>
-    <string name="REMOVE_BOOKMARK_MESSAGE">Are you really want to remove this bookmark?</string>
+    <string name="REMOVE_BOOKMARK_TITLE">Remove bookmark</string>
+    <string name="REMOVE_BOOKMARK_MESSAGE">Are you sure?</string>
     
     <string name="MAP_SOURCE_MENU">Map source</string>
     <string name="TOOLS_MENU">Tools</string>
-    <string name="CACHE_MAP_MENU">Cache map</string>
+    <string name="CACHE_MAP_MENU">Save map for offline use</string>
     <string name="NETWORK_MODE_MENU">Network mode</string>
     <string name="BOOKMARKS_MENU">Bookmarks</string>
     <string name="BOOKMARK_ADD_MENU">Add</string>
@@ -30,19 +23,19 @@
     
     <string name="SELECT_OBJECT_MESSAGE">Select object</string>
     
-    <string name="SELECT_NETWORK_MODE_LABEL">Select network mode</string>
-    <string name="OFFLINE_MODE_LABEL">Offline</string>
-    <string name="ONLINE_MODE_LABEL">Online</string>
+    <string name="SELECT_NETWORK_MODE_LABEL">Do you want to use network?</string>
+    <string name="OFFLINE_MODE_LABEL">No</string>
+    <string name="ONLINE_MODE_LABEL">Yes</string>
     
-    <string name="SELECT_MAP_SOURCE_TITLE">Select map source</string>
+    <string name="SELECT_MAP_SOURCE_TITLE">Select map</string>
     
     <string name="DOWNLOAD_MESSAGE_PATTERN">{0} tile(s) of {1} downloaded({2}KB), {3} error(s)</string>
 
-    <string name="REGION_RADIUS_TITLE">"Select radius of region"</string>
+    <string name="REGION_RADIUS_TITLE">Select radius of region</string>
     
     <string name="DOWNLOAD_COMPLETE_TITLE">Download complete</string>
     <string name="ADD_BOOKMARK_TITLE">Add bookmark</string>
-    <string name="DOWNLOAD_COMPLETE_MESSAGE">All tiles were saved</string>
+    <string name="DOWNLOAD_COMPLETE_MESSAGE">All tiles has been saved</string>
     
     <string name="EMPTY_NAME_ERROR">Name cannot be empty</string>
     
