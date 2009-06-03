@@ -573,8 +573,8 @@ public class MapControl extends RelativeLayout {
 		iengine = new InertionEngine(moveHistory, interval);
 		startInertion = true;
 		
-		//Thread t = new Thread( new CanvasUpdater());
-		//t.start();
+		Thread t = new Thread( new CanvasUpdater());
+		t.start();
 	}
 
 	private void stopInertion() {
