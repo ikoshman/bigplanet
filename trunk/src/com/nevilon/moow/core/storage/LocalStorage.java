@@ -57,9 +57,9 @@ public class LocalStorage {
 		}
 	}
 	
-	public boolean isExists(RawTile tile, int providerId){
+	public boolean isExists(RawTile tile){
 		String path = buildPath(tile.x, tile.y, tile.z);
-		File tileFile = new File(path + "/tile." + providerId + ".tl");
+		File tileFile = new File(path + "/tile." + tile.s + ".tl");
 		return tileFile.exists();
 	}
 
@@ -110,11 +110,11 @@ public class LocalStorage {
 	 * @param data
 	 *            параметры тайла
 	 */
-	public void put(RawTile tile, byte[] data, int providerId) {
+	public void put(RawTile tile, byte[] data) {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File fullPath = new File(path);
 		fullPath.mkdirs();
-		fullPath = new File(path + "tile." + providerId + ".tl");
+		fullPath = new File(path + "tile." + tile.s + ".tl");
 		try {
 			BufferedOutputStream outStream = new BufferedOutputStream(
 					new FileOutputStream(fullPath), BUFFER_SIZE);
@@ -134,9 +134,9 @@ public class LocalStorage {
 	 *            параметры тайла
 	 * @return тайл
 	 */
-	public BufferedInputStream get(RawTile tile, int providerId) {
+	public BufferedInputStream get(RawTile tile) {
 		String path = buildPath(tile.x, tile.y, tile.z);
-		File tileFile = new File(path + "/tile." + providerId + ".tl");
+		File tileFile = new File(path + "/tile." + tile.s + ".tl");
 		if (tileFile.exists()) {
 			try {
 				BufferedInputStream io = new BufferedInputStream(

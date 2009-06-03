@@ -25,8 +25,8 @@ public class LocalStorageWrapper {
 	 * @param tile
 	 * @return
 	 */
-	public static Bitmap get(final RawTile tile, final int providerId) {
-		BufferedInputStream outStream = localStorage.get(tile, providerId);
+	public static Bitmap get(final RawTile tile) {
+		BufferedInputStream outStream = localStorage.get(tile);
 		Bitmap bmp = null;
 		if (outStream != null) {
 			bmp = BitmapFactory.decodeStream(outStream);
@@ -35,21 +35,20 @@ public class LocalStorageWrapper {
 		return bmp;
 	}
 
-	public static boolean isExists(RawTile tile, int providerId){
-		return localStorage.isExists(tile, providerId);
+	public static boolean isExists(RawTile tile){
+		return localStorage.isExists(tile);
 	}
 	
-	public static void put(RawTile tile, byte[] data, int providerId) {
-		localStorage.put(tile, data, providerId);
+	public static void put(RawTile tile, byte[] data) {
+		localStorage.put(tile, data);
 	}
 
-	public static void get(final RawTile tile, final Handler handler,
-			final int providerId) {
+	public static void get(final RawTile tile, final Handler handler) {
 		new Thread() {
 
 			public void run() {
 
-				handler.handle(tile, get(tile, providerId), false);
+				handler.handle(tile, get(tile), false);
 			}
 
 		}.start();

@@ -17,12 +17,10 @@ public class TileScaler implements Runnable {
 
 	private Handler handler;
 
-	private int providerId;
 
-	public TileScaler(RawTile tile, Handler handler, int providerId) {
+	public TileScaler(RawTile tile, Handler handler) {
 		this.tile = tile;
 		this.handler = handler;
-		this.providerId = providerId;
 	}
 
 	public void run() {
@@ -67,7 +65,7 @@ public class TileScaler implements Runnable {
 
 			// необходимо возвращать, во сколько раз увеличить!!!
 			bitmap = LocalStorageWrapper.get(new RawTile(parentTileX,
-					parentTileY, tmpZ), providerId);
+					parentTileY, tmpZ, tile.s));
 			if (bitmap == null) {
 			} else { // родительский тайл найден и загружен
 				// получение отступа в родительском тайле

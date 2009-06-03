@@ -268,7 +268,7 @@ public class PhysicMap {
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
 					cells[i][j] = tileProvider.getTile(
-							new RawTile(x, y, tile.z), true);
+							new RawTile(x, y, tile.z, tileProvider.getMapSourceId()), true);
 
 					updateScreenCommand.execute();
 			}

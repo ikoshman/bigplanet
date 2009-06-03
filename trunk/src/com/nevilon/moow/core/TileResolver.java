@@ -30,10 +30,12 @@ public class TileResolver {
 				new Handler() {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
-						LocalStorageWrapper.put(tile, data, strategyId);
-						Bitmap bmp = LocalStorageWrapper.get(tile, strategyId);
-						cacheProvider.putToCache(tile, bmp);
-						updateMap(tile, bmp);
+						LocalStorageWrapper.put(tile, data);
+						if(tile.s == strategyId){
+							Bitmap bmp = LocalStorageWrapper.get(tile);		
+							cacheProvider.putToCache(tile, bmp);
+							updateMap(tile, bmp);
+						}
 					}
 				}
 		);
@@ -45,7 +47,7 @@ public class TileResolver {
 
 			@Override
 			public synchronized void  handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
-				if(bitmap!=null){
+				if(bitmap!=null && tile.s == strategyId){
 					updateMap(tile, bitmap);
 					if (isScaled) {
 						cacheProvider.putToScaledCache(tile, bitmap);
@@ -61,6 +63,7 @@ public class TileResolver {
 
 			@Override
 			public synchronized void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
+				if(tile.s!=strategyId){return;}
 				if (bitmap != null) {
 					updateMap(tile, bitmap);
 					cacheProvider.putToCache(tile, bitmap);
@@ -68,7 +71,7 @@ public class TileResolver {
 					
 					bitmap = cacheProvider.getScaledTile(tile);
 					if(bitmap==null){
-						new Thread(new TileScaler(tile, scaledHandler, strategyId)).start();
+						new Thread(new TileScaler(tile, scaledHandler)).start();
 						
 					} else {
 						updateMap(tile, bitmap);
@@ -105,7 +108,7 @@ public class TileResolver {
 		}
 		if (bitmap == null) {
 			// асинхронная загрузка
-			LocalStorageWrapper.get(tile, localLoaderHandler, strategyId);
+			LocalStorageWrapper.get(tile, localLoaderHandler);
 		}
 		return bitmap;
 	}

@@ -40,15 +40,18 @@ public class MapSaverUI {
 	private MapSaver mapSaver;
 
 	private Stack<RawTile> tiles;
+	
+	private int sourceId;
 
 	
 	private TextView downloadInfo;
 	
 	
-	public MapSaverUI(Context context, int zoomLevel, Point absoluteCenter) {
+	public MapSaverUI(Context context, int zoomLevel, Point absoluteCenter, int sourceId) {
 		this.context = context;
 		this.absoluteCenter = absoluteCenter;
 		this.zoomLevel = zoomLevel;
+		this.sourceId = sourceId;
 	}
 
 	public void show() {
@@ -205,7 +208,7 @@ public class MapSaverUI {
 		final Stack<RawTile> tiles = new Stack<RawTile>();
 		for (int i = topX; i <= topX + 2 * dTile; i++) {
 			for (int j = topY; j <= topY + 2 * dTile; j++) {
-				RawTile tile = new RawTile(i, j, zoomLevel);
+				RawTile tile = new RawTile(i, j, zoomLevel, sourceId );
 				tiles.add(tile);
 			}
 		}

@@ -59,8 +59,8 @@ public class BitmapCache {
 	 * @param z
 	 * @return битмап (или null если не найден)
 	 */
-	public Bitmap get(int x, int y, int z) {
-		return cacheMap.get(new RawTile(x, y, z));
+	public Bitmap get(int x, int y, int z, int s) {
+		return cacheMap.get(new RawTile(x, y, z,s));
 	}
 
 }
