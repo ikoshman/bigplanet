@@ -48,17 +48,16 @@ public class MoowMap extends Activity {
 	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
 	private Bitmap mapBg = drawBackground();
-	
+
 	// нужно ли запускать инерцию
 	private boolean startInertion = false;
-	
+
 	// последнее время, когда происходило передвижение карты
 	private long lastMoveTime = -1;
-	
+
 	private Stack<Point> moveHistory = new Stack<Point>();
-	
+
 	private InertionEngine iengine;
-	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,9 +99,9 @@ public class MoowMap extends Activity {
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.round((pmap.globalOffset.y + MAP_HEIGHT) / 256);
+			dy = Math.round((pmap.globalOffset.y + MAP_HEIGHT) / 256);
 		} else {
-			dy = (int) Math.round(pmap.globalOffset.y / 256);
+			dy = Math.round(pmap.globalOffset.y / 256);
 
 		}
 
@@ -204,8 +203,8 @@ public class MoowMap extends Activity {
 				inMove = false;
 				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
 				Point pxx = new Point();
-				pxx.set((int)event.getX(), (int)event.getY());
-				
+				pxx.set((int) event.getX(), (int) event.getY());
+				lastMoveTime = 0;
 				moveHistory.push(pxx);
 				break;
 			case MotionEvent.ACTION_MOVE:
@@ -213,10 +212,23 @@ public class MoowMap extends Activity {
 				inMove = true;
 				pmap.moveCoordinates(event.getX(), event.getY());
 				Point p = new Point();
-				p.set((int)event.getX(), (int)event.getY());
+				p.set((int) event.getX(), (int) event.getY());
+				System.out.println(p);
 				moveHistory.push(p);
 				break;
 			case MotionEvent.ACTION_UP:
+				System.out.println("up " + event.getX() + " " + event.getY());
+				long interval = System.currentTimeMillis() - lastMoveTime;
+				System.out.println(interval);
+				if (interval < 1000) {
+					iengine = new InertionEngine(moveHistory, interval);
+					lastMoveTime = 0;
+					// iengine.x = pmap.globalOffset.x;
+					// iengine.y = pmap.globalOffset.y;
+					startInertion = true;
+					return false;
+				}
+
 				if (inMove) {
 					pmap.moveCoordinates(event.getX(), event.getY());
 					quickHack();
@@ -226,13 +238,7 @@ public class MoowMap extends Activity {
 						updateZoomControls();
 					}
 				}
-				long interval = System.currentTimeMillis() - lastMoveTime;
-				if(interval <200){
-					iengine =  new InertionEngine(moveHistory, interval);
-					iengine.x = pmap.globalOffset.x;
-					iengine.y = pmap.globalOffset.y;
-					startInertion = true;
-				}
+
 				break;
 			}
 
@@ -240,54 +246,49 @@ public class MoowMap extends Activity {
 		}
 
 	}
-	
-		
-
 
 	class CanvasUpdater implements Runnable {
 
-		double stepX;
-		
-		double stepY;
-		
-		double counter  = 1;
-		
+		private static final int UPDATE_INTERVAL = 40;
+
+		int step = 0;
+
+		int d = 3;
+
 		public void run() {
 			while (running) {
 				try {
-					Thread.sleep(10);
-					if(startInertion){
-						//processInertion();
+					Thread.sleep(CanvasUpdater.UPDATE_INTERVAL);
+					if (startInertion) {
+						processInertion();
 					}
+					main.postInvalidate();
 				} catch (InterruptedException ex) {
+					ex.printStackTrace();
 				}
-				main.postInvalidate();
 			}
 		}
 
-		private void processInertion(){
-		
-			if(counter <=0.2){
+		private void processInertion() {
+			if (step % 25 == 0) {
+				d--;
+			}
+
+			if (step > 100 || d < 0) {
 				startInertion = false;
 				quickHack();
+				step = 0;
+				d = 3;
 				return;
 			}
-			
-			stepX += (iengine.dx/iengine.getInterval())*(iengine.getInterval()*counter);
-			iengine.x +=  stepX;
-			
-			stepY +=  (iengine.dy/iengine.getInterval())*(iengine.getInterval()*counter); 
-		    iengine.y+= stepY;
-			
-		    System.out.println(stepX + " * "  + stepY);
-		    
-			pmap.globalOffset.x = (int)iengine.x;
-			pmap.globalOffset.y = (int)iengine.y;
-			counter = counter - counter*0.1;
-			//System.out.println(counter);
+
+			step++;
+
+			pmap.globalOffset.x += d;
+			pmap.globalOffset.y += d;
+
 		}
 
-		
 	}
 
 	class ZoomPanel extends RelativeLayout {
@@ -309,6 +310,7 @@ public class MoowMap extends Activity {
 					updateZoomControls();
 				}
 			});
+			BasicEvent ev = new BasicEvent();
 			addView(zoomControls);
 			setPadding(80, 368, 0, 0);
 		}
@@ -338,7 +340,7 @@ public class MoowMap extends Activity {
 
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

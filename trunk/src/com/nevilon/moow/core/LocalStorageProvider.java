@@ -31,7 +31,7 @@ public class LocalStorageProvider {
 			bmp = BitmapFactory.decodeStream(outStream);
 		}
 		
-		System.out.println("tile loaded in "+  (System.currentTimeMillis() - start));
+		//System.out.println("tile loaded in "+  (System.currentTimeMillis() - start));
 		return bmp;
 	}
 
