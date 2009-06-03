@@ -12,8 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -38,6 +40,7 @@ public class AllGeoBookmarks extends ListActivity {
 		DAO dao = new DAO(this);
 		geoBookmarks = dao.getBookmarks();
 		setListAdapter(new SpeechListAdapter(this));
+		//getListView().setPadding(0, 50, 0, 0);
 		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
 
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
