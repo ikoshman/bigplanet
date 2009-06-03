@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<SeekBar android:id="@+id/radiusSeekbar" android:gravity="right"
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		android:max="10" android:progress="0" />
+
+
+
+
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_height="wrap_content" android:layout_width="wrap_content">
+		<TableRow>
+
+			<TextView android:id="@+id/radiusLabel" android:gravity="left"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:text="Radius: " />
+
+			<EditText android:id="@+id/radiusValue"
+			android:numeric="decimal"
+				android:layout_height="40sp" android:layout_width="70sp"
+				android:text="" android:maxLength="4" />
+
+			<TextView android:id="@+id/downloadInfo" android:gravity="left"
+				android:layout_height="wrap_content" android:layout_width="fill_parent"
+				android:text="Download: " />
+
+
+
+		</TableRow>
+
+	</TableLayout>
+
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:gravity="center"
+		android:layout_height="wrap_content" android:layout_width="wrap_content">
+
+		<TableRow >
+			<Button android:id="@+id/startButton" android:layout_width="140dip"
+				android:layout_height="wrap_content" android:text="Start download">
+			</Button>
+			<Button android:id="@+id/cancelButton" android:layout_width="140dip" 
+				android:layout_height="wrap_content" android:text="Cancel">
+			</Button>
+
+		</TableRow>
+
+</TableLayout>
+
+</LinearLayout>

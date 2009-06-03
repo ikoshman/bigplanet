@@ -37,7 +37,6 @@ public class LocalStorage {
 	 * Конструктор Инициализация файлового кеша(если необходимо)
 	 */
 	private LocalStorage() {
-		clear();
 		init();
 	}
 
@@ -56,6 +55,12 @@ public class LocalStorage {
 		if (!(dir.exists() && dir.isDirectory())) {
 			dir.mkdirs();
 		}
+	}
+	
+	public boolean isExists(RawTile tile, int providerId){
+		String path = buildPath(tile.x, tile.y, tile.z);
+		File tileFile = new File(path + "/tile." + providerId + ".tl");
+		return tileFile.exists();
 	}
 
 	/**

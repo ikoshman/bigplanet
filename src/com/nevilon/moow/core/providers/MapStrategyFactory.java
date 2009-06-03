@@ -16,13 +16,10 @@ public class MapStrategyFactory {
 	public static final int OPENSTREET_VECTOR = 4;
 	
 
-	private static MapStrategyFactory mapStrategyFactory;
-
-
+	
 	public static Map<Integer,MapStrategy> strategies;
 	static{
 		strategies = new HashMap<Integer ,MapStrategy>();
-	
 		strategies.put(GOOGLE_VECTOR ,new GoogleVectorMapStrategy());
 		strategies.put(GOOGLE_SATELLITE,new GoogleSatelliteMapStrategy());
 		strategies.put(YANDEX_SATELLITE, new YandexSatelliteMapStrategy());
@@ -34,15 +31,9 @@ public class MapStrategyFactory {
 	private MapStrategyFactory() {
 	}
 
-	public static MapStrategyFactory getInstance() {
-		if (null == mapStrategyFactory) {
-			mapStrategyFactory = new MapStrategyFactory();
-		}
-		return mapStrategyFactory;
 
-	}
 
-	public MapStrategy getStrategy(int sourceId) {
+	public static MapStrategy getStrategy(int sourceId) {
 		return strategies.get(sourceId);
 	}
 

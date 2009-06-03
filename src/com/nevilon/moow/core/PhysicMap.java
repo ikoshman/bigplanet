@@ -5,6 +5,8 @@ import android.graphics.Point;
 
 public class PhysicMap {
 
+	private static final int TILE_SIZE = 256;
+
 	private TileResolver tileProvider;
 
 	private Bitmap[][] cells = new Bitmap[3][3];
@@ -80,9 +82,9 @@ public class PhysicMap {
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x + 320
+			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x + 320
 					/ 2;
-			int currentZoomY = getDefaultTile().y * 256 - globalOffset.y + 480
+			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y + 480
 					/ 2;
 
 			// получение координат точки предудущем уровне
@@ -94,12 +96,12 @@ public class PhysicMap {
 			nextZoomY = nextZoomY - 480 / 2;
 
 			// получение углового тайла
-			int tileX = (nextZoomX / 256);
-			int tileY = nextZoomY / 256;
+			int tileX = (nextZoomX / TILE_SIZE);
+			int tileY = nextZoomY / TILE_SIZE;
 
 			// отступ всегда один - точка должна находится в центре экрана
-			int correctionX = nextZoomX - tileX * 256;
-			int correctionY = nextZoomY - tileY * 256;
+			int correctionX = nextZoomX - tileX * TILE_SIZE;
+			int correctionY = nextZoomY - tileY * TILE_SIZE;
 
 			globalOffset.x = -(correctionX);
 			globalOffset.y = -(correctionY);
@@ -126,9 +128,9 @@ public class PhysicMap {
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
 			// получение отступа он начала координат
-			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x
+			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x
 					+ offsetX;
-			int currentZoomY = getDefaultTile().y * 256 - globalOffset.y
+			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y
 					+ offsetY;
 
 			// получение координат точки на новом уровне
@@ -140,12 +142,12 @@ public class PhysicMap {
 			nextZoomY = nextZoomY - 480 / 2;
 
 			// получение углового тайла
-			int tileX = (nextZoomX / 256);
-			int tileY = nextZoomY / 256;
+			int tileX = (nextZoomX / TILE_SIZE);
+			int tileY = nextZoomY / TILE_SIZE;
 
 			// отступ всегда один - точка должна находится в центре экрана
-			int correctionX = nextZoomX - tileX * 256;
-			int correctionY = nextZoomY - tileY * 256;
+			int correctionX = nextZoomX - tileX * TILE_SIZE;
+			int correctionY = nextZoomY - tileY * TILE_SIZE;
 
 			globalOffset.x = -(correctionX);
 			globalOffset.y = -(correctionY);
@@ -169,6 +171,20 @@ public class PhysicMap {
 
 	}
 
+	
+	public Point getAbsoluteCenter(){
+		Point centerPoint = new Point();
+		centerPoint.x  = getDistance(getDefaultTile().x) - globalOffset.x + 320
+		/ 2;
+        centerPoint.y = getDistance(getDefaultTile().y) - globalOffset.y + 480
+		/ 2;
+		return centerPoint;
+	}
+	
+	private int getDistance(int tileCount){
+		return tileCount*TILE_SIZE;
+	}
+	
 	private void reload(int x, int y, int z) {
 		defTile.x = x;
 		defTile.y = y;
@@ -257,7 +273,7 @@ public class PhysicMap {
 	}
 
 	public void changeMapSource(int sourceId) {
-		tileProvider.changeMapSource(sourceId);
+		tileProvider.setMapSource(sourceId);
 		loadCells(defTile);
 	}
 	
