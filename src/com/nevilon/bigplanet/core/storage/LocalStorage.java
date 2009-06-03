@@ -39,6 +39,7 @@ public class LocalStorage {
 	 * Конструктор Инициализация файлового кеша(если необходимо)
 	 */
 	private LocalStorage() {
+		//clear();
 		init();
 	}
 

@@ -57,6 +57,7 @@ public class ExpiredHashMap {
 				listToSort.add(it.next());
 			}
 			Collections.sort(listToSort);
+			Collections.reverse(listToSort);
 			for (int i = 0; i < expCacheMap.size() / 2; i++) {
 				expCacheMap.remove(listToSort.get(i));
 			}
