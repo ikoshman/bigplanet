@@ -1,6 +1,8 @@
 package com.nevilon.bigplanet.core.db;
 
-public class GeoBookmark {
+import java.io.Serializable;
+
+public class GeoBookmark implements Serializable {
 	
 	private int id;
 	

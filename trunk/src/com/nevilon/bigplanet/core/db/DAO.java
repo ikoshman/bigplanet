@@ -31,14 +31,14 @@ public class DAO {
 	private static final String COLUMN_ID = "id";
 
 	public static final String TABLE_DDL =	 
-	"create table" +TABLE_GEOBOOKMARKS+  
+	"create table " +TABLE_GEOBOOKMARKS+  
 	"("+COLUMN_ID+" integer primary key autoincrement," +
-	""  +COLUMN_NAME+ " text"+
-	"" +COLUMN_DESCRIPTION+ " text"+
-	"" + COLUMN_TAGS+ " text"+
-	"" +COLUMN_SOURCE+ " integer"+
-	"" +COLUMN_OFFSETX+ " integer"+
-	"" +COLUMN_OFFSETY+ " integer"+
+	""  +COLUMN_NAME+ " text,"+
+	"" +COLUMN_DESCRIPTION+ " text,"+
+	"" + COLUMN_TAGS+ " text,"+
+	"" +COLUMN_SOURCE+ " integer,"+
+	"" +COLUMN_OFFSETX+ " integer,"+
+	"" +COLUMN_OFFSETY+ " integer,"+
 	"" +COLUMN_Z+ " integer"+
 	");";
 
@@ -55,7 +55,7 @@ public class DAO {
 	
 	public void saveGeoBookmark(GeoBookmark bookmark){
 		 ContentValues initialValues = new ContentValues();
-	        initialValues.put(DAO.COLUMN_ID, bookmark.getId());
+	      //  initialValues.put(DAO.COLUMN_ID, bookmark.getId());
 	        initialValues.put(DAO.COLUMN_NAME, bookmark.getName());
 	        initialValues.put(DAO.COLUMN_DESCRIPTION, bookmark.getDescription());
 	        initialValues.put(DAO.COLUMN_TAGS, bookmark.getTags());
@@ -65,6 +65,7 @@ public class DAO {
 	        initialValues.put(DAO.COLUMN_OFFSETY, bookmark.getOffsetY());
 	        // save to database
 	        db.insert(DAO.TABLE_GEOBOOKMARKS, null, initialValues);
+	        System.out.println(getBookmarks().size());
 	}
 	
 	public List<GeoBookmark> getBookmarks(){
@@ -90,6 +91,7 @@ public class DAO {
                 bookmarks.add(bookmark);
                 c.moveToNext();
             }
+            c.close();
         } catch (SQLException e) {
             Log.e("Exception on query", e.toString());
         }

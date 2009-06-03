@@ -24,6 +24,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.nevilon.bigplanet.core.Preferences;
 import com.nevilon.bigplanet.core.RawTile;
+import com.nevilon.bigplanet.core.db.GeoBookmark;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
 import com.nevilon.bigplanet.core.ui.MapControl;
@@ -138,7 +139,6 @@ public class BigPlanet extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		System.out.println(resultCode);
 		if (resultCode == RESULT_OK) {
 			mapControl.setMapMode(MapControl.ZOOM_MODE);
 		}
@@ -159,6 +159,12 @@ public class BigPlanet extends Activity {
 				@Override
 				public void onMapLongClick(int x, int y) {
 					Intent intent = new Intent();
+					GeoBookmark newGeoBookmark = new GeoBookmark();
+					newGeoBookmark.setOffsetX(mapControl.getPhysicalMap().getGlobalOffset().x);
+					newGeoBookmark.setOffsetY(mapControl.getPhysicalMap().getGlobalOffset().y);
+					newGeoBookmark.setSource(mapControl.getPhysicalMap().getTileResolver().getMapSourceId());
+					newGeoBookmark.setZ(mapControl.getPhysicalMap().getZoomLevel());
+					intent.putExtra("bookmark", newGeoBookmark);
 					intent.setClass(BigPlanet.this, AddGeoBookmark.class);
 					startActivityForResult(intent,0);
 
