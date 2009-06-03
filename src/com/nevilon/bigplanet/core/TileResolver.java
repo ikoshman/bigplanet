@@ -75,7 +75,8 @@ public class TileResolver {
 				} else { // если тайла нет в файловом кеше
 					bitmap = cacheProvider.getScaledTile(tile);
 					if (bitmap == null) {
-						new Thread(new TileScaler(tile, scaledHandler)).start();
+						TileScaler.get(tile, scaledHandler);
+						//new Thread(new TileScaler(tile, scaledHandler)).start();
 					} else { // скалированый тайл из кеша
 						loaded++;
 						updateMap(tile, bitmap);
@@ -155,6 +156,26 @@ public class TileResolver {
 		tileLoader.setUseNet(useNet);
 		if (useNet) {
 			physicMap.reloadTiles();
+		}
+	}
+	
+	public void fillMap(RawTile tile){
+		Bitmap[][] cells = new Bitmap[3][3];
+		for(int i=0;i<4;i++){
+			for(int j=0;j<4;j++){
+				Bitmap bitmap;
+				bitmap =  cacheProvider.getTile(tile);
+				if(bitmap==null){
+					bitmap= LocalStorageWrapper.get(null);
+					if(bitmap==null){
+						bitmap = TileScaler.get(null);
+						if(bitmap==null){
+							// установить фон
+						}
+					}
+				}
+				cells[i][j]=bitmap;
+			}
 		}
 	}
 

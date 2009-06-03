@@ -458,9 +458,12 @@ public class MapControl extends RelativeLayout {
 								float ox = pmap.getGlobalOffset().x;
 								float oy = pmap.getGlobalOffset().y;
 								double i=1;
+								
+								quickHack();
+							
 								while(pmap.scaleFactor<=2){
 									try {
-										Thread.sleep(40);
+										Thread.sleep(80);
 										postInvalidate();
 										
 										pmap.scaleFactor+=0.1f;
@@ -468,23 +471,20 @@ public class MapControl extends RelativeLayout {
 										
 										tx+=dx;
 										ty+=dy;
+										//scalePoint.x = (int)(scaleX + tx);
 										scalePoint.set((int)(scaleX + tx),(int)(scaleY + ty));
 										ox+=dx;
 										oy+=dy;
 										pmap.getGlobalOffset().x=(int)ox;
 										pmap.getGlobalOffset().y=(int)oy;
-										
-										//quickHack();
 									} catch (InterruptedException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
 								}
 								
-								//pmap.zoomIn((int) event.getX(), (int) event.getY());
-								
+								//pmap.zoomIn((int) event.getX()+, (int) event.getY());
 								pmap.zoomInCenter();
-								//quickHack();
 								h.sendEmptyMessage(0);
 							}
 							
