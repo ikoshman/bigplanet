@@ -43,7 +43,7 @@ public class LocalStorageWrapper {
 		localStorage.put(tile, data);
 	}
 
-	public static void get(final RawTile tile,final boolean isTemp, final Handler handler) {
+	public static void get(final RawTile tile, final Handler handler) {
 		new Thread() {
 
 			public void run() {

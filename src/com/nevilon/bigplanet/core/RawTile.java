@@ -16,7 +16,7 @@ public class RawTile implements Serializable {
 	public int x, y, z, s;
 
 
-	public RawTile(int x, int y, int z, int s, int l) {
+	public RawTile(int x, int y, int z, int s) {
 		this.x = x;
 		this.y = y;
 		this.z = z;

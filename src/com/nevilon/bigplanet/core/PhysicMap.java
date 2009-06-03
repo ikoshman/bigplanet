@@ -301,13 +301,10 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-				setBitmap(MapControl.CELL_BACKGROUND, i, j);
-				//cells[i][j] = MapControl.bp;
-				tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
-						.getMapSourceId(),0));
-
-				//tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
-				//		.getMapSourceId(),1));
+				//setBitmap(MapControl.CELL_BACKGROUND, i, j);
+				cells[i][j] = MapControl.CELL_BACKGROUND;
+				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
+						.getMapSourceId()));
 			}
 		}
 	}

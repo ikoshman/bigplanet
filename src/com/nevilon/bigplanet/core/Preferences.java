@@ -60,7 +60,7 @@ public class Preferences {
 		x = prefs.getInt(Preferences.TILEX, 0);
 		y = prefs.getInt(Preferences.TILEY, 0);
 		z = prefs.getInt(Preferences.TILEZ, 16);
-		return new RawTile(x, y, z, -1,0);
+		return new RawTile(x, y, z, -1);
 	}
 
 	/**

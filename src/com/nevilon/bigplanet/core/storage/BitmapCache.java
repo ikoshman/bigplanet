@@ -38,6 +38,7 @@ public class BitmapCache {
 	 *            битмап
 	 */
 	public void put(RawTile tile, Bitmap bitmap) {
+		System.out.println(tile.s);
 		cacheMap.put(tile, bitmap);
 	}
 

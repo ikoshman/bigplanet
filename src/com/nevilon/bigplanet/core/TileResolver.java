@@ -120,7 +120,7 @@ public class TileResolver {
 		} else {
 
 			updateMap(tile, MapControl.CELL_BACKGROUND);
-			LocalStorageWrapper.get(tile,false ,localLoaderHandler);
+			LocalStorageWrapper.get(tile,localLoaderHandler);
 		}
 	}
 
