@@ -239,11 +239,13 @@ public class MoowMap extends Activity {
 				addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
+				if(startInertion){
+					stopInertion();
+				}
 				long interval = System.currentTimeMillis() - lastMoveTime;
-				if (interval < 100) {
-					iengine = new InertionEngine(moveHistory, interval);
+				if (interval < 100 && !startInertion) {
 					lastMoveTime = 0;
-					startInertion = true;
+					startInertion(moveHistory, interval);				
 					return false;
 				}
 
@@ -263,6 +265,15 @@ public class MoowMap extends Activity {
 			return true;
 		}
 
+	}
+	
+	private void startInertion(List<Point> moveHistory, long interval){
+		iengine = new InertionEngine(moveHistory, interval);
+		startInertion = true;
+	}
+	
+	private void stopInertion(){
+		startInertion = false;
 	}
 
 	class CanvasUpdater implements Runnable {
