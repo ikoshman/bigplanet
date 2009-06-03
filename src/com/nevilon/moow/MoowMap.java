@@ -257,7 +257,7 @@ public class MoowMap extends Activity {
 				try {
 					Thread.sleep(10);
 					if(startInertion){
-						processInertion();
+						//processInertion();
 					}
 				} catch (InterruptedException ex) {
 				}

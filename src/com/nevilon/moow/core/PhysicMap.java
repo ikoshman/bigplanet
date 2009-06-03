@@ -12,7 +12,7 @@ public class PhysicMap {
 	private RawTile defTile;
 
 	private int zoom;
-	
+
 	public Point globalOffset = new Point();
 
 	private Point previousMovePoint = new Point();
@@ -27,7 +27,7 @@ public class PhysicMap {
 	}
 
 	public RawTile getDefaultTile() {
-		return this.defTile;
+		return normalize(this.defTile);
 	}
 
 	public int getZoomLevel() {
@@ -161,18 +161,17 @@ public class PhysicMap {
 				+ (nextMovePoint.y - previousMovePoint.y));
 
 	}
-	
-	
 
 	private void reload(int x, int y, int z) {
-		if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
+		
+		//if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
 			defTile.x = x;
 			defTile.y = y;
 			defTile.z = z;
 			loadCells(defTile);
-		} else {
-			System.out.println("fuck");
-		}
+	//	} else {
+			//System.out.println("fuck");
+	//	}
 	}
 
 	/**
@@ -188,13 +187,34 @@ public class PhysicMap {
 			return false;
 		}
 		int maxTile = (int) Math.pow(2, 17 - z) - 1;
-		if (x > maxTile || y > maxTile) {
+		if (x > maxTile || y > maxTile || y<0) {
 			return false;
 		}
 		return true;
 
 	}
 
+	private RawTile normalize(RawTile tile){
+		tile.x = normalize(tile.x, tile.z);
+		return tile;
+	}
+	
+	private int normalize(int x,int z){
+		System.out.println("before " + x);
+		int tileCount = (int) Math.pow(2, 17 - z);
+		while(x<0){
+			x = tileCount+x;
+			
+		}
+		if (x<0){
+			//x = tileCount+x;
+		} else if (x>tileCount-1){
+			x = x - tileCount;
+		}
+		System.out.println("after "+x);
+		return x;
+	}
+	
 	/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
 	 * крайней левой верхней)
@@ -202,10 +222,12 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void loadCells(RawTile tile) {
+		System.out.println(defTile);
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
 				x = (tile.x + i);
+				x = normalize(x, tile.z);
 				y = (tile.y + j);
 				if (!checkTileXY(x, y, tile.z)) {
 					cells[i][j] = null;
