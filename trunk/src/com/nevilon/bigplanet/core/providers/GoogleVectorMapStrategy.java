@@ -11,7 +11,7 @@ public class GoogleVectorMapStrategy extends MapStrategy {
     public GoogleVectorMapStrategy() {
 		layers.add(new Layer() {
 
-			private  String SERVER = "http://mt1.google.com/"; 
+			private  String SERVER = "http://mt2.google.com/"; 
 			
 			@Override
 			public String getDescription() {
@@ -25,7 +25,7 @@ public class GoogleVectorMapStrategy extends MapStrategy {
 			
 			@Override
 			public String getURLPattern() {
-				return SERVER+ "mt/v=w2.92&hl=en&x={0}&y={1}&zoom={2}&s=Galil";
+				return SERVER+ "mt/v=w2.92&hl=en&x={0}&y={1}&z={2}&s=Galil";
 			}
 
 
@@ -40,7 +40,7 @@ public class GoogleVectorMapStrategy extends MapStrategy {
 	public String getURL(int x, int y, int z,int layout) {
 		Layer layer = layers.get(layout);
 		String tmp = MessageFormat.format(layer.getURLPattern(),
-				String.valueOf(x), String.valueOf(y), String.valueOf(z));
+				String.valueOf(x), String.valueOf(y), String.valueOf(17-z));
  
 		return tmp;
 	}

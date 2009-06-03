@@ -62,7 +62,7 @@ public class BigPlanet extends Activity {
 
 	private static int MY_LOCATION_ZOOM = 1;
 
-	private static int SEARCH_ZOOM = 7;
+	private static int SEARCH_ZOOM = 5;
 
 	private Toast textMessage;
 
@@ -118,6 +118,7 @@ public class BigPlanet extends Activity {
 			// создание карты
 			mm = new MarkerManager(getResources());
 			RawTile savedTile = Preferences.getTile();
+	
 			configMapControl(savedTile);
 			// использовать ли сеть
 			boolean useNet = Preferences.getUseNet();
@@ -131,6 +132,7 @@ public class BigPlanet extends Activity {
 			Point globalOffset = Preferences.getOffset();
 			//globalOffset.x = 0;
 			//globalOffset.y = -32;
+			System.out.println("offset " + globalOffset + " " + savedTile);
 			mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
 			mapControl.getPhysicalMap().reloadTiles();
 			if (BigPlanetApp.isDemo) {
