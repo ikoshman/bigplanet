@@ -38,11 +38,9 @@ public class MoowMap extends Activity {
 	private Point nextMovePoint = new Point();
 	private Point globalOffset = new Point();
 
-	private long lastMove = -1;
+		int zoom = 12; // whole world
 
-	int zoom = 16; // whole world
-
-	PhysicMap pmap = new PhysicMap(new RawTile(0, 0, zoom));
+	PhysicMap pmap = new PhysicMap(new RawTile(9, 7, zoom));
 
 	boolean moving = false;
 
@@ -54,78 +52,25 @@ public class MoowMap extends Activity {
 		main = new Panel(this);
 
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
-		(new Thread(new AnimationLoop())).start();
+		(new Thread(new CanvasUpdater())).start();
 
 		class ZoomPanel extends RelativeLayout {
 
 			
-			private void zoom(int direction){
-				double x = 320 / 2 + Math.abs(globalOffset.x);
-				double y = 480 / 2 + Math.abs(globalOffset.y);
-				// получение сдвига в полных тайлах
-				int tx = (int) Math.floor(x / 256);
-				int ty = (int) Math.floor(y / 256);
-
-				// получение отступа в для последнего тайла
-				int otx = (int) (x - 256 * tx);
-				int oty = (int) (y - 256 * ty);
-				//otx = 0;
-			//oty =0;
-				GeoLocation cpoint = TileUtils.getBoundingBox(tx
-						+ pmap.getDefaultTile().getX(), ty
-						+ pmap.getDefaultTile().getY(), otx, oty, zoom);
-
-				
-				cpoint = TileUtils.getLatLong(tx+pmap.getDefaultTile().getX(),
-						                      ty+pmap.getDefaultTile().getY(),
-						                      otx,
-						                      oty,
-						                      zoom);
-				
-				// увеличение
-				if (direction == 1){
-					zoom--;
-	
-					// уменьшение
-				} else {
-					if (zoom!=16){
-						zoom++;	
-					} else {
-						return;
-					}
-				}
-				  
-				
-				GeoPoint xy = TileUtils.getTileXY(cpoint.lat,
-						cpoint.lon, zoom);
-				GeoPoint offset =TileUtils.getPixelXY(cpoint.lon, cpoint.lat, zoom);
-				MoowMap.this.pmap.zoom((int) xy.x, (int) xy.y, zoom);
-
-				previousMovePoint = new Point();
-				nextMovePoint = new Point();
-				globalOffset = new Point();
-				globalOffset.x = (int) (-160+offset.x);
-				globalOffset.y =  (int) (240-offset.y);
-				
-				
-				//moveCoordinates(globalOffset.x, globalOffset.y);
-		
-
-			}
-			
+						
 			public ZoomPanel(Context context) {
 				super(context);
 				ZoomControls zc = new ZoomControls(getContext());
 				zc.setOnZoomOutClickListener(new OnClickListener(){
 					public void onClick(View v) {
-						zoom(-1);
+						zoomOut();
 					}
 					
 				});
 				zc.setOnZoomInClickListener(new OnClickListener() {
 
 					public void onClick(View v) {
-						zoom(1);
+						zoomIn();
 					}
 
 				});
@@ -141,29 +86,43 @@ public class MoowMap extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
-		
 			break;
 		case MotionEvent.ACTION_MOVE:
+			System.out.println("move");
 			moveCoordinates(event.getX(), event.getY());
-			lastMove = System.currentTimeMillis();
-		
 			break;
 		case MotionEvent.ACTION_UP:
-			// inMove = false;
-			if (lastMove != -1 && System.currentTimeMillis() - lastMove > 1000) {
-			} else {
-				// (new Thread(new InertionMoover())).start();
-			}
-			lastMove = -1;
-		
-			break;
+		    inMove = false;
+		    moveCoordinates(event.getX(), event.getY());
+		    break;
 		}
 
 		return super.onTouchEvent(event);
 	}
 
+	private void zoomIn(){
+		int currentZoomX = pmap.getDefaultTile().getX()*256-globalOffset.x+160;
+		int currentZoomY = pmap.getDefaultTile().getY()*256-globalOffset.y+240;
+		int tileX = (currentZoomX*2)/256;
+		int tileY = (currentZoomY*2)/256;
+		zoom-=1;
+		pmap.zoom(tileX, tileY, zoom);
+	}
+	
+	private void zoomOut(){
+		if((zoom)<16){
+			int currentZoomX = pmap.getDefaultTile().getX()*256-globalOffset.x+160;
+			int currentZoomY = pmap.getDefaultTile().getY()*256-globalOffset.y+240;
+			int tileX = (currentZoomX/2)/256;
+			int tileY = (currentZoomY/2)/256;
+			zoom+=1;
+			pmap.zoom(tileX, tileY, zoom);
+
+		}
+		
+	}
+	
 	private void moveCoordinates(float x, float y) {
 		inMove = true;
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
@@ -177,7 +136,6 @@ public class MoowMap extends Activity {
 	
 	
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		System.out.println(globalOffset.x);
 		updatePhysicMap();
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
@@ -222,7 +180,6 @@ public class MoowMap extends Activity {
 		}
 		if (!movedL) {
 			nL = (int) Math.ceil((globalOffset.x - 256 + 320) / 256);
-			// System.out.println(nL);
 		} else {
 			nL = 0;
 		}
@@ -230,6 +187,7 @@ public class MoowMap extends Activity {
 		// обработка перемещения вниз
 		if (isMovedBottom()) {
 			if (previousMovePoint.y < nextMovePoint.y) {
+				System.out.println("move botton");
 				globalOffset.y -= (256);
 				pmap.moveBottom();
 				movedB = true;
@@ -266,7 +224,7 @@ public class MoowMap extends Activity {
 
 	// проверка, передвинуто ли влево
 	private boolean isMovedLeft() {
-		return Math.abs(Math.ceil((globalOffset.x - 256 + 320) / 256) - nL) == 1;
+		return inMove && nL!=-1 && Math.abs(Math.ceil((globalOffset.x - 256 + 320) / 256) - nL) == 1;
 
 	}
 
@@ -298,58 +256,18 @@ public class MoowMap extends Activity {
 		}
 	}
 
-	class InertionMoover implements Runnable {
-
-		private int counter = 400;
-
-		public void run() {
-
-			int x = nextMovePoint.x + 1;
-			int x1 = previousMovePoint.x;
-			int x2 = nextMovePoint.x;
-			int y1 = previousMovePoint.y;
-			int y2 = nextMovePoint.y;
-
-			// if(x1 == 0){
-			// x1 = x2-2;
-			// }
-
-			System.out.println(previousMovePoint.x + "^" + previousMovePoint.y);
-			System.out.println(nextMovePoint.x + "*" + nextMovePoint.y);
-			while (counter > 0) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				int y = ((x - x1) * (y2 - y1) / (x2 - x1)) + y1;
-
-				moveCoordinates(x, y);
-				x -= x2 > x1 ? -1 : 1;
-				counter -= 1;
-			}
-		}
-	}
-
-	class AnimationLoop implements Runnable {
-
-		// private int counter = 400;
+	
+	class CanvasUpdater implements Runnable {
 
 		public void run() {
-			// while (true) {
 			while (running) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException ex) {
 				}
-				// processInertion();
 				main.postInvalidate();
 			}
-			// }
 		}
 
-		private void processInertion() {
-
-		}
 	}
 }
