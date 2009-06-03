@@ -194,8 +194,6 @@ public class MapControl extends RelativeLayout {
 							pmap.zoomInCenter();
 							//quickHack();
 							h.sendEmptyMessage(0);
-							//updateZoomControls();
-							
 						}
 						
 					}.start();

@@ -157,8 +157,8 @@ public class PhysicMap {
 			int correctionX = -(nextZoomX - tileX * TILE_SIZE);
 			int correctionY = -(nextZoomY - tileY * TILE_SIZE);
 
-			//globalOffset.x = correctionX;
-			//globalOffset.y = correctionY;
+			globalOffset.x = correctionX;
+			globalOffset.y = correctionY;
 			zoom++;
 			zoom(tileX, tileY, zoom);
 
@@ -292,7 +292,6 @@ public class PhysicMap {
 	 */
 	private synchronized void loadCells(RawTile tile) {
 		tileResolver.loaded = 0;
-		scaleFactor = 1;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
