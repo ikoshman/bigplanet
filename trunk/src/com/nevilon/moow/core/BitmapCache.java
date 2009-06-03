@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class BitmapCache {
 	
-	private ExpiredHashMap cacheMap = new ExpiredHashMap(50);
+	private ExpiredHashMap cacheMap = new ExpiredHashMap(20);
 
 	
 	public void put(RawTile tile, Bitmap bitmap){
@@ -63,7 +63,7 @@ public class BitmapCache {
 					listToSort.add(it.next());
 				}
 				Collections.sort(listToSort);
-				for(int i=0;i<50;i++){
+				for(int i=0;i<10;i++){
 					expCacheMap.remove(listToSort.get(i));
 				}
 				Log.i("CACHE", "clean");
