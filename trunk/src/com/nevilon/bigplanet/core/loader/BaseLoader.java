@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.nevilon.bigplanet.core.Log;
 import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.providers.MapStrategy;
 
@@ -38,7 +39,7 @@ public abstract class BaseLoader extends Thread {
 			}
 			if (checkTile(tile)) {
 				try {
-					System.out.println(tile);
+					Log.message("start loadging thread", tile.toString() );
 					byte[] data = load(tile);
 					handle(tile, data, 0);
 				} catch (Exception e) {
@@ -59,7 +60,8 @@ public abstract class BaseLoader extends Thread {
 	private byte[] load(RawTile tile) {
 		HttpURLConnection connection = null;
 		try {
-			URL u = new URL(getStrategy().getURL(tile.x, tile.y, tile.z, 0));
+			String tilePath = getStrategy().getURL(tile.x, tile.y, tile.z, 0);
+			URL u = new URL(tilePath);
 			connection = (HttpURLConnection) u
 					.openConnection();
 			connection.setRequestMethod("GET");
@@ -68,7 +70,7 @@ public abstract class BaseLoader extends Thread {
 			connection.connect();
 			int responseCode = connection.getResponseCode();
 			if (responseCode!= HttpURLConnection.HTTP_OK) {
-				System.out.println(connection.getResponseMessage());
+				Log.message("loading failed", tilePath+ " "+connection.getResponseMessage()+" " + connection.getResponseCode());
 				return null;
 			}
 			int contentLength = connection.getContentLength();
@@ -85,14 +87,17 @@ public abstract class BaseLoader extends Thread {
 			}
 			in.close();
 			if (offset != contentLength) {
+				Log.message("loading failed","invalide offset "+ connection.getResponseMessage()+" " + connection.getResponseCode());
 				return null;
 			}
 			return data;
 		} catch (Exception e) {
+			Log.message("loading failed: exception", e.getMessage());
 			e.printStackTrace();
 		} finally{
 			connection.disconnect();
 		}
+		Log.message("loading failed","return null");
 		return null;
 
 	}
