@@ -255,4 +255,13 @@ public class PhysicMap {
 		}
 		//canDraw = true;
 	}
+
+	public void changeMapSource(int sourceId) {
+		tileProvider.changeMapSource(sourceId);
+		loadCells(defTile);
+	}
+	
+	public int getMapSourceId(){
+		return tileProvider.getMapSourceId();
+	}
 }

@@ -2,4 +2,11 @@
 <resources>
     <string name="hello">Hello World, Testing</string>
     <string name="app_name">moow</string>
+
+    <string name="OPENSTREET_VECTOR"></string>    
+    <string name="YANDEX_SATELLITE"></string>
+    <string name="YANDEX_VECTOR"></string>
+    <string name="GOOGLE_SATELLITE"></string>
+    <string name="GOOGLE_VECTOR"></string>
+    
 </resources>

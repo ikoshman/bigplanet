@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import com.nevilon.moow.core.loader.TileLoader;
 import com.nevilon.moow.core.providers.MapStrategy;
 import com.nevilon.moow.core.providers.MapStrategyFactory;
-import com.nevilon.moow.core.providers.MapStrategyFactory.MapSource;
-import com.nevilon.moow.core.storage.BitmapCacheWrapper;
 import com.nevilon.moow.core.storage.LocalStorageWrapper;
 
 public class TileResolver {
@@ -22,9 +20,12 @@ public class TileResolver {
 
 	private Handler localLoaderHandler;
 
-	private MapStrategy mapStrategy = MapStrategyFactory.getInstance()
-			.getStrategy(MapSource.GOOGLE_VECTOR);
-
+	private MapStrategyFactory strategyFactory = MapStrategyFactory.getInstance(); 
+	
+	private int strategyId = MapStrategyFactory.GOOGLE_VECTOR;
+	
+	private MapStrategy mapStrategy = strategyFactory.getStrategy(strategyId);
+	
 	public int count = 0;
 
 	public TileResolver(final PhysicMap physicMap) {
@@ -34,9 +35,8 @@ public class TileResolver {
 				new Handler() {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
-						localProvider.put(tile, data, mapStrategy.getId());
-						Bitmap bmp = LocalStorageWrapper.get(tile, mapStrategy
-								.getId());
+						localProvider.put(tile, data, strategyId);
+						Bitmap bmp = LocalStorageWrapper.get(tile, strategyId);
 						//cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
@@ -71,8 +71,7 @@ public class TileResolver {
 					//bitmap = cacheProvider.getScaledTile(tile);
 					
 						incCounter();
-						new Thread(new TileScaler(tile, scaledHandler, mapStrategy
-								.getId())).start();
+						new Thread(new TileScaler(tile, scaledHandler, strategyId)).start();
 					
 					load(tile);
 				}
@@ -80,6 +79,7 @@ public class TileResolver {
 
 		};
 
+		
 		new Thread(tileLoader).start();
 	}
 
@@ -118,10 +118,19 @@ public class TileResolver {
 		if (bitmap == null) {
 			incCounter();
 			// асинхронная загрузка
-			LocalStorageWrapper.get(tile, localLoaderHandler, mapStrategy
-					.getId());
+			LocalStorageWrapper.get(tile, localLoaderHandler, strategyId);
 		}
 		return bitmap;
+	}
+
+	public void changeMapSource(int sourceId) {
+		mapStrategy = strategyFactory.getStrategy(sourceId);
+		this.strategyId = sourceId;
+		tileLoader.setMapStrategy(mapStrategy);
+	}
+
+	public int getMapSourceId() {
+		return this.strategyId;
 	}
 
 }

@@ -40,6 +40,10 @@ public class TileLoader implements Runnable {
 		this.handler = handler;
 		this.mapStrategy = mapStrategy;
 	}
+	
+	public void setMapStrategy(MapStrategy mapStrategy){
+		this.mapStrategy = mapStrategy;
+	}
 
 	/**
 	 * Добавляет в очередь на загрузку
