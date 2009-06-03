@@ -1,8 +1,6 @@
 package com.nevilon.bigplanet.core.ui;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import com.nevilon.bigplanet.core.AbstractCommand;
 import com.nevilon.bigplanet.core.PhysicMap;

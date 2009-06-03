@@ -1,10 +1,5 @@
 package com.nevilon.bigplanet;
 
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

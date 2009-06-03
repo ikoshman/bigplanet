@@ -1,10 +1,5 @@
 package com.nevilon.bigplanet.core.ui;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -14,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Bitmap.CompressFormat;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
@@ -116,20 +110,14 @@ public class MapControl extends RelativeLayout {
 			
 			public void execute(Object object){
 				double sf = (Double)object;
+				//pmap.inMove = false;
 				pmap.zoomS(sf);
-				/*for (int i=0;i<7;i++){
-			    int decimalPlace = 10;
-			    BigDecimal bd = new BigDecimal(sf);
-			    bd = bd.setScale(decimalPlace,i);
-			    double tmp = bd.doubleValue();
-			    System.out.println(tmp);
-				}*/
-				//pmap.zoomOut();
 			}
 			
 		});
 		szEngine.setUpdateScreenCommand(new AbstractCommand(){
 			public void execute(Object object){
+				///pmap.inMove = true;
 				pmap.scaleFactor = (Double)object;
 				postInvalidate();
 			}
@@ -204,6 +192,12 @@ public class MapControl extends RelativeLayout {
 			}
 		};
 
+		/*
+		TextView tx = new TextView(this.getContext());
+		tx.setTextColor(Color.BLACK);
+		tx.setText("fdafafasfa");
+		addView(tx);
+		*/
 		// создание панели с картой
 		main = new Panel(this.getContext());
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
@@ -214,29 +208,8 @@ public class MapControl extends RelativeLayout {
 			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					scalePoint.set(pmap.getWidth() / 2, pmap.getHeight() / 2);
-					szEngine.addToScaleQ(-1);
-					/*new Thread() {
-
-						@Override
-						public void run() {
-							double endScaleFactor = pmap.scaleFactor/2;
-							while (!(pmap.scaleFactor <= endScaleFactor)) {
-								
-								try {
-									Thread.sleep(SMOOT_ZOOM_INTERVAL);
-									pmap.scaleFactor -= 0.1f;
-									postInvalidate();
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-							pmap.zoomOut();
-							h.sendEmptyMessage(0);
-						}
-
-					}.start();
-					*/
+					smoothZoom(-1);
+				
 				}
 			});
 
@@ -244,28 +217,8 @@ public class MapControl extends RelativeLayout {
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					scalePoint.set(pmap.getWidth() / 2, pmap.getHeight() / 2);
-					szEngine.addToScaleQ(1);
-					/*new Thread() {
-
-						@Override
-						public void run() {
-							double endScaleFactor = pmap.scaleFactor*2;
-							while (pmap.scaleFactor <= endScaleFactor) {
-								try {
-									Thread.sleep(SMOOT_ZOOM_INTERVAL);
-									pmap.scaleFactor += 0.1f;
-									postInvalidate();
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-							}
-							
-							pmap.zoomInCenter();
-							h.sendEmptyMessage(0);
-						}
-
-					}.start();
-					*/
+					smoothZoom(1);
+					
 				}
 			});
 
@@ -291,6 +244,11 @@ public class MapControl extends RelativeLayout {
 		pmap.setHeight(height);
 		pmap.setWidth(width);
 		pmap.quickHack();
+	}
+	
+	private void smoothZoom(int direction){
+		//pmap.inMove = false;
+		szEngine.addToScaleQ(direction);
 	}
 
 	private synchronized void updateScreen() {
@@ -490,7 +448,7 @@ public class MapControl extends RelativeLayout {
 								double endScaleFactor = pmap.scaleFactor*2;
 								while (pmap.scaleFactor <= endScaleFactor) {
 									try {
-										Thread.sleep(SMOOT_ZOOM_INTERVAL*2);
+										Thread.sleep(20);
 										
 										pmap.scaleFactor += 0.2f;
 
