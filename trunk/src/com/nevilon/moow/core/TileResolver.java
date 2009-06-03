@@ -20,11 +20,9 @@ public class TileResolver {
 
 	private Handler localLoaderHandler;
 
-	private MapStrategyFactory strategyFactory = MapStrategyFactory.getInstance(); 
-	
 	private int strategyId = MapStrategyFactory.GOOGLE_VECTOR;
 	
-	private MapStrategy mapStrategy = strategyFactory.getStrategy(strategyId);
+	//private MapStrategy mapStrategy;
 	
 	public int count = 0;
 
@@ -35,15 +33,16 @@ public class TileResolver {
 				new Handler() {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
-						localProvider.put(tile, data, strategyId);
+						LocalStorageWrapper.put(tile, data, strategyId);
 						Bitmap bmp = LocalStorageWrapper.get(tile, strategyId);
 						//cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
-
-				}, mapStrategy
-
+				}
 		);
+		setMapSource(strategyId);
+		new Thread(tileLoader).start();
+		
 		// обработчик загрузки скалированых картинок
 		this.scaledHandler = new Handler() {
 
@@ -79,8 +78,6 @@ public class TileResolver {
 
 		};
 
-		
-		new Thread(tileLoader).start();
 	}
 
 	private void load(RawTile tile) {
@@ -123,8 +120,9 @@ public class TileResolver {
 		return bitmap;
 	}
 
-	public void changeMapSource(int sourceId) {
-		mapStrategy = strategyFactory.getStrategy(sourceId);
+	public void setMapSource(int sourceId) {
+		Preferences.put(Preferences.MAP_SOURCE, String.valueOf(sourceId));
+	 	MapStrategy mapStrategy = MapStrategyFactory.getStrategy(sourceId);
 		this.strategyId = sourceId;
 		tileLoader.setMapStrategy(mapStrategy);
 	}

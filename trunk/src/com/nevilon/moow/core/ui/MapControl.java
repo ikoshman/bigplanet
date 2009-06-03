@@ -131,6 +131,10 @@ public class MapControl extends RelativeLayout {
 		return pmap.getMapSourceId();
 	}
 	
+	public PhysicMap getPhysicalMap(){
+		return pmap;
+	}
+	
 	private void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
@@ -322,7 +326,7 @@ public class MapControl extends RelativeLayout {
 						main.postInvalidate();
 						
 					} else {
-						System.out.println("none");
+					//	System.out.println("none");
 					}
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();

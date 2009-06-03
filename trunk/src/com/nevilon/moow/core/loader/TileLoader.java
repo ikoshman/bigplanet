@@ -1,9 +1,5 @@
 package com.nevilon.moow.core.loader;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 
 import android.util.Log;
@@ -28,6 +24,7 @@ public class TileLoader implements Runnable {
 
 	private int counter = 0;
 
+
 	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
 
 	/**
@@ -36,14 +33,14 @@ public class TileLoader implements Runnable {
 	 * @param handler
 	 *            обработчик результата загрузки
 	 */
-	public TileLoader(Handler handler, MapStrategy mapStrategy) {
+	public TileLoader(Handler handler) {
 		this.handler = handler;
-		this.mapStrategy = mapStrategy;
 	}
 	
 	public void setMapStrategy(MapStrategy mapStrategy){
 		this.mapStrategy = mapStrategy;
 	}
+	
 
 	/**
 	 * Добавляет в очередь на загрузку
@@ -87,56 +84,24 @@ public class TileLoader implements Runnable {
 		}
 	}
 
-	private class ThreadLoader extends Thread {
+	private class ThreadLoader extends BaseLoader {
 
-		private static final String MIME_TEXT = "text/";
-		private RawTile tile;
-
+	
 		public ThreadLoader(RawTile tile) {
-			super();
-			this.tile = tile;
+			super(tile);
 		}
 
-		private byte[] load() throws Exception {
-			URL u = new URL(mapStrategy.getServer()
-					+ mapStrategy.getURL(tile.x, tile.y, tile.z));
-			URLConnection uc = u.openConnection();
-			String contentType = uc.getContentType();
-			int contentLength = uc.getContentLength();
-			if (contentType == null
-					|| contentType.startsWith(ThreadLoader.MIME_TEXT)
-					|| contentLength == -1) {
-				Log.e("LOADER", "Can't load tile " + tile.x + " " + tile.y
-						+ " " + tile.z);
-				return null;
-			}
-			InputStream raw = uc.getInputStream();
-			InputStream in = new BufferedInputStream(raw, 4096);
-			byte[] data = new byte[contentLength];
-			int bytesRead = 0;
-			int offset = 0;
-			while (offset < contentLength) {
-				bytesRead = in.read(data, offset, data.length - offset);
-				if (bytesRead == -1)
-					break;
-				offset += bytesRead;
-			}
-			in.close();
-			if (offset != contentLength) {
-				return null;
-			}
-			Log.i("LOADER", "Receive tile " + tile);
-			return data;
+		
+		@Override
+		protected MapStrategy getStrategy() {
+			return TileLoader.this.mapStrategy;
 		}
 
-		public void run() {
-			try {
-				TileLoader.this.tileLoaded(tile, load());
-				// TileLoader.this.tileLoaded(tile, null);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 
+
+		@Override
+		protected void handle(RawTile tile, byte[] data) {
+			TileLoader.this.tileLoaded(tile, data);
 		}
 
 	}

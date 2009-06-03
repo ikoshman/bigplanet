@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
@@ -13,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.nevilon.moow.core.providers.MapStrategyFactory;
+import com.nevilon.moow.core.tools.savemap.MapSaverUI;
 import com.nevilon.moow.core.ui.MapControl;
 
 public class MoowMap extends Activity {
@@ -30,8 +32,10 @@ public class MoowMap extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, 0, 0, "Map source");
-		menu.add(0, 1, 0, "Edit");
-		menu.add(0, 2, 0, "Delete");
+
+		SubMenu sub = menu.addSubMenu(0, 1, 0, "Tools");
+		sub.add(2, 11, 1, "Cache map");
+
 		return true;
 	}
 
@@ -52,54 +56,63 @@ public class MoowMap extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+
+		case 11:
+			MapSaverUI mapSaverUI = new MapSaverUI(this, mapControl.getPhysicalMap()
+					.getZoomLevel() , mapControl.getPhysicalMap()
+					.getAbsoluteCenter());
+			mapSaverUI.show();
+			break;
 		case 0:
-
-			final Dialog dl = new Dialog(this);
-			dl.setCanceledOnTouchOutside(true);
-			dl.setCancelable(true);
-			dl.setTitle("Select map source");
-			
-			final LinearLayout mainPanel = new LinearLayout(this);
-			mainPanel.setLayoutParams(new LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-			mainPanel.setOrientation(LinearLayout.VERTICAL);
-
-			RadioGroup sourcesRadioGroup = new RadioGroup(this);
-						
-			LinearLayout.LayoutParams layoutParams = new RadioGroup.LayoutParams(
-					RadioGroup.LayoutParams.WRAP_CONTENT,
-					RadioGroup.LayoutParams.WRAP_CONTENT);
-
-			
-			
-			for(Integer id : MapStrategyFactory.strategies.keySet()) {
-				sourcesRadioGroup.addView(
-						buildRadioButton(
-								MapStrategyFactory.strategies.get(id).getDescription(), id)
-						, 0,
-						layoutParams);
-			}
-			
-			sourcesRadioGroup.check(mapControl.getMapSourceId());
-			
-			
-			sourcesRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
-				public void onCheckedChanged(RadioGroup group, int checkedId) {
-					mapControl.changeMapSource(checkedId);
-					dl.hide();
-				}
-				
-			});
-			
-			mainPanel.addView(sourcesRadioGroup);
-			dl.setContentView(mainPanel);
-			dl.show();
-
-			return true;
+			selectMapSource();
+			break;
 		case 1:
-			return true;
+			break;
 		}
 		return false;
 
 	}
+
+	private void selectMapSource() {
+		final Dialog dl;
+		dl = new Dialog(this);
+		dl.setCanceledOnTouchOutside(true);
+		dl.setCancelable(true);
+		dl.setTitle("Select map source");
+
+		final LinearLayout mainPanel = new LinearLayout(this);
+		mainPanel.setLayoutParams(new LayoutParams(
+				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		mainPanel.setOrientation(LinearLayout.VERTICAL);
+
+		RadioGroup sourcesRadioGroup = new RadioGroup(this);
+
+		LinearLayout.LayoutParams layoutParams = new RadioGroup.LayoutParams(
+				RadioGroup.LayoutParams.WRAP_CONTENT,
+				RadioGroup.LayoutParams.WRAP_CONTENT);
+
+		for (Integer id : MapStrategyFactory.strategies.keySet()) {
+			sourcesRadioGroup.addView(buildRadioButton(
+					MapStrategyFactory.strategies.get(id).getDescription(),
+					id), 0, layoutParams);
+		}
+
+		sourcesRadioGroup.check(mapControl.getMapSourceId());
+
+		sourcesRadioGroup
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+					public void onCheckedChanged(RadioGroup group,
+							int checkedId) {
+						mapControl.changeMapSource(checkedId);
+						dl.hide();
+					}
+
+				});
+
+		mainPanel.addView(sourcesRadioGroup);
+		dl.setContentView(mainPanel);
+		dl.show();
+	}
+
+	
 }
