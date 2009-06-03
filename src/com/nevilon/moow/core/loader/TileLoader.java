@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 import com.nevilon.moow.core.Handler;
 import com.nevilon.moow.core.RawTile;
+import com.nevilon.moow.core.providers.MapStrategy;
 
 import android.util.Log;
 
@@ -21,16 +22,16 @@ import android.util.Log;
 public class TileLoader implements Runnable {
 
 	private static final int MAX_THREADS = 5;
-
-	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?x={0}&y={1}&zoom={2}";
-
-	//private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?v=w2.99&x={0}&y={1}&zoom={2}";
+	
+	private MapStrategy mapStrategy;
 	
 	private Handler handler;
 
 	private int counter = 0;
 
 	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
+	
+
 
 	/**
 	 * Конструктор
@@ -38,8 +39,9 @@ public class TileLoader implements Runnable {
 	 * @param handler
 	 *            обработчик результата загрузки
 	 */
-	public TileLoader(Handler handler) {
+	public TileLoader(Handler handler, MapStrategy mapStrategy) {
 		this.handler = handler;
+		this.mapStrategy = mapStrategy;
 	}
 
 	/**
@@ -95,9 +97,7 @@ public class TileLoader implements Runnable {
 		}
 
 		private byte[] load() throws Exception {
-			URL u = new URL(MessageFormat.format(TileLoader.REQUEST_PATTERN,
-					String.valueOf(tile.x), String.valueOf(tile.y), String
-							.valueOf(tile.z)));
+			URL u = new URL(mapStrategy.getServer() + mapStrategy.getURL(tile.x, tile.y, tile.z));
 			URLConnection uc = u.openConnection();
 			String contentType = uc.getContentType();
 			int contentLength = uc.getContentLength();

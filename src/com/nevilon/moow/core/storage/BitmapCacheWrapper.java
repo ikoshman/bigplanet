@@ -15,7 +15,7 @@ public class BitmapCacheWrapper {
 	/*
 	 * размер кеша (для каждого обоих типов)
 	 */
-	public final static int CACHE_SIZE = 30;
+	public final static int CACHE_SIZE = 20;
 	
 	private BitmapCache cache = new BitmapCache(BitmapCacheWrapper.CACHE_SIZE);
 

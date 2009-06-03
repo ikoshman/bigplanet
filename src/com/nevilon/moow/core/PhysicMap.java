@@ -5,7 +5,7 @@ import android.graphics.Point;
 
 public class PhysicMap {
 
-	private TileProvider tileProvider;
+	private TileResolver tileProvider;
 
 	private Bitmap[][] cells = new Bitmap[3][3];
 
@@ -22,7 +22,7 @@ public class PhysicMap {
 	public PhysicMap(RawTile defTile) {
 		this.defTile = defTile;
 		this.zoom = defTile.z;
-		tileProvider = new TileProvider(this);
+		tileProvider = new TileResolver(this);
 		loadCells(defTile);
 	}
 
