@@ -8,7 +8,7 @@ public class PhysicMap {
 
 	private Bitmap[][] cells = new Bitmap[3][3];
 	
-	private RawTile defTile = new RawTile(1242,1520,5);
+	private RawTile defTile = new RawTile(1042,1520,5);
 	
 	public PhysicMap(){
 		tileProvider = new TileProvider(this);
@@ -64,7 +64,6 @@ public class PhysicMap {
 				x = (tile.getX()+i);
 				y = (tile.getY()+j);
 				cells[i][j] = null;
-				//System.out.println("for load "+x+" " + y);
 				tileProvider.getTile(
 						new RawTile(
 								x,y,
