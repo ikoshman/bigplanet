@@ -40,7 +40,7 @@ public class PhysicMap {
 	
 	private int correctionY;
 	
-	private boolean inZoom = false;
+	private int inZoom = 0;
 
 	private AbstractCommand updateScreenCommand;
 
@@ -154,11 +154,12 @@ public class PhysicMap {
 			int tileY = nextZoomY / TILE_SIZE;
 
 			// отступ всегда один - точка должна находится в центре экрана
-			int correctionX = -(nextZoomX - tileX * TILE_SIZE);
-			int correctionY = -(nextZoomY - tileY * TILE_SIZE);
+			correctionX = -(nextZoomX - tileX * TILE_SIZE);
+			correctionY = -(nextZoomY - tileY * TILE_SIZE);
 
-			globalOffset.x = correctionX;
-			globalOffset.y = correctionY;
+			//globalOffset.x = correctionX;
+			//globalOffset.y = correctionY;
+			inZoom = -1;
 			zoom++;
 			zoom(tileX, tileY, zoom);
 
@@ -204,7 +205,7 @@ public class PhysicMap {
 			correctionX = nextZoomX - tileX * TILE_SIZE;
 			correctionY = nextZoomY - tileY * TILE_SIZE;
 
-			inZoom = true;
+			inZoom = 1;
 			//globalOffset.x = -(correctionX);
 			//globalOffset.y = -(correctionY);
 			zoom--;
@@ -239,10 +240,10 @@ public class PhysicMap {
 
 	private void updateMap() {
 		if (tileResolver.loaded == 9) {
-			if(inZoom){
-				globalOffset.x = -(correctionX);
-				globalOffset.y = -(correctionY);
-				inZoom = false;
+			if(inZoom!=0){
+				globalOffset.x = (-1)*inZoom*(correctionX);
+				globalOffset.y = (-1)*inZoom*(correctionY);
+				inZoom = 0;
 				scaleFactor =1;
 			}
 			updateScreenCommand.execute();
