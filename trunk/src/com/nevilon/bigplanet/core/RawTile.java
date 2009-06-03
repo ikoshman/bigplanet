@@ -1,5 +1,7 @@
 package com.nevilon.bigplanet.core;
 
+import java.io.Serializable;
+
 
 /**
  * Представляет параметры тайла
@@ -7,7 +9,7 @@ package com.nevilon.bigplanet.core;
  * @author hudvin
  * 
  */
-public class RawTile {
+public class RawTile implements Serializable {
 
 	public int x, y, z, s;
 

@@ -91,6 +91,22 @@ public class BigPlanet extends Activity {
 		Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
 	}
 
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (resultCode) {
+		case RESULT_OK:
+			GeoBookmark bookmark = (GeoBookmark) data.getSerializableExtra("bookmark");
+			mapControl.getPhysicalMap().setDefTile(bookmark.getTile());
+			
+			Point offset = new Point();
+			offset.set(bookmark.getOffsetX(), bookmark.getOffsetY());
+			mapControl.getPhysicalMap().setGlobalOffset(offset);
+			mapControl.getPhysicalMap().reloadTiles();
+			mapControl.setMapSource(bookmark.getTile().s);
+		default:
+			break;
+		}
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent ev) {
 		switch (keyCode) {
@@ -161,32 +177,30 @@ public class BigPlanet extends Activity {
 							.getGlobalOffset().x);
 					newGeoBookmark.setOffsetY(mapControl.getPhysicalMap()
 							.getGlobalOffset().y);
-					newGeoBookmark.setSource(mapControl.getPhysicalMap()
-							.getTileResolver().getMapSourceId());
-					newGeoBookmark.setZ(mapControl.getPhysicalMap()
-							.getZoomLevel());
-
 					
-					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark, new OnDialogClickListener(){
+					newGeoBookmark.setTile(mapControl.getPhysicalMap().getDefaultTile());
+					newGeoBookmark.getTile().s = mapControl.getPhysicalMap()
+					.getTileResolver().getMapSourceId(); 
+					
+					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark,
+							new OnDialogClickListener() {
 
-						@Override
-						public void onCancelClick() {
-							// TODO Auto-generated method stub
-							
-						}
+								@Override
+								public void onCancelClick() {
+									// TODO Auto-generated method stub
 
-						@Override
-						public void onOkClick(Object obj) {
-							GeoBookmark geoBookmark = (GeoBookmark)obj;
-							DAO d = new DAO(BigPlanet.this);
-							d.saveGeoBookmark(geoBookmark);
-							mapControl.setMapMode(MapControl.ZOOM_MODE);
-							
-						}
-						
-						
-						
-					});
+								}
+
+								@Override
+								public void onOkClick(Object obj) {
+									GeoBookmark geoBookmark = (GeoBookmark) obj;
+									DAO d = new DAO(BigPlanet.this);
+									d.saveGeoBookmark(geoBookmark);
+									mapControl.setMapMode(MapControl.ZOOM_MODE);
+
+								}
+
+							});
 				}
 
 			});
@@ -243,7 +257,7 @@ public class BigPlanet extends Activity {
 	private void showAllGeoBookmarks() {
 		Intent intent = new Intent();
 		intent.setClass(this, AllGeoBookmarks.class);
-		startActivity(intent);
+		startActivityForResult(intent,0);
 	}
 
 	private void switchToBookmarkMode() {

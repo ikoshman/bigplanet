@@ -12,15 +12,18 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class AllGeoBookmarks extends ListActivity {
 
@@ -31,11 +34,23 @@ public class AllGeoBookmarks extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setData();
 	}
-	
-	private void setData(){
+
+	private void setData() {
 		DAO dao = new DAO(this);
 		geoBookmarks = dao.getBookmarks();
 		setListAdapter(new SpeechListAdapter(this));
+		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
+
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent();
+				intent.putExtra("bookmark", geoBookmarks.get(position));
+				setResult(RESULT_OK,intent);
+				finish();
+				return false;
+			}
+			
+		});
 	}
 
 	/**
@@ -57,31 +72,31 @@ public class AllGeoBookmarks extends ListActivity {
 		return true;
 	}
 
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		final int bookmarkId = (int) this.getSelectedItemId();
-		
+
 		switch (item.getItemId()) {
 		case 0: // редактирование закладки
-			
-			AddBookmarkDialog.show(AllGeoBookmarks.this, geoBookmarks.get(bookmarkId), new OnDialogClickListener(){
+
+			AddBookmarkDialog.show(AllGeoBookmarks.this, geoBookmarks
+					.get(bookmarkId), new OnDialogClickListener() {
 
 				@Override
 				public void onCancelClick() {
 					// TODO Auto-generated method stub
-					
+
 				}
 
 				@Override
 				public void onOkClick(Object obj) {
-					GeoBookmark geoBookmark = (GeoBookmark)obj;
+					GeoBookmark geoBookmark = (GeoBookmark) obj;
 					DAO d = new DAO(AllGeoBookmarks.this);
 					d.saveGeoBookmark(geoBookmark);
 					setData();
-				}		
+				}
 			});
-			
+
 			break;
 
 		case 1: // удаление закладки
@@ -92,7 +107,8 @@ public class AllGeoBookmarks extends ListActivity {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
 									DAO dao = new DAO(AllGeoBookmarks.this);
-									dao.removeGeoBookmark(geoBookmarks.get(bookmarkId).getId());
+									dao.removeGeoBookmark(geoBookmarks.get(
+											bookmarkId).getId());
 									setData();
 								}
 							}).setNegativeButton("No", null).show();
