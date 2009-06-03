@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -18,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.nevilon.bigplanet.core.Preferences;
@@ -29,10 +31,14 @@ import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 
 public class BigPlanet extends Activity {
 
+	
+	
+	private Toast textMessage;
+	
 	/*
 	 * Графический движок, реализующий карту
 	 */
-	public MapControl mapControl;
+	private MapControl mapControl;
 
 	/**
 	 * Конструктор
@@ -71,9 +77,32 @@ public class BigPlanet extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if(textMessage!=null){
+			textMessage.cancel();
+		}
 		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
 		Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
 	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent ev) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			/**
+			 * если текущий режим SELECT_MODE  - изменить на ZOOM_MODE
+			 * если текущий режим ZOOM_MODE - делегировать обработку
+			 */
+			if(mapControl.getMapMode() ==MapControl.SELECT_MODE){
+				mapControl.setMapMode(MapControl.ZOOM_MODE);
+				return true;
+			} 
+		default:
+			return super.onKeyDown(keyCode, ev);
+		}
+	}
+	
+	
+	
 
 	/**
 	 * Создает элементы меню
@@ -88,8 +117,10 @@ public class BigPlanet extends Activity {
 		sub.add(2, 11, 1, "Cache map");
 		// add network mode menu
 		menu.add(0, 3, 0, "Network mode");
-		//add settings menu
-		//menu.add(0, 4,0, "Settings");
+		// add settings menu
+		// menu.add(0, 4,0, "Settings");
+		// add bookmark menu
+		menu.add(0,5,0,"Add bookmark");
 		return true;
 	}
 
@@ -103,6 +134,16 @@ public class BigPlanet extends Activity {
 		return true;
 	}
 
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		System.out.println(resultCode);
+		if (resultCode == RESULT_OK) {
+			mapControl.setMapMode(MapControl.ZOOM_MODE);
+		}
+	}
+	
 	/**
 	 * Устанавливает размеры карты и др. свойства
 	 */
@@ -113,16 +154,16 @@ public class BigPlanet extends Activity {
 		int width = display.getWidth();
 		if (mapControl == null) {
 			mapControl = new MapControl(this, width, height, tile);
-			mapControl.setOnMapLongClickListener(new OnMapLongClickListener(){
+			mapControl.setOnMapLongClickListener(new OnMapLongClickListener() {
 
 				@Override
-				public void onMapLongClick(MotionEvent event) {
+				public void onMapLongClick(int x, int y) {
 					Intent intent = new Intent();
 					intent.setClass(BigPlanet.this, AddGeoBookmark.class);
-					startActivity(intent);
-					
+					startActivityForResult(intent,0);
+
 				}
-				
+
 			});
 		} else {
 			mapControl.setSize(width, height);
@@ -160,21 +201,27 @@ public class BigPlanet extends Activity {
 			selectNetworkMode();
 			break;
 		case 4:
-			//showSettingsMenu();
+			// showSettingsMenu();
 			break;
+			
+		case 5:
+			switchToBookmarkMode();
 		}
 		return false;
 
 	}
 
-	/*
-	private void showSettingsMenu(){
-		Intent intent = new Intent();
-		intent.setClass(this, SettingsMenu.class);
-		startActivity(intent);
+	
+	private void switchToBookmarkMode(){
+		if(mapControl.getMapMode()!=MapControl.SELECT_MODE){
+			mapControl.setMapMode(MapControl.SELECT_MODE);
+			textMessage = Toast.makeText(this, "Select object",
+	                    Toast.LENGTH_LONG);
+	        textMessage.show();
+		}
 	}
 	
-	*/
+	
 	/**
 	 * Отображает диалоги для кеширования карты в заданном радиусе
 	 */

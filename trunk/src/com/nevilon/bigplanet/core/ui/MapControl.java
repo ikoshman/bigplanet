@@ -1,6 +1,7 @@
 package com.nevilon.bigplanet.core.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,6 +24,12 @@ import com.nevilon.bigplanet.core.RawTile;
  * 
  */
 public class MapControl extends RelativeLayout {
+
+	public static final int ZOOM_MODE = 0;
+
+	public static final int SELECT_MODE = 1;
+
+	private int mapMode = ZOOM_MODE;
 
 	/*
 	 * Панель с картой
@@ -88,6 +95,20 @@ public class MapControl extends RelativeLayout {
 
 	}
 
+	public int getMapMode() {
+		return mapMode;
+	}
+
+	/**
+	 * Устанавливает режим карты и состояние зум-контролов(выбор объекта для
+	 * добавления в закладки либо навигация)
+	 * @param mapMode
+	 */
+	public void setMapMode(int mapMode) {
+		this.mapMode = mapMode;
+		updateZoomControls();
+	}
+
 	public void setOnMapLongClickListener(
 			OnMapLongClickListener onMapLongClickListener) {
 		this.onMapLongClickListener = onMapLongClickListener;
@@ -112,6 +133,7 @@ public class MapControl extends RelativeLayout {
 	public PhysicMap getPhysicalMap() {
 		return pmap;
 	}
+	
 
 	/**
 	 * Строит виджет, устанавливает обработчики, размеры и др.
@@ -229,6 +251,10 @@ public class MapControl extends RelativeLayout {
 	 */
 	private void updateZoomControls() {
 		int zoomLevel = pmap.getZoomLevel();
+		if(getMapMode() == MapControl.SELECT_MODE){
+			zoomPanel.setVisibility(View.INVISIBLE);
+		} else {
+			zoomPanel.setVisibility(View.VISIBLE);
 		if (zoomLevel == 16) {
 			zoomPanel.setIsZoomOutEnabled(false);
 			zoomPanel.setIsZoomInEnabled(true);
@@ -239,6 +265,7 @@ public class MapControl extends RelativeLayout {
 			zoomPanel.setIsZoomOutEnabled(true);
 			zoomPanel.setIsZoomInEnabled(true);
 		}
+		}
 	}
 
 	/**
@@ -248,7 +275,7 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private void doDraw(Canvas canvas, Paint paint) {
-		 paint.setAntiAlias(true);
+		paint.setAntiAlias(true);
 
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(1500, 1500, Bitmap.Config.RGB_565);
@@ -265,15 +292,16 @@ public class MapControl extends RelativeLayout {
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
-					tmpBitmap = pmap.getCells()[i-2][j-2];
+					tmpBitmap = pmap.getCells()[i - 2][j - 2];
 					if (tmpBitmap != null) {
-						canvas.drawBitmap(tmpBitmap, (i-2) * 256
-								+ pmap.getGlobalOffset().x, (j-2) * 256
+						canvas.drawBitmap(tmpBitmap, (i - 2) * 256
+								+ pmap.getGlobalOffset().x, (j - 2) * 256
 								+ pmap.getGlobalOffset().y, paint);
 					}
 				} else {
-					canvas.drawBitmap(bp, (i-2) * 256 + pmap.getGlobalOffset().x,
-							(j-2) * 256 + pmap.getGlobalOffset().y, paint);
+					canvas.drawBitmap(bp, (i - 2) * 256
+							+ pmap.getGlobalOffset().x, (j - 2) * 256
+							+ pmap.getGlobalOffset().y, paint);
 				}
 			}
 		}
@@ -299,18 +327,14 @@ public class MapControl extends RelativeLayout {
 	class Panel extends View {
 		Paint paint;
 
-		private MotionEvent lastMoveEvent;
-
 		public Panel(Context context) {
 			super(context);
-			setLongClickable(true);
-
 			setOnLongClickListener(new OnLongClickListener() {
 
 				public boolean onLongClick(View v) {
 					if (MapControl.this.onMapLongClickListener != null) {
-						// MapControl.this.onMapLongClickListener
-						// .onMapLongClick(lastMoveEvent);
+						MapControl.this.onMapLongClickListener
+								.onMapLongClick(0,0);
 					}
 					return true;
 				}
@@ -339,10 +363,8 @@ public class MapControl extends RelativeLayout {
 		 */
 		@Override
 		public boolean onTouchEvent(MotionEvent event) {
-			System.out.println(event);
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				lastMoveEvent = event;
 				inMove = false;
 				pmap.getNextMovePoint().set((int) event.getX(),
 						(int) event.getY());
@@ -353,8 +375,14 @@ public class MapControl extends RelativeLayout {
 				break;
 			case MotionEvent.ACTION_UP:
 				if (dcDetector.process(event)) {
-					pmap.zoomIn((int) event.getX(), (int) event.getY());
-					updateZoomControls();
+					if(mapMode == MapControl.ZOOM_MODE){
+						pmap.zoomIn((int) event.getX(), (int) event.getY());
+						updateZoomControls();
+					} else {
+						if(onMapLongClickListener!=null){
+							onMapLongClickListener.onMapLongClick(0, 0);
+						}
+					}
 				} else {
 					if (inMove) {
 						pmap.moveCoordinates(event.getX(), event.getY());
