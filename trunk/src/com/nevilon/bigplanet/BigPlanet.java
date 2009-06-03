@@ -20,6 +20,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.util.Linkify;
@@ -80,7 +81,7 @@ public class BigPlanet extends Activity {
 	private LocationManager locationManager;
 
 	private boolean inHome = false;
-	
+
 	private MyIntentReceiver intentReceiver;
 
 	/**
@@ -89,32 +90,57 @@ public class BigPlanet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		intentReceiver = new MyIntentReceiver();
+		// проверка на доступность sd
+		String status = Environment.getExternalStorageState();
+		if (!status.equals(Environment.MEDIA_MOUNTED)) {
 
-		IntentFilter intentFilter = new IntentFilter(
-				"com.nevilon.bigplanet.INTENTS.GOTO");
+			new AlertDialog.Builder(this)
 
-		registerReceiver(intentReceiver, intentFilter);
+			.setMessage("Please, insert sd card and restart application")
+					.setCancelable(false).setNeutralButton("Ok",
+							new DialogInterface.OnClickListener() {
 
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		// создание карты
-		mm = new MarkerManager(getResources());
-		RawTile savedTile = Preferences.getTile();
-		configMapControl(savedTile);
-		// использовать ли сеть
-		boolean useNet = Preferences.getUseNet();
-		mapControl.getPhysicalMap().getTileResolver().setUseNet(useNet);
-		// источник карты
-		int mapSourceId = Preferences.getSourceId();
-		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
-		// величина отступа
-		Point globalOffset = Preferences.getOffset();
-		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
-		mapControl.getPhysicalMap().reloadTiles();
-		if(BigPlanetApp.isDemo){
-			showTrialDialog(R.string.this_is_demo_title, R.string.this_is_demo_message);
+								public void onClick(DialogInterface arg0,
+										int arg1) {
+									finish();
+								}
+
+							}).show();
+		} else {
+
+		
+			
+		
+
+			intentReceiver = new MyIntentReceiver();
+
+			IntentFilter intentFilter = new IntentFilter(
+					"com.nevilon.bigplanet.INTENTS.GOTO");
+
+			registerReceiver(intentReceiver, intentFilter);
+
+			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			// создание карты
+			mm = new MarkerManager(getResources());
+			RawTile savedTile = Preferences.getTile();
+			configMapControl(savedTile);
+			// использовать ли сеть
+			boolean useNet = Preferences.getUseNet();
+			mapControl.getPhysicalMap().getTileResolver().setUseNet(useNet);
+			// источник карты
+			int mapSourceId = Preferences.getSourceId();
+			mapControl.getPhysicalMap().getTileResolver().setMapSource(
+					mapSourceId);
+			// величина отступа
+			Point globalOffset = Preferences.getOffset();
+			mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
+			mapControl.getPhysicalMap().reloadTiles();
+			if (BigPlanetApp.isDemo) {
+				showTrialDialog(R.string.this_is_demo_title,
+						R.string.this_is_demo_message);
+			}
+			setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 		}
-		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 	}
 
 	public class MyIntentReceiver extends BroadcastReceiver {
@@ -135,10 +161,11 @@ public class BigPlanet extends Activity {
 			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
 					.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
 			mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
-			System.out.println("receive");
 		}
 
 	}
+	
+	
 
 	@Override
 	public boolean onSearchRequested() {
@@ -161,13 +188,18 @@ public class BigPlanet extends Activity {
 	 */
 	@Override
 	protected void onDestroy() {
-		unregisterReceiver(intentReceiver);
 		super.onDestroy();
+		
+		System.out.println("destroy");
+		if(intentReceiver!=null){
+			unregisterReceiver(intentReceiver);
+			Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
+			Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
+		}
 		if (textMessage != null) {
 			textMessage.cancel();
 		}
-		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
-		Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
+		
 		System.gc();
 	}
 
@@ -327,7 +359,8 @@ public class BigPlanet extends Activity {
 		case 11:
 			if (BigPlanetApp.isDemo
 					&& mapControl.getPhysicalMap().getZoomLevel() <= 6) {
-				showTrialDialog(R.string.try_demo_title, R.string.try_demo_message);
+				showTrialDialog(R.string.try_demo_title,
+						R.string.try_demo_message);
 			} else {
 				showMapSaver();
 			}
@@ -359,7 +392,7 @@ public class BigPlanet extends Activity {
 		final Dialog paramsDialog = new Dialog(this);
 
 		final View v = View.inflate(this, R.layout.demodialog, null);
-		
+
 		final TextView messageValue = (TextView) v.findViewById(R.id.message);
 		messageValue.setText(message);
 		final Button okBtn = (Button) v.findViewById(R.id.okBtn);
