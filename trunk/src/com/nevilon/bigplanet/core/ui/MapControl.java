@@ -78,9 +78,7 @@ public class MapControl extends RelativeLayout {
 
 	private OnMapLongClickListener onMapLongClickListener;
 
-	Bitmap photoBitmap = BitmapFactory.decodeResource(getResources(),
-			R.drawable.ts);
-
+	
 	/**
 	 * Конструктор
 	 * 

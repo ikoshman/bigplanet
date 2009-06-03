@@ -11,9 +11,21 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int globe=0x7f020000;
-        public static final int icon=0x7f020001;
-        public static final int ts=0x7f020002;
+        public static final int archive=0x7f020000;
+        public static final int bookmark=0x7f020001;
+        public static final int database_up=0x7f020002;
+        public static final int delete=0x7f020003;
+        public static final int edit=0x7f020004;
+        public static final int globe=0x7f020005;
+        public static final int globe_download=0x7f020006;
+        public static final int globe_process=0x7f020007;
+        public static final int home=0x7f020008;
+        public static final int icon=0x7f020009;
+        public static final int mode=0x7f02000a;
+        public static final int notification_done=0x7f02000b;
+        public static final int ok=0x7f02000c;
+        public static final int small=0x7f02000d;
+        public static final int tools=0x7f02000e;
     }
     public static final class id {
         public static final int addBtn=0x7f050005;
