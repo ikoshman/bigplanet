@@ -3,6 +3,7 @@ package com.nevilon.bigplanet.core.loader;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 
 import com.nevilon.bigplanet.core.Log;
@@ -91,7 +92,11 @@ public abstract class BaseLoader extends Thread {
 				return null;
 			}
 			return data;
-		} catch (Exception e) {
+		}catch(SocketTimeoutException e){
+			e.printStackTrace();
+			System.out.println("timeout");
+		}
+		catch (Exception e) {
 			Log.message("loading failed: exception", e.getMessage());
 			e.printStackTrace();
 		} finally{

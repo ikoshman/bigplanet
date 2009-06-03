@@ -61,6 +61,9 @@ public class MapControl extends RelativeLayout {
 	 */
 	private ZoomPanel zoomPanel;
 
+	
+	private boolean isNew = true;
+	
 	/*
 	 * Размер ячейки фона
 	 */
@@ -134,6 +137,7 @@ public class MapControl extends RelativeLayout {
 	public void goTo(int x, int y, int z, int offsetX, int offsetY) {
 		getPhysicalMap().goTo(x, y, z, offsetX, offsetY);
 		updateZoomControls();
+		updateScreen();
 	}
 
 	/**
@@ -271,6 +275,7 @@ public class MapControl extends RelativeLayout {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 					tmpBitmap = pmap.getCell(i - 2, j - 2);
 					if (tmpBitmap != null) {
+						isNew = false;
 						canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().y, paint);
@@ -305,12 +310,24 @@ public class MapControl extends RelativeLayout {
 			}
 		}
 	}
-
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		postInvalidateDelayed(500);
-
+		new Thread(){
+			@Override
+			public void run(){
+				while(isNew){
+					try {
+						Thread.sleep(200);
+						postInvalidate();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+		}.start();
 	}
 
 	/**

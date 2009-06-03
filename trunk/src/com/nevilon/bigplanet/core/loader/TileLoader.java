@@ -16,7 +16,7 @@ import com.nevilon.bigplanet.core.providers.MapStrategy;
  */
 public class TileLoader implements Runnable {
 
-	private static final int MAX_THREADS = 5;
+	private static final int MAX_THREADS = 3;
 
 	private MapStrategy mapStrategy;
 

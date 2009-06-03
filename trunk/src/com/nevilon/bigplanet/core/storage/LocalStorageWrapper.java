@@ -1,6 +1,7 @@
 package com.nevilon.bigplanet.core.storage;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,6 +31,12 @@ public class LocalStorageWrapper {
 		Bitmap bmp = null;
 		if (outStream != null) {
 			bmp = BitmapFactory.decodeStream(outStream);
+			try {
+				outStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		return bmp;
