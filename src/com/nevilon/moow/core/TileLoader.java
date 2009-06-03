@@ -5,22 +5,49 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedList;
 
-public class TileLoader{
+public class TileLoader implements Runnable{
 	
 	private TileProvider tileProvider;
+	
+	private int counter = 0;
+	
+	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
 
 	public TileLoader(TileProvider tileProvider){
 		this.tileProvider = tileProvider;
+	//	new Thread(this).start();
 	}
 	
 	public void load(RawTile tile){
-		new ThreadLoader(tile).start();
+		loadQueue.add(tile);
+		//new ThreadLoader(tile).start();
 	}
 
 	public synchronized void tileLoaded(RawTile tile, byte[] data){
 		this.tileProvider.putToStorage(tile,data);
 		this.tileProvider.getTile(tile);
+		counter--;
+	}
+	
+	public void run() {
+		while(true){
+			try {
+				Thread.sleep(500);
+				if (counter<=5 && loadQueue.size()>0){
+					System.out.println("blya");
+					RawTile rt = loadQueue.poll();
+					if (null!=rt){
+						new ThreadLoader(rt).start();
+						counter++;
+					}
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private  class ThreadLoader extends Thread{
@@ -42,7 +69,7 @@ public class TileLoader{
 	            throw new IOException("This is not a binary file. "+tile.getX()+" "+ tile.getY()+" "+ tile.getZ());
 	        }
 	        InputStream raw = uc.getInputStream();
-	        InputStream in = new BufferedInputStream(raw,65535);
+	        InputStream in = new BufferedInputStream(raw,65536);
 	        byte[] data = new byte[contentLength];
 	        int bytesRead = 0;
 	        int offset = 0;
@@ -73,8 +100,7 @@ public class TileLoader{
 		}
 		
 	}
-	
-	
+
 	
 	
 }

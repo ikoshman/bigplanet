@@ -1,7 +1,7 @@
 package com.nevilon.moow.core;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 
 public class PhysicMap {
 
@@ -64,6 +64,11 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 	
+	/**
+	 * Запрос на загрузку тайлов для данной группы ячеек
+	 * (определяется по крайней левой верхней)
+	 * @param tile
+	 */
 	private void loadCells(RawTile tile){
 		for(int i=0;i<3;i++){
 			for(int j=0;j<3;j++){

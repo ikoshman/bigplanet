@@ -1,8 +1,7 @@
 package com.nevilon.moow.core;
 
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.io.BufferedInputStream;
+import java.util.Stack;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,12 +14,13 @@ public class TileProvider implements Runnable {
 
 	private BitmapCache inMemoryCache = new BitmapCache();
 
-	private LinkedList<RawTile> queue = new LinkedList<RawTile>();
+	private Stack<RawTile> queue = new Stack<RawTile>();
 
 	private PhysicMap physicMap;
 
 	public TileProvider(PhysicMap physicMap) {
 		this.physicMap = physicMap;
+		new Thread(tileLoader).start();
 		Thread th = new Thread(this);
 		th.start();
 	}
@@ -38,8 +38,8 @@ public class TileProvider implements Runnable {
 		Bitmap tmpBitmap;
 		while (true) {
 			if (queue.size() > 0) {
-				RawTile tile = queue.poll();
-				InputStream outStream = localStorage.get(tile);
+				RawTile tile = queue.pop();
+				BufferedInputStream outStream = localStorage.get(tile);
 				if (outStream != null) {
 					tmpBitmap = BitmapFactory.decodeStream(outStream);
 					inMemoryCache.put(tile, tmpBitmap);
@@ -61,7 +61,7 @@ public class TileProvider implements Runnable {
 	}
 
 	private void addToQueue(RawTile tile) {
-		queue.add(tile);
+		queue.push(tile);
 	}
 
 }

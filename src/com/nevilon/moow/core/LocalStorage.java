@@ -1,7 +1,7 @@
 package com.nevilon.moow.core;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,9 +11,7 @@ import java.io.InputStream;
 public class LocalStorage {
 
 	private static final String root_dir_location = "/sdcard/moow/";
-
-	private File rootDir = null;
-
+	
 	public LocalStorage() {
 		init();
 	}
@@ -61,7 +59,7 @@ public class LocalStorage {
 		fullPath.mkdirs();
 		fullPath = new File(path + "tile.png");
 		try {
-			FileOutputStream outStream = new FileOutputStream(fullPath);
+			BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(fullPath), 65536);
 			outStream.write(data);
 			outStream.flush();
 			outStream.close();
@@ -71,12 +69,12 @@ public class LocalStorage {
 
 	}
 
-	public InputStream get(RawTile tile) {
+	public BufferedInputStream get(RawTile tile) {
 		String path = buildPath(tile.getX(), tile.getY(), tile.getZ());
 		File tileFile = new File(path + "/tile.png");
 		if (tileFile.exists()){
 			try {
-				return new BufferedInputStream(new FileInputStream(tileFile));
+				return new BufferedInputStream(new FileInputStream(tileFile),65536);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
