@@ -234,7 +234,7 @@ public class MapControl extends RelativeLayout {
 	 * Устанавливает состояние zoomIn/zoomOut контролов в зависимости от уровня
 	 * зума
 	 */
-	private void updateZoomControls() {
+	public void updateZoomControls() {
 		markerManager.updateAll(pmap.getZoomLevel());
 		int zoomLevel = pmap.getZoomLevel();
 		if (getMapMode() == MapControl.SELECT_MODE) {
