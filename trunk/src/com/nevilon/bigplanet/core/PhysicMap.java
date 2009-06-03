@@ -74,7 +74,7 @@ public class PhysicMap {
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
-		//System.out.println("dx " + dx + " dy: " +dy);
+		System.out.println("dx " + dx + " dy: " +dy);
 		//dx = normalize(dx,getZoomLevel());
 		//dy = normalize(dy,getZoomLevel());
 		
@@ -170,7 +170,7 @@ public class PhysicMap {
 	 */
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
-			//System.out.println("zoomImap " + zoom);
+			System.out.println("zoomImap " + zoom);
 			// получение отступа он начала координат
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE - globalOffset.x
 					+ offsetX);

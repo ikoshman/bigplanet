@@ -101,7 +101,7 @@ public class TileResolver {
 
 	private void updateMap(RawTile tile, Bitmap bitmap) {
 		if (tile.s == strategyId) {
-			//System.out.println("update map");
+			System.out.println("update map");
 			physicMap.update(bitmap, tile);
 		}
 	}
