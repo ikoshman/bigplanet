@@ -3,7 +3,6 @@ package com.nevilon.moow;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -51,8 +50,8 @@ public class Testing extends Activity
      if(start)
           {
                canvas.drawColor(Color.BLACK);
-               Bitmap btp = BitmapFactory.decodeResource(getResources(), R.drawable.mt);
-               canvas.drawBitmap(btp,0,0,paint);
+            //   Bitmap btp = BitmapFactory.decodeResource(getResources(), R.drawable.mt);
+            //   canvas.drawBitmap(btp,0,0,paint);
                start = false;
           }
           else
