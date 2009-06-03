@@ -23,7 +23,7 @@ public class PhysicMap {
 
 	public double scaleFactor = 1.00d;
 
-	private int zoom;
+	public static int zoom;
 
 	private Point globalOffset = new Point();
 
@@ -238,10 +238,17 @@ public class PhysicMap {
 	}
 	
 	public void zoomS(double dz){
-		if(zoom>0 && zoom <16){
+		System.out.println(dz);
+		int offsetX = getWidth() / 2;
+		int offsetY = getHeight() / 2;
+		if(dz<1){
+			
+		} else if(dz<1) {
+			
+		}
+		if(dz>1){
 			int zoomTo = getN(dz);
-			int offsetX = getWidth() / 2;
-			int offsetY = getHeight() / 2;
+			
 			
 			
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
@@ -267,8 +274,34 @@ public class PhysicMap {
 
 			inZoom = 1;
 			zoom=zoom-zoomTo;
-			System.out.println("z "+zoom);
+			zoom(tileX, tileY, zoom);	
+		} else {
+			int zoomTo=getN(1/dz);
+			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
+					- globalOffset.x +offsetX);
+			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
+					- globalOffset.y + offsetY);
+
+			// получение координат точки предудущем уровне
+			int nextZoomX = (int) (currentZoomX / (1/dz));
+			int nextZoomY = (int) (currentZoomY / (1/dz));
+
+			// получение координат угла экрана на новом уровне
+			nextZoomX = nextZoomX - offsetX;
+			nextZoomY = nextZoomY - offsetY;
+
+			// получение углового тайла
+			int tileX = (nextZoomX / TILE_SIZE);
+			int tileY = nextZoomY / TILE_SIZE;
+
+			// отступ всегда один - точка должна находится в центре экрана
+			correctionX = -(nextZoomX - tileX * TILE_SIZE);
+			correctionY = -(nextZoomY - tileY * TILE_SIZE);
+
+			inZoom = -1;
+			zoom=zoom+zoomTo;
 			zoom(tileX, tileY, zoom);
+
 			
 		}
 	}
