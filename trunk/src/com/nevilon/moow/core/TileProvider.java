@@ -2,6 +2,7 @@ package com.nevilon.moow.core;
 
 
 import java.io.InputStream;
+import java.util.HashSet;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,9 @@ public class TileProvider {
 	private TileLoader tileLoader = new TileLoader(this);
 	
 	private BitmapCache inMemoryCache = new BitmapCache();
+	
+	// список запросов на загрузку (отправленные, но незагруженные)
+	private HashSet<RawTile> requestQueue = new HashSet<RawTile>();
 	
 	private PhysicMap physicMap;
 	
@@ -37,12 +41,16 @@ public class TileProvider {
 			inMemoryCache.put(tile, tmpBitmap);
 			returnTile(tmpBitmap,tile);
 		} else {
-			tileLoader.load(tile);
+			//if(!requestQueue.contains(tile)){
+				tileLoader.load(tile);
+				requestQueue.add(tile);
+			
+		//	}
 		}
 	}
 	
 	public void returnTile(Bitmap bitmap, RawTile tile){
-		System.out.println(bitmap);
+		requestQueue.remove(tile);
 		physicMap.update(bitmap,tile);
 	}
 	
