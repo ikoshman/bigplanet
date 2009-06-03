@@ -54,7 +54,10 @@ public class DAO {
 	}
 	
 	public void saveGeoBookmark(GeoBookmark bookmark){
-		 ContentValues initialValues = new ContentValues();
+		if(bookmark.getId() !=-1){
+			updateGeoBookmark(bookmark);
+		} else{
+		   ContentValues initialValues = new ContentValues();
 	      //  initialValues.put(DAO.COLUMN_ID, bookmark.getId());
 	        initialValues.put(DAO.COLUMN_NAME, bookmark.getName());
 	        initialValues.put(DAO.COLUMN_DESCRIPTION, bookmark.getDescription());
@@ -65,8 +68,16 @@ public class DAO {
 	        initialValues.put(DAO.COLUMN_OFFSETY, bookmark.getOffsetY());
 	        // save to database
 	        db.insert(DAO.TABLE_GEOBOOKMARKS, null, initialValues);
+		}
 	}
 	
+	private void updateGeoBookmark(GeoBookmark bookmark){
+		ContentValues args = new ContentValues();
+        args.put(COLUMN_NAME, bookmark.getName());
+        args.put(COLUMN_DESCRIPTION, bookmark.getDescription());
+        db.update(TABLE_GEOBOOKMARKS, args, 
+                         COLUMN_ID + "=" + bookmark.getId(), null);
+	}
 	
 	public void removeGeoBookmark(int geoBookmarkId){
 		db.delete(TABLE_GEOBOOKMARKS, COLUMN_ID + "=" + geoBookmarkId, null);

@@ -33,6 +33,10 @@ public class AddBookmarkDialog {
 		final EditText nameValue = (EditText) v.findViewById(R.id.nameValue);
 		final EditText descriptionValue = (EditText) v
 				.findViewById(R.id.descriptionValue);
+		
+		nameValue.setText(geoBookmark.getName());
+		descriptionValue.setText(geoBookmark.getDescription());
+		
 		final TextView validationError = (TextView) v.findViewById(R.id.validationError); 
 		
 		final Button cancelBtn = (Button) v.findViewById(R.id.cancelBtn);
