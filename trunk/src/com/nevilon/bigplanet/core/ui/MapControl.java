@@ -6,8 +6,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,12 +165,40 @@ public class MapControl extends RelativeLayout {
 					updateZoomControls();
 				}
 			});
+			
+			final Handler h = new Handler(){
+	               @Override
+	               public void handleMessage(Message msg) {
+	                  updateZoomControls();
+	               }
+	        }; 
+			
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					pmap.zoomInCenter();
-					quickHack();
-					updateZoomControls();
+					new Thread(){
+						
+						@Override
+						public void run(){
+							while(pmap.scaleFactor<=2){
+								try {
+									Thread.sleep(20);
+									pmap.scaleFactor+=0.05f;
+									postInvalidate();
+								//	quickHack();
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+							pmap.zoomInCenter();
+							//quickHack();
+							h.sendEmptyMessage(0);
+							//updateZoomControls();
+							
+						}
+						
+					}.start();
 				}
 			});
 
@@ -196,13 +227,10 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private synchronized void updateScreen() {
-		zoomPanel.postInvalidate();
+		//scaleFactor=1;
 		if (main != null) {
-			zoomPanel.postInvalidate();
 			main.postInvalidate();
-			zoomPanel.postInvalidate();
 		}
-		zoomPanel.postInvalidate();
 	}
 
 	private void quickHack() {
@@ -269,7 +297,11 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		Bitmap tmpBitmap;
+	   Bitmap tmpBitmap;
+		Matrix matr = new Matrix();
+		
+		matr.postScale(pmap.scaleFactor, pmap.scaleFactor,320/2,480/2);
+		canvas.setMatrix(matr);
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
@@ -289,7 +321,7 @@ public class MapControl extends RelativeLayout {
 		}
 
 		// отрисовка маркеров
-		for (int i = 0; i < 7; i++) {
+	/*	for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 					RawTile tile = pmap.getDefaultTile();
@@ -309,6 +341,8 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
+		*/
+		canvas.restore();
 	}
 	@Override
 	protected void onAttachedToWindow() {

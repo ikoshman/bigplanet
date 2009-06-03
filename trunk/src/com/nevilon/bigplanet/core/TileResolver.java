@@ -138,6 +138,10 @@ public class TileResolver {
 	public void clearCache(){
 		cacheProvider.clear();
 	}
+	
+	public void gcCache(){
+		cacheProvider.gc();
+	}
 
 	public int getMapSourceId() {
 		return this.strategyId;
