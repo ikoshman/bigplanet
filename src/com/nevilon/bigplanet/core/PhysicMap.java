@@ -3,6 +3,7 @@ package com.nevilon.bigplanet.core;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
+import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
 import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class PhysicMap {
@@ -74,7 +75,7 @@ public class PhysicMap {
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
-		System.out.println("dx " + dx + " dy: " +dy);
+		//System.out.println("dx " + dx + " dy: " +dy);
 		//dx = normalize(dx,getZoomLevel());
 		//dy = normalize(dy,getZoomLevel());
 		
@@ -228,6 +229,7 @@ public class PhysicMap {
 	private void updateMap(){
 		if(tileResolver.loaded ==9){
 			updateScreenCommand.execute();
+			BitmapCacheWrapper.getInstance().gc();
 		}
 	}
 	

@@ -29,6 +29,10 @@ public class BitmapCache {
 		cacheMap.clear();
 	}
 	
+	public void gc(){
+		cacheMap.gc();
+	}
+	
 	/**
 	 * Добавление битмапа в кеш
 	 * 
