@@ -86,6 +86,8 @@ public class MoowMap extends Activity {
 
 		return super.onTouchEvent(event);
 	}
+	
+	
 
 	/**
 	 * Устанавливает состояние zoomIn/zoomOut контролов в зависимости от уровня
@@ -127,8 +129,6 @@ public class MoowMap extends Activity {
 		tdx = dx;
 		tdy = dy;
 		
-		//pmap.move(dx, dy);
-
 		
 		if (pmap.globalOffset.x > 0) {
 			dx = Math.round((pmap.globalOffset.x + 320) / 256);
@@ -234,6 +234,7 @@ public class MoowMap extends Activity {
 		}
 
 	}
+	
 
 	class ZoomPanel extends RelativeLayout {
 
