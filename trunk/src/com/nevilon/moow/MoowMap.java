@@ -22,6 +22,8 @@ import com.nevilon.moow.core.ui.DoubleClickHelper;
 
 public class MoowMap extends Activity {
 
+	public static final int MAP_HEIGHT = 480;
+
 	private final static int BCG_CELL_SIZE = 16;
 
 	/**
@@ -51,41 +53,13 @@ public class MoowMap extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
-		setContentView(main, new ViewGroup.LayoutParams(320, 480));
+		setContentView(main, new ViewGroup.LayoutParams(320, MAP_HEIGHT));
 		(new Thread(new CanvasUpdater())).start();
 		zoomPanel = new ZoomPanel(this);
 		addContentView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
 	}
 
-	/**
-	 * Обработка касаний
-	 */
-	public boolean onTouchEvent(MotionEvent event) {
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			inMove = false;
-			nextMovePoint.set((int) event.getX(), (int) event.getY());
-			break;
-		case MotionEvent.ACTION_MOVE:
-			inMove = true;
-			moveCoordinates(event.getX(), event.getY());
-			break;
-		case MotionEvent.ACTION_UP:
-			if (inMove) {
-				moveCoordinates(event.getX(), event.getY());
-				quickHack();
-			} else {
-				if (dcDispatcher.process(event)) {
-					pmap.zoomIn((int) event.getX(), (int) event.getY());
-					updateZoomControls();
-				}
-			}
-			break;
-		}
-
-		return super.onTouchEvent(event);
-	}
 	
 	
 
@@ -117,7 +91,7 @@ public class MoowMap extends Activity {
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.round((pmap.globalOffset.y + 480) / 256);
+			dy = (int) Math.round((pmap.globalOffset.y + MAP_HEIGHT) / 256);
 		} else {
 			dy = (int) Math.round(pmap.globalOffset.y / 256);
 
@@ -137,7 +111,7 @@ public class MoowMap extends Activity {
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.round((pmap.globalOffset.y + 480) / 256);
+			dy = (int) Math.round((pmap.globalOffset.y + MAP_HEIGHT) / 256);
 		} else {
 			dy = (int) Math.round(pmap.globalOffset.y / 256);
 
@@ -168,22 +142,22 @@ public class MoowMap extends Activity {
 	 */
 	private Bitmap drawBackground() {
 		// создание битмапа по размеру экрана
-		Bitmap bitmap = Bitmap.createBitmap(320, 480, Config.RGB_565);
+		Bitmap bitmap = Bitmap.createBitmap(320, MAP_HEIGHT, Config.RGB_565);
 		Canvas cv = new Canvas(bitmap);
 		// прорисовка фона
 		Paint background = new Paint();
 		background.setARGB(255, 128, 128, 128);
-		cv.drawRect(0, 0, 320, 480, background);
+		cv.drawRect(0, 0, 320, MAP_HEIGHT, background);
 		background.setAntiAlias(true);
 		// установка цвета линий
 		background.setColor(Color.WHITE);
 		// продольные линии
 		for (int i = 0; i < 320 / MoowMap.BCG_CELL_SIZE; i++) {
 			cv.drawLine(MoowMap.BCG_CELL_SIZE * i, 0,
-					MoowMap.BCG_CELL_SIZE * i, 480, background);
+					MoowMap.BCG_CELL_SIZE * i, MAP_HEIGHT, background);
 		}
 		// поперечные линии
-		for (int i = 0; i < 480 / MoowMap.BCG_CELL_SIZE; i++) {
+		for (int i = 0; i < MAP_HEIGHT / MoowMap.BCG_CELL_SIZE; i++) {
 			cv.drawLine(0, MoowMap.BCG_CELL_SIZE * i, 320,
 					MoowMap.BCG_CELL_SIZE * i, background);
 		}
@@ -191,19 +165,21 @@ public class MoowMap extends Activity {
 	}
 
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		Bitmap tmpBitmap;
-		canvas.drawBitmap(mapBg, 0, 0, paint);
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				tmpBitmap = pmap.getCells()[i][j];
-				if (tmpBitmap != null) {
-					canvas.drawBitmap(tmpBitmap, (i) * 256
-							+ pmap.globalOffset.x, (j) * 256
-							+ pmap.globalOffset.y, paint);
+		if(pmap.canDraw){
+			Bitmap tmpBitmap;
+			canvas.drawBitmap(mapBg, 0, 0, paint);
+			
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					tmpBitmap = pmap.getCells()[i][j];
+					if (tmpBitmap != null) {
+						canvas.drawBitmap(tmpBitmap, (i) * 256
+								+ pmap.globalOffset.x, (j) * 256
+								+ pmap.globalOffset.y, paint);
+					}
 				}
 			}
 		}
-
 	}
 
 	class Panel extends View {
@@ -212,6 +188,7 @@ public class MoowMap extends Activity {
 		public Panel(Context context) {
 			super(context);
 			paint = new Paint();
+			//setDrawingCacheEnabled(true);
 		}
 
 		@Override
@@ -219,6 +196,42 @@ public class MoowMap extends Activity {
 			super.onDraw(canvas);
 			doDraw(canvas, paint);
 		}
+		
+		
+		/**
+		 * Обработка касаний
+		 */
+		@Override
+		public boolean onTouchEvent(MotionEvent event) {
+			System.out.println(event.getAction());
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				inMove = false;
+				nextMovePoint.set((int) event.getX(), (int) event.getY());
+				break;
+			case MotionEvent.ACTION_MOVE:
+				inMove = true;
+				moveCoordinates(event.getX(), event.getY());
+				break;
+			case MotionEvent.ACTION_UP:
+				if (inMove) {
+					moveCoordinates(event.getX(), event.getY());
+					quickHack();
+				} else {
+					if (dcDispatcher.process(event)) {
+						pmap.zoomIn((int) event.getX(), (int) event.getY());
+						updateZoomControls();
+					}
+				}
+				pmap.gc();
+				break;
+			}
+
+			return true;
+		}
+		
+
+		
 	}
 
 	class CanvasUpdater implements Runnable {

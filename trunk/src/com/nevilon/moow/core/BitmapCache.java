@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class BitmapCache {
 	
-	private ExpiredHashMap cacheMap = new ExpiredHashMap(20);
+	private ExpiredHashMap cacheMap = new ExpiredHashMap(50);
 
 	
 	public void put(RawTile tile, Bitmap bitmap){
@@ -26,6 +26,13 @@ public class BitmapCache {
 		return cacheMap.get(new RawTile(x,y,z));
 	}
 	
+	/**
+	 * Очистка кеша
+	 */
+	public void gc(){
+		cacheMap.clear();
+	}
+	
 	
 	private static class ExpiredHashMap{
 		
@@ -38,9 +45,6 @@ public class BitmapCache {
 		}
 		
 		public synchronized void put(RawTile tile, Bitmap bitmap){
-			if (maxSize == expCacheMap.keySet().size()){
-				clear();
-			}
 			expCacheMap.put(new ExpRawTile(tile,System.currentTimeMillis()), bitmap);
 		}
 		
@@ -51,17 +55,19 @@ public class BitmapCache {
 		/**
 		 * Удаляет определенную часть самых старых элементов в кеше
 		 */
-		private void clear(){
-			Iterator<ExpRawTile> it = expCacheMap.keySet().iterator();
-			List<ExpRawTile> listToSort = new ArrayList<ExpRawTile>();
-			while(it.hasNext()){
-				listToSort.add(it.next());
+		public void clear(){
+			if (maxSize == expCacheMap.keySet().size()){
+				Iterator<ExpRawTile> it = expCacheMap.keySet().iterator();
+				List<ExpRawTile> listToSort = new ArrayList<ExpRawTile>();
+				while(it.hasNext()){
+					listToSort.add(it.next());
+				}
+				Collections.sort(listToSort);
+				for(int i=0;i<50;i++){
+					expCacheMap.remove(listToSort.get(i));
+				}
+				Log.i("CACHE", "clean");
 			}
-			Collections.sort(listToSort);
-			for(int i=0;i<20;i++){
-				expCacheMap.remove(listToSort.get(i));
-			}
-			Log.i("CACHE", "clean");
 		}
 		
 		private class ExpRawTile extends RawTile implements Comparable<ExpRawTile>{
