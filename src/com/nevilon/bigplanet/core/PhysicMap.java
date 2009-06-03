@@ -5,6 +5,7 @@ import java.util.Random;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
+import com.nevilon.bigplanet.core.geoutils.GeoUtils;
 import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
 import com.nevilon.bigplanet.core.ui.MapControl;
 import com.nevilon.bigplanet.core.ui.SmoothZoomEngine;
@@ -180,10 +181,7 @@ public class PhysicMap {
 		// коориданаты углового тайла
 		int tx = fullX - getWidth() / 2;
 		int ty = fullY - getHeight() / 2;
-
-		this.zoom = z;
 		globalOffset.x = -(tx - Math.round(tx / 256) * 256);
-
 		globalOffset.y = -(ty - Math.round(ty / 256) * 256);
 		reload(tx / 256, ty / 256, z);
 	}
@@ -227,30 +225,12 @@ public class PhysicMap {
 
 	}
 
-	
-	private int getN(double x){
-		int counter = 1;
-		while(x>2){
-			counter++;
-			x=x/2;
-		}
-		return counter;
-	}
-	
 	public void zoomS(double dz){
-		System.out.println(dz);
 		int offsetX = getWidth() / 2;
 		int offsetY = getHeight() / 2;
-		if(dz<1){
-			
-		} else if(dz<1) {
-			
-		}
+		int zoomTo=Utils.getZoomLevel(dz);
 		if(dz>1){
-			int zoomTo = getN(dz);
-			
-			
-			
+		
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
 					- globalOffset.x + offsetX);
 			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
@@ -276,7 +256,7 @@ public class PhysicMap {
 			zoom=zoom-zoomTo;
 			zoom(tileX, tileY, zoom);	
 		} else {
-			int zoomTo=getN(1/dz);
+			
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
 					- globalOffset.x +offsetX);
 			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
@@ -492,9 +472,12 @@ public class PhysicMap {
 				if (scaleFactor == 1) {
 					setBitmap(MapControl.CELL_BACKGROUND, i, j);
 				}
-				// setBitmap(null, i, j);
-				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
-						.getMapSourceId()));
+				if(GeoUtils.isValid(tile)){
+					tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
+							.getMapSourceId()));	
+				} else {
+					tileResolver.loaded++;
+				}
 			}
 		}
 	}

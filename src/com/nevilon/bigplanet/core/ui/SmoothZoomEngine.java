@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.nevilon.bigplanet.core.AbstractCommand;
+import com.nevilon.bigplanet.core.PhysicMap;
+import com.nevilon.bigplanet.core.Utils;
 
 public class SmoothZoomEngine {
 
@@ -59,30 +61,34 @@ public class SmoothZoomEngine {
 						int scaleDirection = scaleQueue.removeFirst();
 						endScaleFactor = scaleDirection == -1 ? scaleFactor / 2
 								: scaleFactor * 2;
-						if (!(endScaleFactor > 8000 || endScaleFactor < 125)) {
-							System.out.println(scaleFactor + " "
-									+ endScaleFactor);
-							synchronized (scaleFactor) {
+						int z  = PhysicMap.zoom ;
+						System.out.println("zoom " + PhysicMap.zoom+" scaleFactor "  + Utils.getZoomLevel(scaleFactor/1000));
+						if((scaleDirection==-1 && z<16) || (scaleDirection==1 && z>0)){
+							if(!(endScaleFactor > 8000 || endScaleFactor < 125)){
+								synchronized (scaleFactor) {
 
-								do {
-									try {
-										Thread.sleep(PAUSE);
-										scaleFactor = scaleFactor
-												+ (scaleDirection) * 25;
-										// обновить экран
-						
-										updateScreen.execute(new Double(
-												scaleFactor / 1000));
-									} catch (InterruptedException e) {
-										e.printStackTrace();
-									}
-								} while (!(scaleFactor == (endScaleFactor)));	
+									do {
+										try {
+											Thread.sleep(PAUSE);
+											scaleFactor = scaleFactor
+													+ (scaleDirection) * 25;
+											// обновить экран
+							
+											updateScreen.execute(new Double(
+													scaleFactor / 1000));
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									} while (!(scaleFactor == (endScaleFactor)));	
+								}
 							}
-						}
 
-						} else if (!isEmpty && scaleQueue.size()==0) {
+						} if (!isEmpty && scaleQueue.size()==0) {
+							System.out.println("reload");
 							isEmpty = true;
 							reloadMap.execute(new Double(scaleFactor / 1000));
+						}
+
 						}
 				//	}
 				}
