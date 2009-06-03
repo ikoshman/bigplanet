@@ -5,16 +5,15 @@ import android.graphics.Bitmap;
 import com.nevilon.moow.core.loader.TileLoader;
 import com.nevilon.moow.core.providers.MapStrategy;
 import com.nevilon.moow.core.providers.MapStrategyFactory;
+import com.nevilon.moow.core.storage.BitmapCacheWrapper;
 import com.nevilon.moow.core.storage.LocalStorageWrapper;
 
 public class TileResolver {
 	private TileLoader tileLoader;
 
 	private PhysicMap physicMap;
-
-	private LocalStorageWrapper localProvider = new LocalStorageWrapper();
-
-	//private BitmapCacheWrapper cacheProvider = new BitmapCacheWrapper();
+	
+	private BitmapCacheWrapper cacheProvider = new BitmapCacheWrapper();
 
 	private Handler scaledHandler;
 
@@ -33,7 +32,7 @@ public class TileResolver {
 					public void handle(RawTile tile, byte[] data) {
 						LocalStorageWrapper.put(tile, data, strategyId);
 						Bitmap bmp = LocalStorageWrapper.get(tile, strategyId);
-						//cacheProvider.putToCache(tile, bmp);
+						cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
 				}
@@ -45,12 +44,12 @@ public class TileResolver {
 		this.scaledHandler = new Handler() {
 
 			@Override
-			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
+			public synchronized void  handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
 				decCounter();
-				if (isScaled) {
-					//cacheProvider.putToScaledCache(tile, bitmap);
-				}
 				updateMap(tile, bitmap);
+				if (isScaled) {
+					cacheProvider.putToScaledCache(tile, bitmap);
+				}
 			}
 
 		};
@@ -58,18 +57,23 @@ public class TileResolver {
 		this.localLoaderHandler = new Handler() {
 
 			@Override
-			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
+			public synchronized void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
 				decCounter();
 				if (bitmap != null) {
-					//cacheProvider.putToCache(tile, bitmap);
 					updateMap(tile, bitmap);
+					cacheProvider.putToCache(tile, bitmap);
 				} else {
 					
-					//bitmap = cacheProvider.getScaledTile(tile);
-					
+					bitmap = cacheProvider.getScaledTile(tile);
+					if(bitmap==null){
 						incCounter();
+						
 						new Thread(new TileScaler(tile, scaledHandler, strategyId)).start();
-					
+						
+					} else {
+						decCounter();
+					}
+					updateMap(tile, bitmap);
 					load(tile);
 				}
 			}

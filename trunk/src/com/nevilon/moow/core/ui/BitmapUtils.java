@@ -34,22 +34,22 @@ public class BitmapUtils {
 	 */
 	public static Bitmap drawBackground(int cellSize, int height, int widht) {
 		// создание битмапа по размеру экрана
-		Bitmap bitmap = Bitmap.createBitmap(320, height, Config.RGB_565);
+		Bitmap bitmap = Bitmap.createBitmap(widht, height, Config.RGB_565);
 		Canvas cv = new Canvas(bitmap);
 		// прорисовка фона
 		Paint background = new Paint();
 		background.setColor(BACKGROUND_COLOR);
-		cv.drawRect(0, 0, 320, height, background);
+		cv.drawRect(0, 0, widht, height, background);
 		background.setAntiAlias(true);
 		// установка цвета линий
 		background.setColor(LINE_COLOR);
 		// продольные линии
-		for (int i = 0; i < 320 / cellSize; i++) {
+		for (int i = 0; i < widht / cellSize; i++) {
 			cv.drawLine(cellSize * i, 0, cellSize * i, height, background);
 		}
 		// поперечные линии
 		for (int i = 0; i < height / cellSize; i++) {
-			cv.drawLine(0, cellSize * i, 320, cellSize * i, background);
+			cv.drawLine(0, cellSize * i, widht, cellSize * i, background);
 		}
 		return bitmap;
 	}
