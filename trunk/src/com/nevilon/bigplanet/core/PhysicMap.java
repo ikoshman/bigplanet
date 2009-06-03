@@ -194,11 +194,11 @@ public class PhysicMap {
 			int nextZoomY = currentZoomY * 2;
 
 			// получение координат угла экрана на новом уровне
-			nextZoomX = nextZoomX - getWidth() / 2;
-			nextZoomY = nextZoomY - getHeight() / 2;
+			nextZoomX = nextZoomX - offsetX;
+			nextZoomY = nextZoomY - offsetY;
 
 			// получение углового тайла
-			int tileX = (nextZoomX / TILE_SIZE);
+			int tileX = nextZoomX / TILE_SIZE;
 			int tileY = nextZoomY / TILE_SIZE;
 
 			// отступ всегда один - точка должна находится в центре экрана
