@@ -8,9 +8,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.nevilon.moow.core.PhysicMap;
@@ -62,7 +65,7 @@ public class MapControl extends RelativeLayout {
 	/*
 	 * Фон
 	 */
-	private Bitmap mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, 480, 320);
+	private Bitmap mapBg;
 
 	/*
 	 * Координаты точек, история перемещения
@@ -91,13 +94,16 @@ public class MapControl extends RelativeLayout {
 	 * Размер ячейки фона
 	 */
 	private final static int BCG_CELL_SIZE = 16;
-
-	public MapControl(Context context) {
+	
+	public MapControl(Context context, int width, int height) {
 		super(context);
-
+		
+		pmap.setHeight(height);
+		pmap.setWidth(width);
+		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
 		// панель с картой
 		main = new Panel(context);
-		addView(main, 0, new ViewGroup.LayoutParams(320, 480));
+		addView(main, 0, new ViewGroup.LayoutParams(width, height));
 
 		(new Thread(new CanvasUpdater())).start();
 
@@ -139,13 +145,13 @@ public class MapControl extends RelativeLayout {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
 		if (pmap.globalOffset.x > 0) {
-			dx = Math.round((pmap.globalOffset.x + 320) / 256);
+			dx = Math.round((pmap.globalOffset.x + pmap.getWidth()) / 256);
 		} else {
 			dx = Math.round((pmap.globalOffset.x) / 256);
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = Math.round((pmap.globalOffset.y + 480) / 256);
+			dy = Math.round((pmap.globalOffset.y + pmap.getHeight()) / 256);
 		} else {
 			dy = Math.round(pmap.globalOffset.y / 256);
 
@@ -158,13 +164,13 @@ public class MapControl extends RelativeLayout {
 		tdy = dy;
 
 		if (pmap.globalOffset.x > 0) {
-			dx = Math.round((pmap.globalOffset.x + 320) / 256);
+			dx = Math.round((pmap.globalOffset.x + pmap.getWidth()) / 256);
 		} else {
 			dx = Math.round((pmap.globalOffset.x) / 256);
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.round((pmap.globalOffset.y + 480) / 256);
+			dy = (int) Math.round((pmap.globalOffset.y + pmap.getHeight()) / 256);
 		} else {
 			dy = (int) Math.round(pmap.globalOffset.y / 256);
 
@@ -309,7 +315,7 @@ public class MapControl extends RelativeLayout {
 
 	class CanvasUpdater implements Runnable {
 
-		private static final int UPDATE_INTERVAL = 50;
+		private static final int UPDATE_INTERVAL = 20;
 
 		int step = 0;
 

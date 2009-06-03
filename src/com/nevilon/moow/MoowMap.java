@@ -3,10 +3,12 @@ package com.nevilon.moow;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -24,8 +26,17 @@ public class MoowMap extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mapControl = new MapControl(this);
-		setContentView(mapControl, new ViewGroup.LayoutParams(320, 480));
+		
+
+		WindowManager wm = this.getWindowManager();
+		Display display = wm.getDefaultDisplay();
+		int height = display.getHeight();
+		int width = display.getWidth();
+
+		mapControl = new MapControl(this, width, height);
+
+		setContentView(mapControl);
+		setContentView(mapControl, new ViewGroup.LayoutParams(width,height));
 	}
 
 	@Override

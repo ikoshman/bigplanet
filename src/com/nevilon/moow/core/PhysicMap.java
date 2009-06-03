@@ -22,6 +22,12 @@ public class PhysicMap {
 	public Point nextMovePoint = new Point();
 	
 	public boolean canDraw = true;
+	
+	private int width;
+	
+	
+	private int height;
+
 
 	public PhysicMap(RawTile defTile) {
 		this.defTile = defTile;
@@ -82,9 +88,9 @@ public class PhysicMap {
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x + 320
+			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x + getWidth()
 					/ 2;
-			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y + 480
+			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y + getHeight()
 					/ 2;
 
 			// получение координат точки предудущем уровне
@@ -92,8 +98,8 @@ public class PhysicMap {
 			int nextZoomY = currentZoomY / 2;
 
 			// получение координат угла экрана на новом уровне
-			nextZoomX = nextZoomX - 320 / 2;
-			nextZoomY = nextZoomY - 480 / 2;
+			nextZoomX = nextZoomX - getWidth() / 2;
+			nextZoomY = nextZoomY - getHeight() / 2;
 
 			// получение углового тайла
 			int tileX = (nextZoomX / TILE_SIZE);
@@ -138,8 +144,8 @@ public class PhysicMap {
 			int nextZoomY = currentZoomY * 2;
 
 			// получение координат угла экрана на новом уровне
-			nextZoomX = nextZoomX - 320 / 2;
-			nextZoomY = nextZoomY - 480 / 2;
+			nextZoomX = nextZoomX - getWidth() / 2;
+			nextZoomY = nextZoomY - getHeight() / 2;
 
 			// получение углового тайла
 			int tileX = (nextZoomX / TILE_SIZE);
@@ -173,10 +179,11 @@ public class PhysicMap {
 
 	
 	public Point getAbsoluteCenter(){
+		//TODO не работает при изменении ориентации девайса
 		Point centerPoint = new Point();
-		centerPoint.x  = getDistance(getDefaultTile().x) - globalOffset.x + 320
+		centerPoint.x  = getDistance(getDefaultTile().x) - globalOffset.x + getWidth()
 		/ 2;
-        centerPoint.y = getDistance(getDefaultTile().y) - globalOffset.y + 480
+        centerPoint.y = getDistance(getDefaultTile().y) - globalOffset.y + getHeight()
 		/ 2;
 		return centerPoint;
 	}
@@ -280,4 +287,21 @@ public class PhysicMap {
 	public int getMapSourceId(){
 		return tileProvider.getMapSourceId();
 	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
 }
