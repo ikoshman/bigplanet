@@ -151,6 +151,7 @@ public class TileProvider implements Runnable {
 								offsetParentY, tileSize, tileSize);
 						bitmap = Bitmap.createBitmap(pixels, tileSize,
 								tileSize, Config.RGB_565);
+						pixels = null;
 						return Bitmap.createScaledBitmap(bitmap, 256, 256,
 								false);
 					}
