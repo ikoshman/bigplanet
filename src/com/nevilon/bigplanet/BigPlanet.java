@@ -114,6 +114,7 @@ public class BigPlanet extends Activity {
 		if(BigPlanetApp.isDemo){
 			showTrialDialog(R.string.this_is_demo_title, R.string.this_is_demo_message);
 		}
+		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 	}
 
 	public class MyIntentReceiver extends BroadcastReceiver {
