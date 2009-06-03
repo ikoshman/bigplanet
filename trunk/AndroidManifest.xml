@@ -34,6 +34,5 @@ android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permissi
 		</activity>
 
 
-
 	</application>
 </manifest> 

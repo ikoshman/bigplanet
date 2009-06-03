@@ -78,6 +78,12 @@ public class BigPlanet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//Intent i = new Intent(this,ServiceStartArguments.class);
+		//i.putExtra("name", "One"); 
+		//startService(i);
+		
+		
 		Date now = new Date(System.currentTimeMillis());
 		now.getMonth();
 		/*if (now.getMonth() == 2) {
