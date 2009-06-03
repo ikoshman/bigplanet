@@ -109,7 +109,7 @@ public class MoowMap extends Activity {
 		case 11:
 			MapSaverUI mapSaverUI = new MapSaverUI(this, mapControl
 					.getPhysicalMap().getZoomLevel(), mapControl
-					.getPhysicalMap().getAbsoluteCenter());
+					.getPhysicalMap().getAbsoluteCenter(), mapControl.getPhysicalMap().getTileResolver().getMapSourceId());
 			mapSaverUI.show();
 			break;
 		case 0:

@@ -46,7 +46,7 @@ public class Preferences {
         if(z == 0){
         	z = 16;
         }
-		return new RawTile(x,y,z);
+		return new RawTile(x,y,z,-1);
 	}
 	
 	/**

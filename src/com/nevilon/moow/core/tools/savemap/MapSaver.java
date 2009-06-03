@@ -65,7 +65,7 @@ public class MapSaver {
 		} else {
 			totalSuccessful++;
 			totalKB+=data.length;
-			LocalStorageWrapper.put(tile, data, Preferences.getSourceId());
+			LocalStorageWrapper.put(tile, data);
 		}
 		handler.sendEmptyMessage(0);
 	}
