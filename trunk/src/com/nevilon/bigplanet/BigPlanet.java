@@ -2,12 +2,14 @@ package com.nevilon.bigplanet;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -23,6 +25,7 @@ import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
 import com.nevilon.bigplanet.core.ui.MapControl;
+import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 
 public class BigPlanet extends Activity {
 
@@ -110,6 +113,17 @@ public class BigPlanet extends Activity {
 		int width = display.getWidth();
 		if (mapControl == null) {
 			mapControl = new MapControl(this, width, height, tile);
+			mapControl.setOnMapLongClickListener(new OnMapLongClickListener(){
+
+				@Override
+				public void onMapLongClick(MotionEvent event) {
+					Intent intent = new Intent();
+					intent.setClass(BigPlanet.this, AddGeoBookmark.class);
+					startActivity(intent);
+					
+				}
+				
+			});
 		} else {
 			mapControl.setSize(width, height);
 		}

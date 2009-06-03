@@ -1,6 +1,5 @@
 package com.nevilon.bigplanet.core.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.nevilon.bigplanet.R;
 import com.nevilon.bigplanet.core.AbstractCommand;
@@ -71,9 +69,11 @@ public class MapControl extends RelativeLayout {
 	 */
 	private final static int BCG_CELL_SIZE = 16;
 
-	Bitmap photoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ts); 
-	
-	
+	private OnMapLongClickListener onMapLongClickListener;
+
+	Bitmap photoBitmap = BitmapFactory.decodeResource(getResources(),
+			R.drawable.ts);
+
 	/**
 	 * Конструктор
 	 * 
@@ -85,8 +85,12 @@ public class MapControl extends RelativeLayout {
 	public MapControl(Context context, int width, int height, RawTile startTile) {
 		super(context);
 		buildView(width, height, startTile);
-		
-				
+
+	}
+
+	public void setOnMapLongClickListener(
+			OnMapLongClickListener onMapLongClickListener) {
+		this.onMapLongClickListener = onMapLongClickListener;
 	}
 
 	/**
@@ -97,7 +101,7 @@ public class MapControl extends RelativeLayout {
 	 */
 	public void setSize(int width, int height) {
 		buildView(width, height, pmap.getDefaultTile());
-				
+
 	}
 
 	/**
@@ -147,7 +151,7 @@ public class MapControl extends RelativeLayout {
 
 		}
 		zoomPanel.setPadding((width - 160) / 2, height - 112, 0, 0);
-		
+
 		if (pmap == null) { // если не был создан раньше
 			pmap = new PhysicMap(startTile, new AbstractCommand() {
 
@@ -155,7 +159,7 @@ public class MapControl extends RelativeLayout {
 				 * Callback, выполняющий перерисовку карты по запросу
 				 */
 				@Override
-				public  void execute() {
+				public void execute() {
 					updateScreen();
 				}
 
@@ -166,14 +170,13 @@ public class MapControl extends RelativeLayout {
 
 	}
 
-	
-	private synchronized void  updateScreen(){
+	private synchronized void updateScreen() {
 		if (main != null) {
 			main.postInvalidate();
 		}
 	}
-	
-	private  void quickHack() {
+
+	private void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
 		Point globalOffset = pmap.getGlobalOffset();
@@ -240,12 +243,13 @@ public class MapControl extends RelativeLayout {
 
 	/**
 	 * Перерисовывает карту
+	 * 
 	 * @param canvas
 	 * @param paint
 	 */
 	private void doDraw(Canvas canvas, Paint paint) {
-		//paint.setAntiAlias(true);
-		
+		// paint.setAntiAlias(true);
+
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
@@ -259,15 +263,12 @@ public class MapControl extends RelativeLayout {
 		// отрисовка тайлов
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-		
-		
-				
+
 				tmpBitmap = pmap.getCells()[i][j];
 				if (tmpBitmap != null) {
-					
+
 					canvas.drawBitmap(photoBitmap, 120, 120, paint);
-					
-					
+
 					canvas.drawBitmap(tmpBitmap, (i) * 256
 							+ pmap.getGlobalOffset().x, (j) * 256
 							+ pmap.getGlobalOffset().y, paint);
@@ -279,28 +280,33 @@ public class MapControl extends RelativeLayout {
 
 	/**
 	 * Панель, на которую выводится карта
+	 * 
 	 * @author hudvin
-	 *
+	 * 
 	 */
 	class Panel extends View {
 		Paint paint;
 
+		private MotionEvent lastMoveEvent;
+
 		public Panel(Context context) {
 			super(context);
 			setLongClickable(true);
-			
-			setOnLongClickListener(new OnLongClickListener(){
+
+			setOnLongClickListener(new OnLongClickListener() {
 
 				public boolean onLongClick(View v) {
-					System.out.println("long touchа");
+					if (MapControl.this.onMapLongClickListener != null) {
+						MapControl.this.onMapLongClickListener
+								.onMapLongClick(lastMoveEvent);
+					}
 					return true;
 				}
-				
+
 			});
 
-			
 			paint = new Paint();
-			
+
 		}
 
 		@Override
@@ -316,12 +322,6 @@ public class MapControl extends RelativeLayout {
 			doDraw(canvas, paint);
 		}
 
-
-		/*
-		Toast ts =  Toast.makeText(this.getContext(), "Some message text", Toast.LENGTH_SHORT);
-		ts.show();
-		ts.setMargin(12, 15);
-		*/
 		/**
 		 * Обработка касаний
 		 */
@@ -330,6 +330,7 @@ public class MapControl extends RelativeLayout {
 			System.out.println(event);
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
+				lastMoveEvent = event;
 				inMove = false;
 				pmap.getNextMovePoint().set((int) event.getX(),
 						(int) event.getY());
@@ -339,15 +340,15 @@ public class MapControl extends RelativeLayout {
 				pmap.moveCoordinates(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
-				 if (dcDetector.process(event)) {
-						pmap.zoomIn((int) event.getX(), (int) event.getY());
-						updateZoomControls();
-			    } else {
-			    	if (inMove) {
+				if (dcDetector.process(event)) {
+					pmap.zoomIn((int) event.getX(), (int) event.getY());
+					updateZoomControls();
+				} else {
+					if (inMove) {
 						pmap.moveCoordinates(event.getX(), event.getY());
 						quickHack();
 					}
-			    }
+				}
 				break;
 			}
 
