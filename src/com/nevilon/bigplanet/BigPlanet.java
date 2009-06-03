@@ -328,7 +328,12 @@ public class BigPlanet extends Activity {
 
 				});
 		if (!inHome) {
-			goToMyLocation(locationManager.getLastKnownLocation(provider));
+			Location tmpLocation = locationManager.getLastKnownLocation(provider);
+			if(tmpLocation!=null){
+				goToMyLocation(tmpLocation);
+			} else{
+				Toast.makeText(this, "Unable to get current location",3000 ).show();
+			}
 			inHome = true;
 		}
 	}
