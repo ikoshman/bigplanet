@@ -1,33 +1,22 @@
 package com.nevilon.moow;
 
-import android.util.AttributeSet;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.RectF;
-import android.graphics.Typeface;
-import android.graphics.Paint.Style;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AbsoluteLayout;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.ZoomControls;
 
 import com.nevilon.moow.core.PhysicMap;
 
-public class DrawTesting extends Activity {
+public class MoowMap extends Activity {
 	public static final int DIRECTION_RIGHT = 0, DIRECTION_LEFT = 1;
 
 	private Panel main;
@@ -46,7 +35,7 @@ public class DrawTesting extends Activity {
 	private Point globalOffset = new Point();
 
 	private long lastMove = -1;
-	
+
 	PhysicMap pmap = new PhysicMap();
 
 	boolean moving = false;
@@ -57,14 +46,13 @@ public class DrawTesting extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
-		
+
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
 		(new Thread(new AnimationLoop())).start();
-		
-		class TransparentPanel extends RelativeLayout { 
-		    
-			
-			public TransparentPanel(Context context) {
+
+		class ZoomPanel extends RelativeLayout {
+
+			public ZoomPanel(Context context) {
 				super(context);
 				ZoomControls zc = new ZoomControls(getContext());
 				addView(zc);
@@ -72,30 +60,26 @@ public class DrawTesting extends Activity {
 			}
 
 		}
-		
-		TransparentPanel ts = new TransparentPanel(DrawTesting.this);
-	    addContentView(ts, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
-		//ts.setPadding(80, 368, 0, 0);
-		
+		addContentView(new ZoomPanel(MoowMap.this), new LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			
-		
+
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
 			break;
 		case MotionEvent.ACTION_MOVE:
 			moveCoordinates(event.getX(), event.getY());
-			//System.out.println("move");
+			// System.out.println("move");
 			lastMove = System.currentTimeMillis();
 			break;
 		case MotionEvent.ACTION_UP:
-			//inMove = false;
-			if(lastMove!=-1 && System.currentTimeMillis()-lastMove>1000){
+			// inMove = false;
+			if (lastMove != -1 && System.currentTimeMillis() - lastMove > 1000) {
 			} else {
-			//	(new Thread(new InertionMoover())).start();
+				// (new Thread(new InertionMoover())).start();
 			}
 			lastMove = -1;
 			break;
@@ -133,7 +117,7 @@ public class DrawTesting extends Activity {
 			nR = 0;
 		}
 
-		//обработка перемещения влево
+		// обработка перемещения влево
 		if (isMovedLeft()) {
 			if (previousMovePoint.x > nextMovePoint.x) {
 				globalOffset.x += (256);
@@ -142,12 +126,11 @@ public class DrawTesting extends Activity {
 			}
 		}
 		if (!movedL) {
-			nL = (int) Math.ceil((globalOffset.x - 256+320) / 256);
-			//System.out.println(nL);
+			nL = (int) Math.ceil((globalOffset.x - 256 + 320) / 256);
+			// System.out.println(nL);
 		} else {
 			nL = 0;
 		}
-        
 
 		// обработка перемещения вниз
 		if (isMovedBottom()) {
@@ -163,7 +146,7 @@ public class DrawTesting extends Activity {
 		} else {
 			nB = 0;
 		}
-		
+
 		// обработка перемещения вверх
 		if (isMovedTop()) {
 			if (previousMovePoint.y > nextMovePoint.y) {
@@ -174,7 +157,7 @@ public class DrawTesting extends Activity {
 
 		}
 		if (!movedT) {
-			nT = (int) Math.ceil((globalOffset.y + 256+480) / 256);
+			nT = (int) Math.ceil((globalOffset.y + 256 + 480) / 256);
 		} else {
 			nT = 0;
 		}
@@ -200,8 +183,7 @@ public class DrawTesting extends Activity {
 
 	// проверка, передвинуто ли влево
 	private boolean isMovedLeft() {
-		return 
-			 Math.abs(Math.ceil((globalOffset.x -256 + 320) / 256) - nL) == 1;
+		return Math.abs(Math.ceil((globalOffset.x - 256 + 320) / 256) - nL) == 1;
 
 	}
 
@@ -210,11 +192,12 @@ public class DrawTesting extends Activity {
 		return inMove && nB != -1
 				&& Math.abs(Math.ceil((globalOffset.y + 256) / 256) - nB) == 1;
 	}
-	
+
 	// проверка, передвино ли вниз
 	private boolean isMovedTop() {
-		return inMove && nT != -1
-				&& Math.abs(Math.ceil((globalOffset.y - 256+480) / 256) - nT) == 1;
+		return inMove
+				&& nT != -1
+				&& Math.abs(Math.ceil((globalOffset.y - 256 + 480) / 256) - nT) == 1;
 	}
 
 	class Panel extends View {
@@ -232,60 +215,58 @@ public class DrawTesting extends Activity {
 		}
 	}
 
-	class InertionMoover implements Runnable{
-		
+	class InertionMoover implements Runnable {
+
 		private int counter = 400;
-		
-		public void run(){
-			
-			int x = nextMovePoint.x +1;
+
+		public void run() {
+
+			int x = nextMovePoint.x + 1;
 			int x1 = previousMovePoint.x;
 			int x2 = nextMovePoint.x;
 			int y1 = previousMovePoint.y;
 			int y2 = nextMovePoint.y;
-			
-			//if(x1 == 0){
-			//	x1 = x2-2;
-			//}
-			
+
+			// if(x1 == 0){
+			// x1 = x2-2;
+			// }
+
 			System.out.println(previousMovePoint.x + "^" + previousMovePoint.y);
 			System.out.println(nextMovePoint.x + "*" + nextMovePoint.y);
-			while(counter>0){
+			while (counter > 0) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				int y = ((x-x1)*(y2-y1)/(x2-x1))+y1;
-				
-				moveCoordinates(x,y);
-				x-=x2>x1?-1:1;
-				counter-=1;
+				int y = ((x - x1) * (y2 - y1) / (x2 - x1)) + y1;
+
+				moveCoordinates(x, y);
+				x -= x2 > x1 ? -1 : 1;
+				counter -= 1;
 			}
 		}
 	}
-	
+
 	class AnimationLoop implements Runnable {
-		
-	//	private int counter = 400;
-			
-		
-		
+
+		// private int counter = 400;
+
 		public void run() {
-			//while (true) {
-				while (running) {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException ex) {
-					}
-					processInertion();
-					main.postInvalidate();
+			// while (true) {
+			while (running) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException ex) {
 				}
-	//		}
+				processInertion();
+				main.postInvalidate();
+			}
+			// }
 		}
-		
-		private void processInertion(){
-			
+
+		private void processInertion() {
+
 		}
 	}
 }
