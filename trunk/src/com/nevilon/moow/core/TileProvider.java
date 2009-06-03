@@ -116,7 +116,7 @@ public class TileProvider implements Runnable {
 			int offsetParentY;
 			int parentTileX;
 			int parentTileY;
-			// получение отступа от начала координат на начальном уровне
+			// получение отступа от начала координат на текущев уровне
 			offsetX = x * 256; // отступ от начала координат по ox
 			offsetY = y * 256; // отступ от начала координат по oy
 			int tmpZ = z;
@@ -132,7 +132,6 @@ public class TileProvider implements Runnable {
 				parentTileY = offsetParentY / 256;
 
 				// необходимо возвращать, во сколько раз увеличить!!!
-				// pow(2,tmp-z)
 				bitmap = loadTile(new RawTile(parentTileX, parentTileY, tmpZ));
 				if (bitmap == null) {
 				} else { // родительский тайл найден и загружен
@@ -147,7 +146,7 @@ public class TileProvider implements Runnable {
 
 					// копирование области и скалирование
 					int[] pixels = new int[tileSize * tileSize];
-					if (offsetParentY > 0 && offsetParentX > 0) {
+					if (offsetParentY >= 0 && offsetParentX >= 0) {
 						bitmap.getPixels(pixels, 0, tileSize, offsetParentX,
 								offsetParentY, tileSize, tileSize);
 						bitmap = Bitmap.createBitmap(pixels, tileSize,
