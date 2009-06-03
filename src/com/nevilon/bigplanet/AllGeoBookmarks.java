@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.nevilon.bigplanet.core.db.DAO;
 import com.nevilon.bigplanet.core.db.GeoBookmark;
+import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
+import com.nevilon.bigplanet.core.ui.MapControl;
+import com.nevilon.bigplanet.core.ui.OnDialogClickListener;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -47,15 +50,41 @@ public class AllGeoBookmarks extends ListActivity {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case 0:
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean isSelected = this.getSelectedItemId() >= 0;
+		menu.findItem(0).setEnabled(isSelected);
+		menu.findItem(1).setEnabled(isSelected);
+		return true;
+	}
 
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		final int bookmarkId = (int) this.getSelectedItemId();
+		
+		switch (item.getItemId()) {
+		case 0: // редактирование закладки
+			
+			AddBookmarkDialog.show(AllGeoBookmarks.this, geoBookmarks.get(bookmarkId), new OnDialogClickListener(){
+
+				@Override
+				public void onCancelClick() {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onOkClick(Object obj) {
+					GeoBookmark geoBookmark = (GeoBookmark)obj;
+					DAO d = new DAO(AllGeoBookmarks.this);
+					d.saveGeoBookmark(geoBookmark);
+					setData();
+				}		
+			});
+			
 			break;
 
-		case 1:
-			final int bookmarkId = geoBookmarks.get((int) this.getSelectedItemId())
-					.getId();
+		case 1: // удаление закладки
 			new AlertDialog.Builder(this).setTitle("Bookmark removing")
 					.setMessage("Are you really want to remove this bookmark?")
 					.setPositiveButton("Yes",
@@ -63,7 +92,7 @@ public class AllGeoBookmarks extends ListActivity {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
 									DAO dao = new DAO(AllGeoBookmarks.this);
-									dao.removeGeoBookmark(bookmarkId);
+									dao.removeGeoBookmark(geoBookmarks.get(bookmarkId).getId());
 									setData();
 								}
 							}).setNegativeButton("No", null).show();
