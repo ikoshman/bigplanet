@@ -57,6 +57,8 @@ public class MoowMap extends Activity {
 	// последнее время, когда происходило передвижение карты
 	private long lastMoveTime = -1;
 
+	private boolean canDraw = true;
+	
 	private List<Point> moveHistory = new ArrayList<Point>();
 
 	private InertionEngine iengine;
@@ -178,29 +180,37 @@ public class MoowMap extends Activity {
 		return bitmap;
 	}
 
-	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		Bitmap tmpBitmap;
-		canvas.drawBitmap(mapBg, 0, 0, paint);
+	private  void doDraw(Canvas canvas, Paint paint) {
+		if(canDraw){
+			Bitmap tmpBitmap;
+			canvas.drawBitmap(mapBg, 0, 0, paint);
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				tmpBitmap = pmap.getCells()[i][j];
-				if (tmpBitmap != null) {
-					canvas.drawBitmap(tmpBitmap, (i) * 256
-							+ pmap.globalOffset.x, (j) * 256
-							+ pmap.globalOffset.y, paint);
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					tmpBitmap = pmap.getCells()[i][j];
+					if (tmpBitmap != null) {
+						canvas.drawBitmap(tmpBitmap, (i) * 256
+								+ pmap.globalOffset.x, (j) * 256
+								+ pmap.globalOffset.y, paint);
+					}
 				}
 			}
 		}
 	}
 
+	
+	private void addPointToHistory(float x, float y){
+		Point tmpPoint = new Point();
+		tmpPoint.set((int) x, (int) y);
+		moveHistory.add(tmpPoint);
+	}
+	
 	class Panel extends View {
 		Paint paint;
 
 		public Panel(Context context) {
 			super(context);
 			paint = new Paint();
-			// setDrawingCacheEnabled(true);
 		}
 
 		@Override
@@ -219,24 +229,18 @@ public class MoowMap extends Activity {
 				inMove = false;
 				moveHistory.clear();
 				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
-				Point pxx = new Point();
-				pxx.set((int) event.getX(), (int) event.getY());
 				lastMoveTime = 0;
-				moveHistory.add(pxx);
+				addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_MOVE:
 				lastMoveTime = System.currentTimeMillis();
 				inMove = true;
 				pmap.moveCoordinates(event.getX(), event.getY());
-				Point p = new Point();
-				p.set((int) event.getX(), (int) event.getY());
-				//System.out.println(p);
-				moveHistory.add(p);
+				addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
-				//System.out.println("up " + event.getX() + " " + event.getY());
 				long interval = System.currentTimeMillis() - lastMoveTime;
-				if (interval < 1000) {
+				if (interval < 100) {
 					iengine = new InertionEngine(moveHistory, interval);
 					lastMoveTime = 0;
 					startInertion = true;
@@ -263,7 +267,7 @@ public class MoowMap extends Activity {
 
 	class CanvasUpdater implements Runnable {
 
-		private static final int UPDATE_INTERVAL = 30;
+		private static final int UPDATE_INTERVAL = 35;
 
 		int step = 0;
 
@@ -273,9 +277,11 @@ public class MoowMap extends Activity {
 			while (running) {
 				try {
 					Thread.sleep(CanvasUpdater.UPDATE_INTERVAL);
+					canDraw = false;
 					if (startInertion) {
 						processInertion();
 					}
+					canDraw = true;
 					main.postInvalidate();
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
@@ -284,15 +290,14 @@ public class MoowMap extends Activity {
 		}
 
 		private void processInertion() {
-			if (step % 25 == 0) {
-				d--;
+			if (step % 10 == 0) {
+				iengine.reduceSpeed();
 			}
 
-			if (step > 35 || d < 0) {
+			if (step > iengine.step/7 || d < 0) {
 				startInertion = false;
 				quickHack();
 				step = 0;
-				d = 3;
 				return;
 			}
 
