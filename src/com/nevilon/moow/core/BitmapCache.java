@@ -13,7 +13,7 @@ public class BitmapCache {
 	private ExpiredHashMap cacheMap;
 
 	public BitmapCache(int size) {
-		cacheMap = new ExpiredHashMap(size);
+		cacheMap = new ExpiredHashMap(40);
 	}
 
 	public void put(RawTile tile, Bitmap bitmap) {
