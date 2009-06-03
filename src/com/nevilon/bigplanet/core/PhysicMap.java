@@ -1,5 +1,7 @@
 package com.nevilon.bigplanet.core;
 
+import java.util.Random;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -9,6 +11,8 @@ import com.nevilon.bigplanet.core.ui.MapControl;
 public class PhysicMap {
 
 	private static final int TILE_SIZE = 256;
+	
+	private static Random random = new Random();
 
 	private TileResolver tileResolver;
 
@@ -94,7 +98,6 @@ public class PhysicMap {
 
 	public void move(int dx, int dy) {
 		System.gc();
-		RawTile t = getDefaultTile();
 		reload(defTile.x - dx,
 				defTile.y -dy,
 				defTile.z);
@@ -229,7 +232,11 @@ public class PhysicMap {
 	private void updateMap(){
 		if(tileResolver.loaded ==9){
 			updateScreenCommand.execute();
-			BitmapCacheWrapper.getInstance().gc();
+			int r = random.nextInt(10);
+			if(r>7){
+				BitmapCacheWrapper.getInstance().gc();
+			}
+			System.out.println(r);
 		}
 	}
 	

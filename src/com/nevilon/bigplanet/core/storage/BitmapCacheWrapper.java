@@ -18,7 +18,7 @@ public class BitmapCacheWrapper {
 	public final static int CACHE_SIZE = 30;
 	private BitmapCache cache = new BitmapCache(CACHE_SIZE);
 
-	private BitmapCache scaledCache = new BitmapCache(10);
+	private BitmapCache scaledCache = new BitmapCache(20);
 
 	private static BitmapCacheWrapper instance;
 	
