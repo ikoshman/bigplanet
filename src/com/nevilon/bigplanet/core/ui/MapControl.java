@@ -141,7 +141,10 @@ public class MapControl extends RelativeLayout {
 	 * @param height
 	 */
 	public void setSize(int width, int height) {
-		removeAllViews();
+		if(main!=null){
+			removeView(main);
+		}
+		//removeAllViews();
 		buildView(width, height, pmap.getDefaultTile());
 
 	}
@@ -366,7 +369,7 @@ public class MapControl extends RelativeLayout {
 			}
 		
 		
-/*
+
 		if (pmap.scaleFactor == 1) {
 			// отрисовка маркеров
 			for (int i = 0; i < 7; i++) {
@@ -396,7 +399,7 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-		*/
+
 		Matrix matr = new Matrix();
 		matr.postScale((float) pmap.scaleFactor, (float) pmap.scaleFactor,
 				scalePoint.x, scalePoint.y);
@@ -479,7 +482,6 @@ public class MapControl extends RelativeLayout {
 								float ty = 0;
 								int scaleX = scalePoint.x;
 								int scaleY = scalePoint.y;
-								System.out.println(pmap.getGlobalOffset());
 								
 								float ox = pmap.getGlobalOffset().x;
 								float oy = pmap.getGlobalOffset().y;
