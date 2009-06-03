@@ -1,6 +1,5 @@
 package com.nevilon.moow;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,31 +22,31 @@ import com.nevilon.moow.core.ui.DoubleClickHelper;
 
 public class MoowMap extends Activity {
 
-	private final static int BCG_CELL_SIZE = 16; 
+	private final static int BCG_CELL_SIZE = 16;
 
 	/**
 	 * Начальное значение зума
 	 */
 	private final static int START_ZOOM = 12; // whole world
-	
+
 	private Panel main;
-	
+
 	private ZoomPanel zoomPanel;
 
 	private volatile boolean running = true;
 
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
-	
-	
-	private PhysicMap pmap = new PhysicMap(new RawTile(9, 7, MoowMap.START_ZOOM));
-	
+
+	private PhysicMap pmap = new PhysicMap(
+			new RawTile(9, 7, MoowMap.START_ZOOM));
+
 	boolean inMove = false;
-	
+
 	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
 	private Bitmap mapBg = drawBackground();
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,11 +54,10 @@ public class MoowMap extends Activity {
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
 		(new Thread(new CanvasUpdater())).start();
 		zoomPanel = new ZoomPanel(this);
-		addContentView(zoomPanel, new LayoutParams(
-		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		addContentView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT));
 	}
 
-	
 	/**
 	 * Обработка касаний
 	 */
@@ -67,20 +65,19 @@ public class MoowMap extends Activity {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			inMove = false;
-			nextMovePoint.set((int) event.getX(), (int) event.getY());	
-			break;	
+			nextMovePoint.set((int) event.getX(), (int) event.getY());
+			break;
 		case MotionEvent.ACTION_MOVE:
 			inMove = true;
 			moveCoordinates(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_UP:
-			if(inMove){
+			if (inMove) {
 				moveCoordinates(event.getX(), event.getY());
-			    quickHack();
-			   // quickHack();
+				quickHack();
 			} else {
-			   if(dcDispatcher.process(event)){
-					pmap.zoomIn((int)event.getX(), (int)event.getY());	
+				if (dcDispatcher.process(event)) {
+					pmap.zoomIn((int) event.getX(), (int) event.getY());
 					updateZoomControls();
 				}
 			}
@@ -91,15 +88,15 @@ public class MoowMap extends Activity {
 	}
 
 	/**
-	 * Устанавливает состояние zoomIn/zoomOut контролов 
-	 * в зависимости от уровня зума
+	 * Устанавливает состояние zoomIn/zoomOut контролов в зависимости от уровня
+	 * зума
 	 */
-	private void updateZoomControls(){
+	private void updateZoomControls() {
 		int zoomLevel = pmap.getZoomLevel();
-		if(zoomLevel ==16){
+		if (zoomLevel == 16) {
 			zoomPanel.setIsZoomOutEnabled(false);
 			zoomPanel.setIsZoomInEnabled(true);
-		} else if (zoomLevel == 0){
+		} else if (zoomLevel == 0) {
 			zoomPanel.setIsZoomOutEnabled(true);
 			zoomPanel.setIsZoomInEnabled(false);
 		} else {
@@ -107,34 +104,55 @@ public class MoowMap extends Activity {
 			zoomPanel.setIsZoomInEnabled(true);
 		}
 	}
-	
-	private  void  quickHack(){
-		int dx = 0,dy = 0;
-	    
-		if(pmap.globalOffset.x>0){
-	    	dx = Math.round((pmap.globalOffset.x+320)/256);
-	    } else {
-	    	dx = Math.round((pmap.globalOffset.x)/256);
-	    }
-	    
-	    
-		//if(pmap.globalOffset.y>0){
-	    	dy = Math.round(pmap.globalOffset.y/256)+1;
-	   // }else {
-	     //  dy = Math.round((pmap.globalOffset.y+480)/256)-1;
-	   // }
-	    
-	    pmap.globalOffset.x = pmap.globalOffset.x - dx*256 ;
-	    pmap.globalOffset.y = pmap.globalOffset.y - dy*256;
-	    
-	    
-	    pmap.move(dx, dy);
-	    
-	  
-	    
+
+	private void quickHack() {
+		int dx = 0, dy = 0;
+		int tdx, tdy;
+		if (pmap.globalOffset.x > 0) {
+			dx = Math.round((pmap.globalOffset.x + 320) / 256);
+		} else {
+			dx = Math.round((pmap.globalOffset.x) / 256);
+		}
+
+		if (pmap.globalOffset.y > 0) {
+			dy = (int) Math.floor((pmap.globalOffset.y + 480) / 256);
+		} else {
+			dy = (int) Math.floor(pmap.globalOffset.y / 256);
+
+		}
+
+		pmap.globalOffset.x = pmap.globalOffset.x - dx * 256;
+		pmap.globalOffset.y = pmap.globalOffset.y - dy * 256;
+
+		tdx = dx;
+		tdy = dy;
+		
+		//pmap.move(dx, dy);
+
+		
+		if (pmap.globalOffset.x > 0) {
+			dx = Math.round((pmap.globalOffset.x + 320) / 256);
+		} else {
+			dx = Math.round((pmap.globalOffset.x) / 256);
+		}
+
+		if (pmap.globalOffset.y > 0) {
+			dy = (int) Math.floor((pmap.globalOffset.y + 480) / 256);
+		} else {
+			dy = (int) Math.floor(pmap.globalOffset.y / 256);
+
+		}
+
+		pmap.globalOffset.x = pmap.globalOffset.x - dx * 256;
+		pmap.globalOffset.y = pmap.globalOffset.y - dy * 256;
+
+		tdx+=dx;
+		tdy+=dy;
+		pmap.move(tdx, tdy);
+
+		
 	}
-	
-	
+
 	private void moveCoordinates(float x, float y) {
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 		nextMovePoint.set((int) x, (int) y);
@@ -145,46 +163,48 @@ public class MoowMap extends Activity {
 
 	/**
 	 * Рисует фон для карты( в клетку )
+	 * 
 	 * @return
 	 */
-	private Bitmap drawBackground(){
+	private Bitmap drawBackground() {
 		// создание битмапа по размеру экрана
 		Bitmap bitmap = Bitmap.createBitmap(320, 480, Config.RGB_565);
 		Canvas cv = new Canvas(bitmap);
-		//прорисовка фона
-	 	Paint background = new Paint();
-	    background.setARGB(255, 128, 128, 128);
-	    cv.drawRect(0, 0, 320, 480, background);
-	    background.setAntiAlias(true);
-	    //установка цвета линий
-	    background.setColor(Color.WHITE);
-	    // продольные линии
-	    for (int i=0;i<320/MoowMap.BCG_CELL_SIZE;i++){
-	    	cv.drawLine(MoowMap.BCG_CELL_SIZE*i, 0, MoowMap.BCG_CELL_SIZE*i, 480, background);   
-	    }
-	    // поперечные линии
-	    for (int i=0;i<480/MoowMap.BCG_CELL_SIZE;i++){
-	    	cv.drawLine(0, MoowMap.BCG_CELL_SIZE*i,  320,MoowMap.BCG_CELL_SIZE*i, background);
-	    }
-	    return bitmap;
+		// прорисовка фона
+		Paint background = new Paint();
+		background.setARGB(255, 128, 128, 128);
+		cv.drawRect(0, 0, 320, 480, background);
+		background.setAntiAlias(true);
+		// установка цвета линий
+		background.setColor(Color.WHITE);
+		// продольные линии
+		for (int i = 0; i < 320 / MoowMap.BCG_CELL_SIZE; i++) {
+			cv.drawLine(MoowMap.BCG_CELL_SIZE * i, 0,
+					MoowMap.BCG_CELL_SIZE * i, 480, background);
+		}
+		// поперечные линии
+		for (int i = 0; i < 480 / MoowMap.BCG_CELL_SIZE; i++) {
+			cv.drawLine(0, MoowMap.BCG_CELL_SIZE * i, 320,
+					MoowMap.BCG_CELL_SIZE * i, background);
+		}
+		return bitmap;
 	}
-	
+
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
-		canvas.drawBitmap(mapBg,0,0,paint);
+		canvas.drawBitmap(mapBg, 0, 0, paint);
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
 				if (tmpBitmap != null) {
-					canvas.drawBitmap(tmpBitmap, (i) * 256 + pmap.globalOffset.x,
-							(j) * 256 + pmap.globalOffset.y, paint);
+					canvas.drawBitmap(tmpBitmap, (i) * 256
+							+ pmap.globalOffset.x, (j) * 256
+							+ pmap.globalOffset.y, paint);
 				}
 			}
 		}
 
 	}
-
-	
 
 	class Panel extends View {
 		Paint paint;
@@ -201,7 +221,6 @@ public class MoowMap extends Activity {
 		}
 	}
 
-	
 	class CanvasUpdater implements Runnable {
 
 		public void run() {
@@ -215,15 +234,15 @@ public class MoowMap extends Activity {
 		}
 
 	}
-	
+
 	class ZoomPanel extends RelativeLayout {
 
 		private ZoomControls zoomControls;
-		
+
 		public ZoomPanel(Context context) {
 			super(context);
 			zoomControls = new ZoomControls(getContext());
-			zoomControls.setOnZoomOutClickListener(new OnClickListener(){
+			zoomControls.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					pmap.zoomOut();
 					updateZoomControls();
@@ -238,27 +257,27 @@ public class MoowMap extends Activity {
 			addView(zoomControls);
 			setPadding(80, 368, 0, 0);
 		}
-		
+
 		/**
-		 * Устанавливает кнопку увеличения детализации
-		 * в активное/неактивное состояние
+		 * Устанавливает кнопку увеличения детализации в активное/неактивное
+		 * состояние
+		 * 
 		 * @param isEnabled
 		 */
-		public void setIsZoomInEnabled(boolean isEnabled){
+		public void setIsZoomInEnabled(boolean isEnabled) {
 			zoomControls.setIsZoomInEnabled(isEnabled);
-			
+
 		}
-		
+
 		/**
-		 * Устанавливает кнопку уменьшения детализации
-		 * в активное/неактивное состояние
+		 * Устанавливает кнопку уменьшения детализации в активное/неактивное
+		 * состояние
+		 * 
 		 * @param isEnabled
 		 */
-        public void setIsZoomOutEnabled(boolean isEnabled){
-        	zoomControls.setIsZoomOutEnabled(isEnabled);
+		public void setIsZoomOutEnabled(boolean isEnabled) {
+			zoomControls.setIsZoomOutEnabled(isEnabled);
 		}
-		
-		
 
 	}
 
