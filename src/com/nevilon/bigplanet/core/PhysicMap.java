@@ -11,13 +11,13 @@ import com.nevilon.bigplanet.core.ui.MapControl;
 public class PhysicMap {
 
 	private static final int TILE_SIZE = 256;
-	
+
 	private static Random random = new Random();
 
 	private TileResolver tileResolver;
 
 	private Bitmap[][] cells = new Bitmap[3][3];
-	
+
 	public RawTile defTile;
 
 	private int zoom;
@@ -31,7 +31,7 @@ public class PhysicMap {
 	private int width;
 
 	private int height;
-	
+
 	private AbstractCommand updateScreenCommand;
 
 	public PhysicMap(RawTile defTile, AbstractCommand updateScreenCommand) {
@@ -42,23 +42,23 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	public Bitmap getCell(int x, int y){
+	public Bitmap getCell(int x, int y) {
 		return cells[x][y];
 	}
-	
-	private void setBitmap(Bitmap bmp, int x, int y){
+
+	private void setBitmap(Bitmap bmp, int x, int y) {
 		cells[x][y] = bmp;
 	}
-	
-	public Point getNextMovePoint(){
+
+	public Point getNextMovePoint() {
 		return this.nextMovePoint;
 	}
-	
-	public Point getGlobalOffset(){
+
+	public Point getGlobalOffset() {
 		return this.globalOffset;
 	}
-	
-	public void setGlobalOffset(Point globalOffset){
+
+	public void setGlobalOffset(Point globalOffset) {
 		this.globalOffset = globalOffset;
 	}
 
@@ -79,17 +79,18 @@ public class PhysicMap {
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
-		//System.out.println("dx " + dx + " dy: " +dy);
-		//dx = normalize(dx,getZoomLevel());
-		//dy = normalize(dy,getZoomLevel());
-		
 		if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
 			if (dx >= 0 && dy >= 0) {
-				try {
-					setBitmap(bitmap, dx, dy);
-					updateMap();
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (bitmap == null) {
+					System.out.println("null");
+				} else {
+
+					try {
+						setBitmap(bitmap, dx, dy);
+						updateMap();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -98,29 +99,25 @@ public class PhysicMap {
 
 	public void move(int dx, int dy) {
 		System.gc();
-		reload(defTile.x - dx,
-				defTile.y -dy,
-				defTile.z);
+		reload(defTile.x - dx, defTile.y - dy, defTile.z);
 	}
 
-	
-	
-	public void goTo(int x,int y, int z, int offsetX, int offsetY){
-		int fullX = x*256+offsetX;
-		int fullY = y*256 +offsetY;
+	public void goTo(int x, int y, int z, int offsetX, int offsetY) {
+		int fullX = x * 256 + offsetX;
+		int fullY = y * 256 + offsetY;
 		// коориданаты углового тайла
-		int tx = fullX - getWidth()/2;
-		int ty = fullY - getHeight()/2;
-		
-		this.zoom = z;
-		globalOffset.x = -(tx-Math.round(tx/256)*256);
+		int tx = fullX - getWidth() / 2;
+		int ty = fullY - getHeight() / 2;
 
-		globalOffset.y = -(ty-Math.round(ty/256)*256);
-		reload(tx/256, ty/256, z);
+		this.zoom = z;
+		globalOffset.x = -(tx - Math.round(tx / 256) * 256);
+
+		globalOffset.y = -(ty - Math.round(ty / 256) * 256);
+		reload(tx / 256, ty / 256, z);
 	}
-	
+
 	public void zoom(int x, int y, int z) {
-	tileResolver.clearCache();
+		tileResolver.clearCache();
 		reload(x, y, z);
 	}
 
@@ -129,10 +126,10 @@ public class PhysicMap {
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE - globalOffset.x
-					+ getWidth() / 2);
-			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE - globalOffset.y
-					+ getHeight() / 2);
+			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
+					- globalOffset.x + getWidth() / 2);
+			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
+					- globalOffset.y + getHeight() / 2);
 
 			// получение координат точки предудущем уровне
 			int nextZoomX = currentZoomX / 2;
@@ -174,12 +171,11 @@ public class PhysicMap {
 	 */
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
-			System.out.println("zoomImap " + zoom);
 			// получение отступа он начала координат
-			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE - globalOffset.x
-					+ offsetX);
-			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE - globalOffset.y
-					+ offsetY);
+			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
+					- globalOffset.x + offsetX);
+			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
+					- globalOffset.y + offsetY);
 
 			// получение координат точки на новом уровне
 			int nextZoomX = currentZoomX * 2;
@@ -212,7 +208,7 @@ public class PhysicMap {
 	 */
 	public void moveCoordinates(float x, float y) {
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
-		nextMovePoint.set( (int)x,  (int)y);
+		nextMovePoint.set((int) x, (int) y);
 		globalOffset.set(globalOffset.x
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
@@ -228,18 +224,16 @@ public class PhysicMap {
 		return centerPoint;
 	}
 
-	
-	private void updateMap(){
-		if(tileResolver.loaded ==9){
+	private void updateMap() {
+		if (tileResolver.loaded == 9) {
 			updateScreenCommand.execute();
 			int r = random.nextInt(10);
-			if(r>7){
+			if (r > 7) {
 				BitmapCacheWrapper.getInstance().gc();
 			}
-			System.out.println(r);
 		}
 	}
-	
+
 	private int getDistance(int tileCount) {
 		return tileCount * TILE_SIZE;
 	}
@@ -248,7 +242,7 @@ public class PhysicMap {
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
-		//defTile = normalize(defTile);
+		// defTile = normalize(defTile);
 		loadCells(defTile);
 	}
 
@@ -256,7 +250,7 @@ public class PhysicMap {
 		int x = normalize(tile.x, tile.z);
 		int y = normalize(tile.y, tile.z);
 		int z = tile.z;
-		RawTile newTile = new RawTile(x,y,z,tile.s);
+		RawTile newTile = new RawTile(x, y, z, tile.s);
 		return newTile;
 	}
 
@@ -277,7 +271,7 @@ public class PhysicMap {
 	 * 
 	 * @param tile
 	 */
-	private synchronized void  loadCells(RawTile tile) {
+	private synchronized void loadCells(RawTile tile) {
 		tileResolver.loaded = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -297,7 +291,6 @@ public class PhysicMap {
 	public void reloadTiles() {
 		loadCells(defTile);
 	}
-
 
 	public int getWidth() {
 		return width;

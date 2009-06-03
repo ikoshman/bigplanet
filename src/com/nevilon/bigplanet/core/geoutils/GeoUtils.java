@@ -152,18 +152,5 @@ public class GeoUtils {
            return quadKey.toString();
        }
 
-
-	   /**
-	    * Test cases
-	    * @param args
-	    */
-	   public static void main(String[] args) {
-	      //System.out.println(toTileXY(50.4536290 , 30.5038280, 10));
-	      //System.out.println(getPixelOffsetInTile(50.4536290, 30.5038280, 10));
-	      System.out.println(TileXYToQuadKey(327, 795, 11));
-	      
-	      
-	     }
-
 	}
 

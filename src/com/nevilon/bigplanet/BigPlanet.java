@@ -189,8 +189,6 @@ public class BigPlanet extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		
-		System.out.println("destroy");
 		if(intentReceiver!=null){
 			unregisterReceiver(intentReceiver);
 			Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
@@ -198,8 +196,7 @@ public class BigPlanet extends Activity {
 		}
 		if (textMessage != null) {
 			textMessage.cancel();
-		}
-		
+		}	
 		System.gc();
 	}
 
