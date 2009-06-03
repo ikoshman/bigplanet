@@ -4,7 +4,7 @@ package com.nevilon.bigplanet.core.geoutils;
 
 import com.nevilon.bigplanet.core.RawTile;
 
-public class Geo {
+public class GeoUtils {
 	   static int TILE_SIZE = 256;
 
 	   /**
