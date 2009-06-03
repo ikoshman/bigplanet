@@ -123,6 +123,14 @@ public class MapControl extends RelativeLayout {
 
 	}
 
+	public void changeMapSource(int sourceId){
+		pmap.changeMapSource(sourceId);
+	}
+	
+	public int getMapSourceId(){
+		return pmap.getMapSourceId();
+	}
+	
 	private void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
@@ -215,6 +223,7 @@ public class MapControl extends RelativeLayout {
 		}
 
 	}
+	
 
 	private void addPointToHistory(float x, float y) {
 		Point tmpPoint = new Point();

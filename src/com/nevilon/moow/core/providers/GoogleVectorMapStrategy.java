@@ -22,8 +22,8 @@ public class GoogleVectorMapStrategy extends MapStrategy {
 	}
 
 	@Override
-	public int getId() {
-		return 0;
+	public String getDescription() {
+		return "Google Map";
 	}
 
 }

@@ -1,13 +1,36 @@
 package com.nevilon.moow.core.providers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapStrategyFactory {
+
+	public static final int GOOGLE_VECTOR = 0;
+
+	public static final int GOOGLE_SATELLITE = 1;
+
+	public static final int YANDEX_VECTOR = 2;
+
+	public static final int YANDEX_SATELLITE = 3;
+	
+	public static final int OPENSTREET_VECTOR = 4;
+	
 
 	private static MapStrategyFactory mapStrategyFactory;
 
-	public enum MapSource {
-		GOOGLE_VECTOR, GOOGLE_SATELLITE, YANDEX_VECTOR, YANDEX_SATELLITE, OPENSTREET_VECTOR
-	};
 
+	public static Map<Integer,MapStrategy> strategies;
+	static{
+		strategies = new HashMap<Integer ,MapStrategy>();
+	
+		strategies.put(GOOGLE_VECTOR ,new GoogleVectorMapStrategy());
+		strategies.put(GOOGLE_SATELLITE,new GoogleSatelliteMapStrategy());
+		strategies.put(YANDEX_SATELLITE, new YandexSatelliteMapStrategy());
+		strategies.put(YANDEX_VECTOR,new YandexVectorMapStrategy());
+		strategies.put(OPENSTREET_VECTOR,new OpenStreetMapStrategy());
+	
+	}
+	
 	private MapStrategyFactory() {
 	}
 
@@ -19,27 +42,8 @@ public class MapStrategyFactory {
 
 	}
 
-	public MapStrategy getStrategy(MapSource source) {
-		switch (source) {
-
-		case GOOGLE_VECTOR:
-			return new GoogleVectorMapStrategy();
-
-		case GOOGLE_SATELLITE:
-			return new GoogleSatelliteMapStrategy();
-
-		case YANDEX_SATELLITE:
-			return new YandexSatelliteMapStrategy();
-
-		case YANDEX_VECTOR:
-			return new YandexVectorMapStrategy();
-
-		case OPENSTREET_VECTOR:
-			return new OpenStreetMapStrategy();
-
-		default:
-			return new GoogleVectorMapStrategy();
-		}
+	public MapStrategy getStrategy(int sourceId) {
+		return strategies.get(sourceId);
 	}
 
 }
