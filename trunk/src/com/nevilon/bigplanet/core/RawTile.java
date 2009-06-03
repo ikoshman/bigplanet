@@ -11,14 +11,15 @@ import java.io.Serializable;
  */
 public class RawTile implements Serializable {
 
-	public int x, y, z, s;
+	public int x, y, z, s,l;
 
 
-	public RawTile(int x, int y, int z, int s) {
+	public RawTile(int x, int y, int z, int s, int l) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.s = s;
+		this.l = l;
 	}
 
 	@Override
@@ -29,6 +30,7 @@ public class RawTile implements Serializable {
 		result = prime * result + y;
 		result = prime * result + z;
 		result = prime * result + s;
+		result = prime * result + l;
 		return result;
 	}
 
@@ -48,6 +50,8 @@ public class RawTile implements Serializable {
 		if (z != other.z)
 			return false;
 		if (s != other.s)
+			return false;
+		if (l != other.l)
 			return false;
 
 		return true;

@@ -252,7 +252,7 @@ public class MapSaverUI {
 				if (onlyCount) {
 					count++;
 				} else {
-					RawTile tile = new RawTile(i, j, zoomLevel, sourceId);
+					RawTile tile = new RawTile(i, j, zoomLevel, sourceId,0);
 					if (GoogleTileUtils.isValid(tile)) {
 						tiles.add(tile);
 					}

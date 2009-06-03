@@ -1,19 +1,43 @@
 package com.nevilon.bigplanet.core.providers;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GoogleLandscapeMapStrategy extends MapStrategy {
 
-	private static final String REQUEST_PATTERN = "mt?v=w2p.87&hl=ru&x={0}&y={1}&z={2}&s=Galil";
+	private List<Layer> layers = new ArrayList<Layer>();
 
-	@Override
-	public String getServer() {
-		return "http://mt1.google.com/";
+	public GoogleLandscapeMapStrategy() {
+		layers.add(new Layer() {
+
+			private String SERVER = "http://mt1.google.com/"; 
+			
+			@Override
+			public String getDescription() {
+				return null;
+			}
+
+			@Override
+			public int getId() {
+				return 0;
+			}
+
+			@Override
+			public String getURLPattern() {
+				return SERVER+"mt?v=w2p.87&hl=ru&x={0}&y={1}&z={2}&s=Galil";
+			}
+
+
+		});
+
 	}
 
+
 	@Override
-	public String getURL(int x, int y, int z) {
-		return MessageFormat.format(GoogleLandscapeMapStrategy.REQUEST_PATTERN,
+	public String getURL(int x, int y, int z, int layout) {
+		Layer layer = layers.get(layout);
+		return MessageFormat.format(layer.getURLPattern(),
 				String.valueOf(x), String.valueOf(y), String.valueOf(17 - z));
 	}
 

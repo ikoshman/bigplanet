@@ -64,13 +64,13 @@ public class TileScaler implements Runnable {
 			// необходимо возвращать, во сколько раз увеличить!!!
 			
 			RawTile tmpTile = new RawTile(parentTileX,
-					parentTileY, tmpZ, tile.s);
+					parentTileY, tmpZ, tile.s,0);
 			
 			if(bitmap==null){
 				bitmap =  BitmapCacheWrapper.getInstance().getTile(tmpTile);	
 			}
 			if(bitmap==null){
-				bitmap = LocalStorageWrapper.get(tmpTile);
+				bitmap = LocalStorageWrapper.get(tmpTile,false);
 			}
 			
 			if (bitmap == null) {

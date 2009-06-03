@@ -16,9 +16,9 @@ public class PhysicMap {
 
 	private TileResolver tileResolver;
 
-	//private ArrayList<Bitmap>[][] cells = new ArrayList<Bitmap>[3][3];
+	private Bitmap[][] cells = new Bitmap[3][3];
 
-	private HashMap<Tile,Bitmap> cells = new HashMap<Tile,Bitmap>(9);
+	//private HashMap<Tile,ArrayList<Bitmap>> cells = new HashMap<Tile,ArrayList<Bitmap>>(9);
 	
 	private RawTile defTile;
 
@@ -45,21 +45,26 @@ public class PhysicMap {
 	}
 
 	public Bitmap getCell(int x, int y){
-		int ind = 3*(y+1)-(3-x);
-		Tile t = new Tile();
-		t.x = x;
-		t.y = y;
-		System.out.println(cells.size());
-		return cells.get(t);
+		//Tile t = new Tile();
+		//t.x = x;
+		//t.y = y;
+		//Bitmap tmp =  cells.get(t).get(0);
+		//System.out.println(tmp);
+		//return tmp ;
+		return cells[x][y];
 	}
 	
 	private void setBitmap(Bitmap bmp, int x, int y){
-		int ind = 3*(y+1)-(3-x);
-		Tile t = new Tile();
+		/*Tile t = new Tile();
 		t.x = x;
 		t.y = y;
-		cells.put(t, bmp);
-		
+		if(cells.get(t)==null){
+			cells.put(t, new ArrayList<Bitmap>());
+		}
+		cells.get(t).add(0,bmp);
+		*/
+		//cells.get put(t, bmp);
+		cells[x][y] = bmp;
 	}
 	
 	public Point getNextMovePoint(){
@@ -289,7 +294,10 @@ public class PhysicMap {
 				setBitmap(MapControl.bp, i, j);
 				//cells[i][j] = MapControl.bp;
 				tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
-						.getMapSourceId()));
+						.getMapSourceId(),0));
+
+				//tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
+				//		.getMapSourceId(),1));
 			}
 		}
 	}
@@ -323,45 +331,6 @@ public class PhysicMap {
 	public void setDefTile(RawTile defTile) {
 		this.defTile = defTile;
 		this.zoom = defTile.z;
-	}
-	
-	
-	class Tile {
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + x;
-			result = prime * result + y;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Tile other = (Tile) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (x != other.x)
-				return false;
-			if (y != other.y)
-				return false;
-			return true;
-		}
-
-		public int x;
-		
-		public int y;
-		
-			private PhysicMap getOuterType() {
-			return PhysicMap.this;
-		}
 	}
 
 }
