@@ -19,6 +19,8 @@ public class GeoLocationHandler extends DefaultHandler {
 	
 	private static String COORDINATES_TAG = "coordinates";
 	
+	private static String LOCALITY_NAME_TAG = "LocalityName";
+	
 	private boolean isCodeTag = false;
 	
 	private boolean isAddressTag = false;
@@ -26,6 +28,8 @@ public class GeoLocationHandler extends DefaultHandler {
 	private boolean isPlaceMarkTag = false;
 	
 	private boolean isCoordinatesTag = false;
+	
+	private boolean isLocalityNameTag = false;
 	
 	private int responseCode = -1;
 	
@@ -55,6 +59,9 @@ public class GeoLocationHandler extends DefaultHandler {
 		if(elementName.equals(COORDINATES_TAG)){
 			isCoordinatesTag = true;
 		}
+		if(elementName.equals(LOCALITY_NAME_TAG)){
+			isLocalityNameTag = true;
+		}
 		
 	}
 
@@ -74,6 +81,9 @@ public class GeoLocationHandler extends DefaultHandler {
 		if(name.equals(COORDINATES_TAG)){
 			isCoordinatesTag = false;
 		}
+		if(name.equals(LOCALITY_NAME_TAG)){
+			isLocalityNameTag = false;
+		}
 	}
 	
 	@Override
@@ -92,6 +102,9 @@ public class GeoLocationHandler extends DefaultHandler {
 			currentPlace.setLat(Double.parseDouble(lat));
 			currentPlace.setLon(Double.parseDouble(lon));
 			
+		}
+		if(isLocalityNameTag){
+			currentPlace.setName(chars);
 		}
 	}
 

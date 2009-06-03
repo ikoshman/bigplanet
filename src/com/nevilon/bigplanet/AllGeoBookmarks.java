@@ -40,7 +40,6 @@ public class AllGeoBookmarks extends ListActivity {
 		DAO dao = new DAO(this);
 		geoBookmarks = dao.getBookmarks();
 		setListAdapter(new SpeechListAdapter(this));
-		//getListView().setPadding(0, 50, 0, 0);
 		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
 
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
