@@ -1,10 +1,12 @@
-package com.nevilon.moow.core;
+package com.nevilon.moow.core.storage;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import com.nevilon.moow.core.RawTile;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -27,15 +29,14 @@ public class ExpiredHashMap {
 	}
 
 	public synchronized void put(RawTile tile, Bitmap bitmap) {
-		if (expCacheMap.size() > maxSize) {
+		if (expCacheMap.size() >= maxSize) {
 			clear();
 		}
 		expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),
 				bitmap);
 	}
 
-	public Bitmap get(RawTile tile) {
-		// TODO обновить время доступа
+	public synchronized Bitmap get(RawTile tile) {
 		Bitmap bmp = expCacheMap.get(tile);
 		if (bmp!=null){
 			expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),

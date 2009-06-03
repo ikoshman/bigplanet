@@ -1,6 +1,11 @@
 package com.nevilon.moow.core;
 
 
+import com.nevilon.moow.core.loader.TileLoader;
+import com.nevilon.moow.core.storage.BitmapCache;
+import com.nevilon.moow.core.storage.BitmapCacheWrapper;
+import com.nevilon.moow.core.storage.LocalStorageWrapper;
+
 import android.graphics.Bitmap;
 
 
@@ -11,9 +16,9 @@ public class TileProvider {
 	
 	private PhysicMap physicMap;
 
-	private LocalStorageProvider localProvider = new LocalStorageProvider();
+	private LocalStorageWrapper localProvider = new LocalStorageWrapper();
 
-	private BitmapCacheProvider cacheProvider = new BitmapCacheProvider();
+	private BitmapCacheWrapper cacheProvider = new BitmapCacheWrapper();
 
 	private Handler scaledHandler;
 
@@ -27,7 +32,7 @@ public class TileProvider {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
 						localProvider.put(tile, data);
-						Bitmap bmp = LocalStorageProvider.get(tile);
+						Bitmap bmp = LocalStorageWrapper.get(tile);
 						cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
@@ -52,7 +57,7 @@ public class TileProvider {
 
 			@Override
 			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
-				if (bitmap != null) {
+				if (bitmap != null && !isScaled) {
 					cacheProvider.putToCache(tile, bitmap);
 					updateMap(tile, bitmap);
 				} else {
@@ -93,7 +98,7 @@ public class TileProvider {
 			//LocalStorageProvider.get(tile, localLoaderHandler);
 			
 			
-			bitmap = LocalStorageProvider.get(tile);
+			bitmap = LocalStorageWrapper.get(tile);
 			if (bitmap == null) {
 				new Thread(new TileScaler(tile, scaledHandler)).start();
 				load(tile);

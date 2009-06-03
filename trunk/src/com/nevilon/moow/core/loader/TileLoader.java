@@ -1,4 +1,4 @@
-package com.nevilon.moow.core;
+package com.nevilon.moow.core.loader;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -6,6 +6,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.LinkedList;
+
+import com.nevilon.moow.core.Handler;
+import com.nevilon.moow.core.RawTile;
 
 import android.util.Log;
 
@@ -16,6 +19,8 @@ import android.util.Log;
  * 
  */
 public class TileLoader implements Runnable {
+
+	private static final int MAX_THREADS = 5;
 
 	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?x={0}&y={1}&zoom={2}";
 
@@ -50,7 +55,7 @@ public class TileLoader implements Runnable {
 		loadQueue.add(tile);
 	}
 
-	public synchronized RawTile getFromQueue() {
+	public  RawTile getFromQueue() {
 		return loadQueue.poll();
 	}
 
@@ -65,7 +70,7 @@ public class TileLoader implements Runnable {
 		while (true) {
 			try {
 				Thread.sleep(200);
-				if (counter <= 6 && loadQueue.size() > 0) {
+				if (counter <= MAX_THREADS && loadQueue.size() > 0) {
 					RawTile rt = getFromQueue();
 					Log.i("LOADER", "Tile " + rt + " start loading");
 					if (null != rt) {
@@ -104,7 +109,7 @@ public class TileLoader implements Runnable {
 				return null;
 			}
 			InputStream raw = uc.getInputStream();
-			InputStream in = new BufferedInputStream(raw, 65536);
+			InputStream in = new BufferedInputStream(raw, 4096);
 			byte[] data = new byte[contentLength];
 			int bytesRead = 0;
 			int offset = 0;

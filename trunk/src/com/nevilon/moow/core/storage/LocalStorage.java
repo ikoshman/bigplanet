@@ -1,4 +1,4 @@
-package com.nevilon.moow.core;
+package com.nevilon.moow.core.storage;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import com.nevilon.moow.core.RawTile;
+
 /**
  * Реализация файлового кеша Для хранения тайлов используется дерево
  * 
@@ -14,6 +16,8 @@ import java.io.FileOutputStream;
  * 
  */
 public class LocalStorage {
+
+	private static final int BUFFER_SIZE = 4096;
 
 	private static LocalStorage localStorage;
 
@@ -107,7 +111,7 @@ public class LocalStorage {
 		fullPath = new File(path + "tile.tl");
 		try {
 			BufferedOutputStream outStream = new BufferedOutputStream(
-					new FileOutputStream(fullPath), 65536);
+					new FileOutputStream(fullPath), BUFFER_SIZE);
 			outStream.write(data);
 			outStream.flush();
 			outStream.close();
@@ -130,7 +134,7 @@ public class LocalStorage {
 		if (tileFile.exists()) {
 			try {
 				BufferedInputStream io = new BufferedInputStream(new FileInputStream(tileFile),
-						4096);
+						BUFFER_SIZE);
 				return io ;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
