@@ -3,11 +3,12 @@ package com.nevilon.moow.core;
 
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class TileProvider {
+public class TileProvider implements Runnable {
 
 	private LocalStorage localStorage = new LocalStorage();
 	
@@ -15,44 +16,50 @@ public class TileProvider {
 	
 	private BitmapCache inMemoryCache = new BitmapCache();
 	
-	// список запросов на загрузку (отправленные, но незагруженные)
-	private HashSet<RawTile> requestQueue = new HashSet<RawTile>();
-	
+	private LinkedList<RawTile> queue = new LinkedList<RawTile>();
+		
 	private PhysicMap physicMap;
 	
 	public TileProvider(PhysicMap physicMap){
 		this.physicMap = physicMap;
+		Thread th = new Thread(this);
+		th.start();
 	}
 	
-	public void getTile(RawTile tile, boolean useCache){
-		// попытка загрузить из кеша
+	void getTile(RawTile tile, boolean useCache){
 		Bitmap tmpBitmap;
 		if(useCache){
 			tmpBitmap = inMemoryCache.get(tile);
 			if (tmpBitmap!=null){
-				System.out.println("loaded from mem cache");
+				//System.out.println("loaded from mem cache");
 				returnTile(tmpBitmap, tile);
+			} else {
+				addToQueue(tile);
 			}
 		}
 		
 		
-		InputStream outStream = localStorage.get(tile);
-		if(outStream!=null){
-			tmpBitmap = BitmapFactory.decodeStream(outStream);
-			inMemoryCache.put(tile, tmpBitmap);
-			returnTile(tmpBitmap,tile);
-		} else {
-			//if(!requestQueue.contains(tile)){
-				tileLoader.load(tile);
-				System.out.println("request to server");
-				requestQueue.add(tile);
-			
-		//	}
+	}
+	
+	public void run() {
+		Bitmap tmpBitmap;
+		while(true){
+			if(queue.size()>0){
+				RawTile tile = queue.poll();
+				InputStream outStream = localStorage.get(tile);
+				if(outStream!=null){
+					tmpBitmap = BitmapFactory.decodeStream(outStream);
+					inMemoryCache.put(tile, tmpBitmap);
+					returnTile(tmpBitmap,tile);
+				} else {
+						tileLoader.load(tile);
+				}
+				
+			}
 		}
 	}
 	
 	public void returnTile(Bitmap bitmap, RawTile tile){
-		requestQueue.remove(tile);
 		physicMap.update(bitmap,tile);
 	}
 	
@@ -60,6 +67,9 @@ public class TileProvider {
 		localStorage.put(tile,data);
 	}
 	
+	private  void addToQueue(RawTile tile){
+		queue.add(tile);
+	}
 	
 	
 }

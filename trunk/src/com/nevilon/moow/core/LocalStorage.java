@@ -1,5 +1,6 @@
 package com.nevilon.moow.core;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,7 +80,7 @@ public class LocalStorage {
 		File tileFile = new File(path + "/tile.png");
 		if (tileFile.exists()){
 			try {
-				return new FileInputStream(tileFile);
+				return new BufferedInputStream(new FileInputStream(tileFile));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
