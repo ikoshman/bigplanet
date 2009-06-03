@@ -103,6 +103,7 @@ public class TileLoader implements Runnable {
 
 		@Override
 		protected void handle(RawTile tile, byte[] data, int meta) {
+			System.out.println("handle " + tile);
 			TileLoader.this.tileLoaded(tile, data);
 		}
 

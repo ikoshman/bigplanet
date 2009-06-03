@@ -94,7 +94,12 @@ public class PhysicMap {
 	 */
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
 		synchronized (SmoothZoomEngine.getInstance()) {
-			if (!inMove) {
+			System.out.println("tileZ " + tile.z +" " + zoom) ;
+			if(tile.z != zoom){
+				System.out.println("fffffffffffffuck" +
+						"");
+			}
+			if (!inMove && tile.z == zoom) {
 				int dx = tile.x - defTile.x;
 				int dy = tile.y - defTile.y;
 				if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
@@ -293,8 +298,6 @@ public class PhysicMap {
 		}
 	}
 
-	
-
 	/**
 	 * Установка текущего отступа
 	 * 
@@ -369,29 +372,33 @@ public class PhysicMap {
 
 	}
 
-	private void updateMap() {
-		
-		System.out.println("loaded " + tileResolver.loaded);
-		 synchronized (SmoothZoomEngine.getInstance()) {
-		if (tileResolver.loaded == 9) {
-			if (inZoom != 0) {
-				System.out.println("inZoom " + inZoom);
-				globalOffset.x = (-1) * inZoom * (correctionX);
-				globalOffset.y = (-1) * inZoom * (correctionY);
-				inZoom = 0;
-				
-				
-				scaleFactor = 1;
-			}
-			updateScreenCommand.execute();
-			int r = random.nextInt(10);
-			if (r > 7) {
-				BitmapCacheWrapper.getInstance().gc();
-			}
-			SmoothZoomEngine.getInstance().nullScaleFactor();
-		}
-		}
+	private synchronized void updateMap() {
 
+		System.out.println("loaded " + tileResolver.getLoaded());
+		synchronized (SmoothZoomEngine.getInstance()) {
+			if (tileResolver.getLoaded() == 9) {
+				if (inZoom != 0) {
+					System.out.println("inZoom " + inZoom);
+					globalOffset.x = (-1) * inZoom * (correctionX);
+					globalOffset.y = (-1) * inZoom * (correctionY);
+					inZoom = 0;
+
+					scaleFactor = 1;
+				} else {
+					System.out.println("not 1");
+				}
+				updateScreenCommand.execute();
+				int r = random.nextInt(10);
+				if (r > 7) {
+					BitmapCacheWrapper.getInstance().gc();
+				}
+				SmoothZoomEngine.getInstance().nullScaleFactor();
+			} else {
+
+				System.out.println("not 2 " + tileResolver.getLoaded());
+			}
+		}
+		System.out.println("in p: " + scaleFactor);
 	}
 
 	private int getDistance(int tileCount) {
@@ -413,26 +420,31 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void loadCells(RawTile tile) {
-		
-		 synchronized (SmoothZoomEngine.getInstance()) {
-		tileResolver.loaded = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				int x, y;
-				x = (tile.x + i);
-				y = (tile.y + j);
-				if (scaleFactor == 1) {
-					setBitmap(MapControl.CELL_BACKGROUND, i, j);
-				}
-				if (GeoUtils.isValid(tile)) {
-					tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
-							.getMapSourceId()));
-				} else {
-					tileResolver.loaded++;
+		synchronized (SmoothZoomEngine.getInstance()) {
+			tileResolver.resetLoaded();
+			int t =0;
+			
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					int x, y;
+					x = (tile.x + i);
+					y = (tile.y + j);
+					if (scaleFactor == 1) {
+						setBitmap(MapControl.CELL_BACKGROUND, i, j);
+					}
+					if (GeoUtils.isValid(tile)) {
+						t++;
+						tileResolver.getTile(new RawTile(x, y, zoom,
+								tileResolver.getMapSourceId()));
+					} else {
+						t++;
+						tileResolver.incLoaded();
+					}
 				}
 			}
+			System.out.println("tile count " + t);
 		}
-		 }
+		
 	}
 
 	public void reloadTiles() {

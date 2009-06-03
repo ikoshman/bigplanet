@@ -2,7 +2,10 @@ package com.nevilon.bigplanet.core.ui;
 
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -105,12 +108,29 @@ public class MapControl extends RelativeLayout {
 		scalePoint.set(width / 2, height / 2);
 		this.markerManager = markerManager;
 		buildView(width, height, startTile);
+		
+		
+		final Handler updateControlsHandler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+
+				switch (msg.what) {
+				case 0:
+					updateZoomControls();
+					break;
+				}
+				super.handleMessage(msg);
+			}
+		};
+		
 		szEngine = SmoothZoomEngine.getInstance();
 		szEngine.setReloadMapCommand(new AbstractCommand() {
 
 			public void execute(Object object) {
 				double sf = (Float) object;
 				pmap.zoomS(sf);
+				updateControlsHandler.sendEmptyMessage(0);
 			}
 
 		});
@@ -189,6 +209,10 @@ public class MapControl extends RelativeLayout {
 			}
 		};
 
+		
+		
+
+		
 		// создание панели с картой
 		main = new Panel(this.getContext());
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
@@ -238,6 +262,7 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private void smoothZoom(int direction) {
+		System.out.println(getPhysicalMap().getTileResolver().getLoaded());
 		szEngine.addToScaleQ(direction);
 	}
 
@@ -286,6 +311,7 @@ public class MapControl extends RelativeLayout {
 					Bitmap.Config.RGB_565);
 			cs.setBitmap(cb);
 		}
+		System.out.println("doDraw scaleFactor " + pmap.scaleFactor);
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
@@ -405,9 +431,11 @@ public class MapControl extends RelativeLayout {
 						(int) event.getY());
 				break;
 			case MotionEvent.ACTION_MOVE:
-				System.out.println("inmove " + pmap.inMove);
-				pmap.inMove = true;
-				pmap.moveCoordinates(event.getX(), event.getY());
+				if(pmap.scaleFactor==1){
+					System.out.println("inmove " + pmap.inMove);
+					pmap.inMove = true;
+					pmap.moveCoordinates(event.getX(), event.getY());
+				}
 				break;
 			case MotionEvent.ACTION_UP:
 				if (dcDetector.process(event)) {

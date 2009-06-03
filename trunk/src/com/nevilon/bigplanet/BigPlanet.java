@@ -118,7 +118,7 @@ public class BigPlanet extends Activity {
 			// создание карты
 			mm = new MarkerManager(getResources());
 			RawTile savedTile = Preferences.getTile();
-	
+			//savedTile.s = 0;
 			configMapControl(savedTile);
 			// использовать ли сеть
 			boolean useNet = Preferences.getUseNet();
