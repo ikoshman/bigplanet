@@ -1,5 +1,7 @@
 package com.nevilon.moow;
 
+import org.junit.Test;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -122,6 +124,8 @@ public class MoowMap extends Activity {
 		}
 		
 	}
+	
+	
 	
 	private void moveCoordinates(float x, float y) {
 		inMove = true;

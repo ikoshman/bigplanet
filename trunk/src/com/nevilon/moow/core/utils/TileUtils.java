@@ -46,8 +46,33 @@ public class TileUtils {
 		
 	}
 	
-
+	
+	
 	@Test
+	public void test(){
+		getScaledTile(4, 3, 14);
+	}
+	
+	private void getScaledTile(int x, int y, int z){
+	 	double scaledX = x/2.0;
+	 	double scaledY = y/2.0;
+	 	int ox, oy;
+	 	if (Math.floor(scaledX)<scaledX){
+	 		ox = 1;
+	 	} else {
+	 		ox = 0;
+	 	}
+	 	if(Math.floor(scaledY)<scaledY){
+	 		oy = 1;
+	 	} else {
+	 		oy = 0;
+	 	}
+	 	// получить scaledX, вырезать нужную часть
+	 	System.out.println(ox*128 + " % " + oy*128);
+	}
+	
+
+	//@Test
 	public void getScaled(){
 		/**
 		 *  входные данные - координаты тайла

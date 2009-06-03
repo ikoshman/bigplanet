@@ -12,7 +12,7 @@ import android.util.Log;
 
 public class BitmapCache {
 	
-	private ExpiredHashMap cacheMap = new ExpiredHashMap(50);
+	private ExpiredHashMap cacheMap = new ExpiredHashMap(20);
 
 	
 	public void put(RawTile tile, Bitmap bitmap){
