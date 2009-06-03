@@ -26,6 +26,8 @@ public class MoowMap extends Activity {
 
 	private MapControl mapControl;
 
+	private boolean rotate = false;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,7 +35,9 @@ public class MoowMap extends Activity {
 		Display display = wm.getDefaultDisplay();
 		int height = display.getHeight();
 		int width = display.getWidth();
-		mapControl = new MapControl(this, width, height);
+		
+		mapControl = new MapControl(this, width, height, Preferences.getTile());
+		mapControl.getPhysicalMap().globalOffset =  Preferences.getOffset();
 		setContentView(mapControl);
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
@@ -41,26 +45,29 @@ public class MoowMap extends Activity {
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);  
-		savedInstanceState.putSerializable("tile", mapControl.getPhysicalMap().getDefaultTile());
+		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
+		Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);			
 		mapControl.clear();
 		mapControl = null;
 		System.gc();
-
+		rotate = true;
 	}
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		RawTile defTile = (RawTile) savedInstanceState.getSerializable("tile");
+		RawTile defTile = Preferences.getTile();
 		mapControl.getPhysicalMap().setDefTile(defTile);
 		mapControl.getPhysicalMap().reloadTiles();
+		mapControl.getPhysicalMap().globalOffset = Preferences.getOffset();
 	}
-	
-	/*
 	@Override
-	protected void onStop(){
-		super.onStop();
+	protected void onDestroy(){
+		super.onDestroy();
+		if(!rotate){
+			Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
+			Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);			
+		}
 	}
-    */
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

@@ -12,6 +12,12 @@ public class RawTile implements Serializable{
 
 	public int x, y, z;
 
+	public RawTile(){
+		x = 0;
+		y = 0;
+		z = 16;
+	}
+	
 	public RawTile(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
