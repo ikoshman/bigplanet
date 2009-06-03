@@ -53,7 +53,7 @@ public class LocalStorage {
 	}
 
 	public void put(RawTile tile, byte[] data) {
-		String path = buildPath(tile.getX(),tile.getY(), tile.getZ());
+		String path = buildPath(tile.x,tile.y, tile.z);
 		File fullPath = new File(path);
 		fullPath.mkdirs();
 		fullPath = new File(path + "tile.tl");
@@ -69,7 +69,7 @@ public class LocalStorage {
 	}
 
 	public BufferedInputStream get(RawTile tile) {
-		String path = buildPath(tile.getX(), tile.getY(), tile.getZ());
+		String path = buildPath(tile.x, tile.y, tile.z);
 		File tileFile = new File(path + "/tile.tl");
 		if (tileFile.exists()){
 			try {

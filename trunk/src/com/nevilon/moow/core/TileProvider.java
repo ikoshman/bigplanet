@@ -5,8 +5,6 @@ import java.util.Stack;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.Bitmap.Config;
 import android.util.Log;
 
 public class TileProvider implements Runnable {
@@ -15,7 +13,7 @@ public class TileProvider implements Runnable {
 
 	private TileLoader tileLoader = new TileLoader(this);
 
-	private BitmapCache inMemoryCache = new BitmapCache();
+	BitmapCache inMemoryCache = new BitmapCache();
 
 	private Stack<RawTile> queue = new Stack<RawTile>();
 
