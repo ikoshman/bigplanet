@@ -233,25 +233,36 @@ public class PhysicMap {
 			int tx = defTile.x * 256 + sing * offsetX;
 			//System.out.println("offsetx " + tx);
 			if (nextMovePoint.x > previousMovePoint.x) {
-				 System.out.println("right");
+				 System.out.println(offsetX);
 			
-				if (tx <= 0) {
-					//System.out.println("tx");
-					offsetX = 0;
-				}
-			
-				 
-			} else if (nextMovePoint.x < previousMovePoint.x) {
-				// System.out.println("up");
-				//if (tx <= 0) {
-					//System.out.println("tx");
-				//	offsetX = 0;
+				 if (globalOffset.x <= 0 && tx>=0) {
+						offsetX = 0;
 
-			//	}
-			}
+					}
+
+			
+			} 
 
 		}
 
+		if (getDefaultTile().y == 0) {
+			int sing = defTile.y < 0 ? -1 : 1;
+			int ty = defTile.y * 256 + sing * offsetY;
+			//System.out.println("offsetx " + tx);
+			if (nextMovePoint.y > previousMovePoint.y) {
+				 System.out.println(offsetY);
+			
+				 if (globalOffset.y <= 0 && ty>=0) {
+						offsetY = 0;
+
+					}
+
+			
+			} 
+
+		}
+
+		
 		/*
 		if (getDefaultTile().y == 0) {
 
