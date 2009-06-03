@@ -35,6 +35,8 @@ public class DrawTesting extends Activity {
 	private Point nextMovePoint = new Point();
 	private Point globalOffset = new Point();
 
+	private long lastMove = -1;
+	
 	PhysicMap pmap = new PhysicMap();
 
 	boolean moving = false;
@@ -53,21 +55,32 @@ public class DrawTesting extends Activity {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
-			inMove = true;
 			break;
 		case MotionEvent.ACTION_MOVE:
-			previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
-			nextMovePoint.set((int) event.getX(), (int) event.getY());
-			globalOffset.set(globalOffset.x
-					+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
-					+ (nextMovePoint.y - previousMovePoint.y));
+			moveCoordinates(event.getX(), event.getY());
+			//System.out.println("move");
+			lastMove = System.currentTimeMillis();
 			break;
 		case MotionEvent.ACTION_UP:
-			inMove = false;
+			//inMove = false;
+			if(lastMove!=-1 && System.currentTimeMillis()-lastMove>1000){
+			} else {
+			//	(new Thread(new InertionMoover())).start();
+			}
+			lastMove = -1;
 			break;
 		}
 
 		return super.onTouchEvent(event);
+	}
+
+	private void moveCoordinates(float x, float y) {
+		inMove = true;
+		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
+		nextMovePoint.set((int) x, (int) y);
+		globalOffset.set(globalOffset.x
+				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
+				+ (nextMovePoint.y - previousMovePoint.y));
 	}
 
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
@@ -157,8 +170,6 @@ public class DrawTesting extends Activity {
 
 	// проверка, передвинуто ли влево
 	private boolean isMovedLeft() {
-		//return false;
-		//System.out.println("e " + Math.abs(Math.ceil((globalOffset.x + 320) / 256) - nL));
 		return 
 			 Math.abs(Math.ceil((globalOffset.x -256 + 320) / 256) - nL) == 1;
 
@@ -182,11 +193,6 @@ public class DrawTesting extends Activity {
 		public Panel(Context context) {
 			super(context);
 			paint = new Paint();
-			TextView txt = new TextView(getContext());
-			txt.setText("xxxxxxxx");
-			addContentView(txt, new ViewGroup.LayoutParams(
-					ViewGroup.LayoutParams.WRAP_CONTENT,
-					ViewGroup.LayoutParams.WRAP_CONTENT));
 		}
 
 		@Override
@@ -196,17 +202,60 @@ public class DrawTesting extends Activity {
 		}
 	}
 
+	class InertionMoover implements Runnable{
+		
+		private int counter = 400;
+		
+		public void run(){
+			
+			int x = nextMovePoint.x +1;
+			int x1 = previousMovePoint.x;
+			int x2 = nextMovePoint.x;
+			int y1 = previousMovePoint.y;
+			int y2 = nextMovePoint.y;
+			
+			//if(x1 == 0){
+			//	x1 = x2-2;
+			//}
+			
+			System.out.println(previousMovePoint.x + "^" + previousMovePoint.y);
+			System.out.println(nextMovePoint.x + "*" + nextMovePoint.y);
+			while(counter>0){
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				int y = ((x-x1)*(y2-y1)/(x2-x1))+y1;
+				
+				moveCoordinates(x,y);
+				x-=x2>x1?-1:1;
+				counter-=1;
+			}
+		}
+	}
+	
 	class AnimationLoop implements Runnable {
+		
+	//	private int counter = 400;
+			
+		
+		
 		public void run() {
-			while (true) {
+			//while (true) {
 				while (running) {
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException ex) {
 					}
+					processInertion();
 					main.postInvalidate();
 				}
-			}
+	//		}
+		}
+		
+		private void processInertion(){
+			
 		}
 	}
 }
