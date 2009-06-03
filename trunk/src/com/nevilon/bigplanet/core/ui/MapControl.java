@@ -519,10 +519,14 @@ public class MapControl extends RelativeLayout {
 									}
 								}
 
-								
-								 pmap.zoomInCenter();
+								try{
+									Thread.sleep(200);
+									pmap.zoomInCenter();
 									h.sendEmptyMessage(0);
-								
+								} catch(InterruptedException e){
+									e.printStackTrace();
+								}
+								 
 							}
 
 						}.start();
