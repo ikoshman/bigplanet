@@ -70,7 +70,7 @@ public class TileScaler implements Runnable {
 				bitmap =  BitmapCacheWrapper.getInstance().getTile(tmpTile);	
 			}
 			if(bitmap==null){
-				bitmap = LocalStorageWrapper.get(tmpTile,false);
+				bitmap = LocalStorageWrapper.get(tmpTile);
 			}
 			
 			if (bitmap == null) {

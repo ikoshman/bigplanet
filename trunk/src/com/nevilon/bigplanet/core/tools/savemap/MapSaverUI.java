@@ -22,7 +22,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.nevilon.bigplanet.R;
 import com.nevilon.bigplanet.core.RawTile;
-import com.nevilon.bigplanet.core.geoutils.Geo;
+import com.nevilon.bigplanet.core.geoutils.GeoUtils;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 
 public class MapSaverUI {
@@ -230,7 +230,7 @@ public class MapSaverUI {
 	}
 
 	private int getTiles(int radius, boolean onlyCount) {
-		com.nevilon.bigplanet.core.geoutils.Point ppoint = Geo.getLatLong(absoluteCenter.x / 256,
+		com.nevilon.bigplanet.core.geoutils.Point ppoint = GeoUtils.getLatLong(absoluteCenter.x / 256,
 				absoluteCenter.y / 256, zoomLevel);
 		
 		Point latLon = new Point();
@@ -258,7 +258,7 @@ public class MapSaverUI {
 					count++;
 				} else {
 					RawTile tile = new RawTile(i, j, zoomLevel, sourceId,0);
-					if (Geo.isValid(tile)) {
+					if (GeoUtils.isValid(tile)) {
 						tiles.add(tile);
 					}
 

@@ -33,7 +33,7 @@ public class TileResolver {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
 						LocalStorageWrapper.put(tile, data);
-						Bitmap bmp = LocalStorageWrapper.get(tile,false);
+						Bitmap bmp = LocalStorageWrapper.get(tile);
 						cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}

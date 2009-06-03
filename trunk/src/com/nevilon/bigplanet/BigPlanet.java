@@ -30,7 +30,7 @@ import com.nevilon.bigplanet.core.Preferences;
 import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.db.DAO;
 import com.nevilon.bigplanet.core.db.GeoBookmark;
-import com.nevilon.bigplanet.core.geoutils.Geo;
+import com.nevilon.bigplanet.core.geoutils.GeoUtils;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
 import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
@@ -101,8 +101,8 @@ public class BigPlanet extends Activity {
 		case GO_TO_LOCATION:
 			int z = 5;
 			Place place = (Place)data.getSerializableExtra("place");
-			com.nevilon.bigplanet.core.geoutils.Point p = Geo.toTileXY(place.getLat(), place.getLon(), z);
-			com.nevilon.bigplanet.core.geoutils.Point off = Geo.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
+			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(place.getLat(), place.getLon(), z);
+			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
 			mapControl.goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
 			break;	
 		case RESULT_OK:
