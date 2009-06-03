@@ -80,6 +80,8 @@ public class BigPlanet extends Activity {
 	private LocationManager locationManager;
 
 	private boolean inHome = false;
+	
+	private MyIntentReceiver intentReceiver;
 
 	/**
 	 * Конструктор
@@ -87,7 +89,7 @@ public class BigPlanet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		MyIntentReceiver intentReceiver = new MyIntentReceiver();
+		intentReceiver = new MyIntentReceiver();
 
 		IntentFilter intentFilter = new IntentFilter(
 				"com.nevilon.bigplanet.INTENTS.GOTO");
@@ -158,6 +160,7 @@ public class BigPlanet extends Activity {
 	 */
 	@Override
 	protected void onDestroy() {
+		unregisterReceiver(intentReceiver);
 		super.onDestroy();
 		if (textMessage != null) {
 			textMessage.cancel();
@@ -176,6 +179,7 @@ public class BigPlanet extends Activity {
 
 			Point offset = new Point();
 			offset.set(bookmark.getOffsetX(), bookmark.getOffsetY());
+			Preferences.putSourceId(bookmark.getTile().s);
 			mapControl.getPhysicalMap().setGlobalOffset(offset);
 			mapControl.getPhysicalMap().reloadTiles();
 			mapControl.setMapSource(bookmark.getTile().s);
