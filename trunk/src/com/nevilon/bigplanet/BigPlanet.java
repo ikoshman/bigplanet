@@ -119,7 +119,7 @@ public class BigPlanet extends Activity {
 		case GO_TO_LOCATION:
 			int z = 5;
 			Place place = (Place) data.getSerializableExtra("place");
-			mm.addMarker(place, z);
+			mm.addMarker(place, z,false);
 			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
 					place.getLat(), place.getLon(), z);
 			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
@@ -352,7 +352,7 @@ public class BigPlanet extends Activity {
 		Place place = new Place();
 		place.setLat(lat);
 		place.setLon(lon);
-		mm.addMarker(place, z);
+		mm.addMarker(place, z,true);
 	}
 
 	private void showSearch() {
