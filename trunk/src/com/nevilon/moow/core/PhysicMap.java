@@ -154,7 +154,7 @@ public class PhysicMap {
 	 * @param y
 	 */
 	public void moveCoordinates(float x, float y) {
-				previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
+		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 		nextMovePoint.set((int) x, (int) y);
 		globalOffset.set(globalOffset.x
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y

@@ -129,8 +129,9 @@ public class LocalStorage {
 		File tileFile = new File(path + "/tile.tl");
 		if (tileFile.exists()) {
 			try {
-				return new BufferedInputStream(new FileInputStream(tileFile),
-						65536);
+				BufferedInputStream io = new BufferedInputStream(new FileInputStream(tileFile),
+						4096);
+				return io ;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
