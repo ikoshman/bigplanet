@@ -1,7 +1,5 @@
 package com.nevilon.moow.core;
 
-
-
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -22,13 +20,12 @@ public class PhysicMap {
 	private Point previousMovePoint = new Point();
 
 	public Point nextMovePoint = new Point();
-	
-	private int width;
-	
-	private int height;
-	
-	private AbstractCommand updateScreenCommand;
 
+	private int width;
+
+	private int height;
+
+	private AbstractCommand updateScreenCommand;
 
 	public PhysicMap(RawTile defTile, AbstractCommand updateScreenCommand) {
 		this.defTile = defTile;
@@ -38,11 +35,11 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	public void create(){
+	public void create() {
 		loadCells(defTile);
-		updateScreenCommand.execute();	
+		updateScreenCommand.execute();
 	}
-	
+
 	public RawTile getDefaultTile() {
 		return normalize(this.defTile);
 	}
@@ -70,7 +67,7 @@ public class PhysicMap {
 				}
 			}
 		}
-		
+
 	}
 
 	public void move(int dx, int dy) {
@@ -91,10 +88,10 @@ public class PhysicMap {
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x + getWidth()
-					/ 2;
-			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y + getHeight()
-					/ 2;
+			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x
+					+ getWidth() / 2;
+			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y
+					+ getHeight() / 2;
 
 			// получение координат точки предудущем уровне
 			int nextZoomX = currentZoomX / 2;
@@ -125,7 +122,7 @@ public class PhysicMap {
 	 * Увеличение уровня детализации с центрированием
 	 */
 	public void zoomInCenter() {
-		zoomIn(getWidth()/2, getHeight()/2);
+		zoomIn(getWidth() / 2, getHeight() / 2);
 	}
 
 	/**
@@ -181,21 +178,20 @@ public class PhysicMap {
 		updateScreenCommand.execute();
 	}
 
-	
-	public Point getAbsoluteCenter(){
-		//TODO не работает при изменении ориентации девайса
+	public Point getAbsoluteCenter() {
+		// TODO не работает при изменении ориентации девайса
 		Point centerPoint = new Point();
-		centerPoint.x  = getDistance(getDefaultTile().x) - globalOffset.x + getWidth()
-		/ 2;
-        centerPoint.y = getDistance(getDefaultTile().y) - globalOffset.y + getHeight()
-		/ 2;
+		centerPoint.x = getDistance(getDefaultTile().x) - globalOffset.x
+				+ getWidth() / 2;
+		centerPoint.y = getDistance(getDefaultTile().y) - globalOffset.y
+				+ getHeight() / 2;
 		return centerPoint;
 	}
-	
-	private int getDistance(int tileCount){
-		return tileCount*TILE_SIZE;
+
+	private int getDistance(int tileCount) {
+		return tileCount * TILE_SIZE;
 	}
-	
+
 	private void reload(int x, int y, int z) {
 		defTile.x = x;
 		defTile.y = y;
@@ -267,27 +263,27 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-					cells[i][j] = null;
-					tileProvider.getTile(
-							new RawTile(x, y, tile.z, tileProvider.getMapSourceId()), true);
+				cells[i][j] = null;
+				tileProvider.getTile(new RawTile(x, y, tile.z, tileProvider
+						.getMapSourceId()), true);
 			}
 		}
 	}
 
-	public void reloadTiles(){
+	public void reloadTiles() {
 		loadCells(defTile);
 	}
-	
+
 	public void changeMapSource(int sourceId) {
 		tileProvider.setMapSource(sourceId);
 		cells = new Bitmap[3][3];
 		loadCells(defTile);
 	}
-	
-	public int getMapSourceId(){
+
+	public int getMapSourceId() {
 		return tileProvider.getMapSourceId();
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}
@@ -295,7 +291,7 @@ public class PhysicMap {
 	public void setWidth(int width) {
 		this.width = width;
 	}
-	
+
 	public int getHeight() {
 		return height;
 	}
@@ -306,18 +302,11 @@ public class PhysicMap {
 
 	public TileResolver getTileResolver() {
 		return this.tileProvider;
-		
+
 	}
 
 	public void setDefTile(RawTile defTile) {
 		this.defTile = defTile;
-	}
-
-	public void clear() {
-		cells = null;
-		tileProvider.clear();
-		tileProvider = null;
-		
 	}
 
 }

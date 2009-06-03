@@ -28,9 +28,14 @@ public class ExpiredHashMap {
 		this.maxSize = maxSize;
 	}
 
+	
+	public void clear(){
+		this.expCacheMap.clear();
+	}
+	
 	public synchronized void put(RawTile tile, Bitmap bitmap) {
 		if (expCacheMap.size() >= maxSize) {
-			clear();
+			gc();
 		}
 		expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),
 				bitmap);
@@ -48,7 +53,7 @@ public class ExpiredHashMap {
 	/**
 	 * Удаляет определенную часть самых старых элементов в кеше
 	 */
-	public void clear() {
+	public void gc() {
 		Iterator<ExpRawTile> it = expCacheMap.keySet().iterator();
 		List<ExpRawTile> listToSort = new ArrayList<ExpRawTile>();
 		while (it.hasNext()) {

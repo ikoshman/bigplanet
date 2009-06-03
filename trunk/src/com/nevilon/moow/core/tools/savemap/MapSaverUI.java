@@ -40,14 +40,13 @@ public class MapSaverUI {
 	private MapSaver mapSaver;
 
 	private Stack<RawTile> tiles;
-	
+
 	private int sourceId;
 
-	
 	private TextView downloadInfo;
-	
-	
-	public MapSaverUI(Context context, int zoomLevel, Point absoluteCenter, int sourceId) {
+
+	public MapSaverUI(Context context, int zoomLevel, Point absoluteCenter,
+			int sourceId) {
 		this.context = context;
 		this.absoluteCenter = absoluteCenter;
 		this.zoomLevel = zoomLevel;
@@ -66,28 +65,28 @@ public class MapSaverUI {
 
 		View v = View.inflate(context, R.layout.savemap, null);
 
-		downloadInfo = (TextView) v
-		.findViewById(R.id.downloadInfo);
+		downloadInfo = (TextView) v.findViewById(R.id.downloadInfo);
 		final EditText radiusValue = (EditText) v
 				.findViewById(R.id.radiusValue);
-		
-	
-		radiusValue.addTextChangedListener(new TextWatcher(){
+
+		radiusValue.addTextChangedListener(new TextWatcher() {
 
 			public void afterTextChanged(Editable arg0) {
 				int radius = Integer.parseInt(arg0.toString());
 				updateLabels(radius);
-								
+
 			}
 
 			public void beforeTextChanged(CharSequence arg0, int arg1,
-					int arg2, int arg3) {}
+					int arg2, int arg3) {
+			}
 
 			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-					int arg3) {}
-			
+					int arg3) {
+			}
+
 		});
-		
+
 		radiusValue.setText("0");
 		updateLabels(0);
 		final Button startButton = (Button) v.findViewById(R.id.startButton);
@@ -133,15 +132,13 @@ public class MapSaverUI {
 
 	}
 
-	
-	private void updateLabels(int radius){
+	private void updateLabels(int radius) {
 		tiles = getTiles(radius);
-		downloadInfo.setText(String.valueOf(tiles.size())
-				+ " tile(s) / "
+		downloadInfo.setText(String.valueOf(tiles.size()) + " tile(s) / "
 				+ String.valueOf(tiles.size() * 20000 / 1024) + " KB");
 
 	}
-	
+
 	private void showProgressDialog() {
 		final ProgressDialog downloadDialog = new ProgressDialog(context);
 		downloadDialog.setTitle("Downloading...");
@@ -204,11 +201,10 @@ public class MapSaverUI {
 		int topX = cx - dTile;
 		int topY = cy - dTile;
 
-		
 		final Stack<RawTile> tiles = new Stack<RawTile>();
 		for (int i = topX; i <= topX + 2 * dTile; i++) {
 			for (int j = topY; j <= topY + 2 * dTile; j++) {
-				RawTile tile = new RawTile(i, j, zoomLevel, sourceId );
+				RawTile tile = new RawTile(i, j, zoomLevel, sourceId);
 				tiles.add(tile);
 			}
 		}

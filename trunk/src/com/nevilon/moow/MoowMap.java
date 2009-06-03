@@ -2,6 +2,7 @@ package com.nevilon.moow;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
@@ -17,7 +18,6 @@ import android.widget.ScrollView;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.nevilon.moow.core.Preferences;
-import com.nevilon.moow.core.RawTile;
 import com.nevilon.moow.core.providers.MapStrategyFactory;
 import com.nevilon.moow.core.tools.savemap.MapSaverUI;
 import com.nevilon.moow.core.ui.MapControl;
@@ -26,54 +26,42 @@ public class MoowMap extends Activity {
 
 	private MapControl mapControl;
 
-	private boolean rotate = false;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		configMapControl();
+		int mapSourceId = Preferences.getSourceId();
+		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
+		mapControl.getPhysicalMap().globalOffset = Preferences.getOffset();
+		mapControl.getPhysicalMap().getTileResolver().setUseNet(
+				Preferences.getUseNet());
+	}
+
+	private void configMapControl() {
 		WindowManager wm = this.getWindowManager();
 		Display display = wm.getDefaultDisplay();
 		int height = display.getHeight();
 		int width = display.getWidth();
-		
-		mapControl = new MapControl(this, width, height, Preferences.getTile());
-		int mapSourceId = Preferences.getSourceId();
-		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
-		mapControl.getPhysicalMap().globalOffset =  Preferences.getOffset();
-		mapControl.getPhysicalMap().getTileResolver().setUseNet(Preferences.getUseNet());
-		setContentView(mapControl);
+		if (mapControl == null) {
+			mapControl = new MapControl(this, width, height, Preferences
+					.getTile());
+		} else {
+			mapControl.setSize(width, height);
+		}
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);  
-		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
-		Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);
-		//int mapSourceId = mapControl.getPhysicalMap().getTileResolver().getMapSourceId();
-		//Preferences.putSourceId(mapSourceId);
-		mapControl.clear();
-		mapControl = null;
-		System.gc();
-		rotate = true;
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		configMapControl();
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		RawTile defTile = Preferences.getTile();
-		int mapSourceId = Preferences.getSourceId();
-		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
-		mapControl.getPhysicalMap().globalOffset = Preferences.getOffset();
-		mapControl.getPhysicalMap().setDefTile(defTile);
-		mapControl.getPhysicalMap().reloadTiles();
-	}
-	@Override
-	protected void onDestroy(){
+	protected void onDestroy() {
 		super.onDestroy();
-		if(!rotate){
-			Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
-			Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);			
-		}
+		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
+		Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);
 	}
 
 	@Override
@@ -89,13 +77,13 @@ public class MoowMap extends Activity {
 		return true;
 	}
 
-	
-	@Override public boolean onPrepareOptionsMenu(Menu menu) {
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean useNet = Preferences.getUseNet();
 		menu.findItem(11).setEnabled(useNet);
-		return true; 
+		return true;
 	}
-	
+
 	private RadioButton buildRadioButton(String label, int id) {
 		RadioButton btn = new RadioButton(this);
 		btn.setText(label);
@@ -109,7 +97,8 @@ public class MoowMap extends Activity {
 		case 11:
 			MapSaverUI mapSaverUI = new MapSaverUI(this, mapControl
 					.getPhysicalMap().getZoomLevel(), mapControl
-					.getPhysicalMap().getAbsoluteCenter(), mapControl.getPhysicalMap().getTileResolver().getMapSourceId());
+					.getPhysicalMap().getAbsoluteCenter(), mapControl
+					.getPhysicalMap().getTileResolver().getMapSourceId());
 			mapSaverUI.show();
 			break;
 		case 0:
@@ -152,9 +141,9 @@ public class MoowMap extends Activity {
 
 		boolean useNet = Preferences.getUseNet();
 		int checked = 0;
-		if(useNet){
-			checked = 1; 
-		} 
+		if (useNet) {
+			checked = 1;
+		}
 		modesRadioGroup.check(checked);
 
 		modesRadioGroup
@@ -188,7 +177,7 @@ public class MoowMap extends Activity {
 		ScrollView scrollPanel = new ScrollView(this);
 		scrollPanel.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
-		
+
 		final LinearLayout mainPanel = new LinearLayout(this);
 		mainPanel.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
@@ -224,7 +213,4 @@ public class MoowMap extends Activity {
 		mapSourceDialog.show();
 	}
 
-		
-
-	
 }

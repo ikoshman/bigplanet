@@ -33,34 +33,34 @@ public abstract class BaseLoader extends Thread {
 			if (stop) {
 				return;
 			}
-			if(checkTile(tile)){
+			if (checkTile(tile)) {
 				try {
 					byte[] data = load(tile);
-					handle(tile, data,0);
+					handle(tile, data, 0);
 				} catch (Exception e) {
 					e.printStackTrace();
-					handle(tile, null,0);
+					handle(tile, null, 0);
 				}
-			}  else {
-				handle(tile,null,1);
+			} else {
+				handle(tile, null, 1);
 			}
 		}
 
 	}
 
-	
-	private boolean checkTile(RawTile tile){
+	private boolean checkTile(RawTile tile) {
 		return true;
 	}
-	
+
 	private byte[] load(RawTile tile) throws Exception {
 
 		try {
 			HttpClient client = new HttpClient();
-			
+
 			client.getHttpConnectionManager().getParams().setSoTimeout(4000);
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(4000);
-			
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(
+					4000);
+
 			GetMethod method = new GetMethod(getStrategy().getServer()
 					+ getStrategy().getURL(tile.x, tile.y, tile.z));
 
@@ -75,7 +75,7 @@ public abstract class BaseLoader extends Thread {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 			return null;
 		}
 

@@ -8,17 +8,17 @@ import java.io.Serializable;
  * @author hudvin
  * 
  */
-public class RawTile implements Serializable{
+public class RawTile implements Serializable {
 
-	public int x, y, z,s;
+	public int x, y, z, s;
 
-	public RawTile(){
+	public RawTile() {
 		x = 0;
 		y = 0;
 		z = 16;
 		s = -1;
 	}
-	
+
 	public RawTile(int x, int y, int z, int s) {
 		this.x = x;
 		this.y = y;
@@ -54,13 +54,13 @@ public class RawTile implements Serializable{
 			return false;
 		if (s != other.s)
 			return false;
-		
+
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return x + " : " + y + " : " + z + " : " +s;
+		return x + " : " + y + " : " + z + " : " + s;
 	}
 
 }

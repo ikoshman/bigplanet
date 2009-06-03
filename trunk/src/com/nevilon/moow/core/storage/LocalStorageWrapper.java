@@ -35,10 +35,10 @@ public class LocalStorageWrapper {
 		return bmp;
 	}
 
-	public static boolean isExists(RawTile tile){
+	public static boolean isExists(RawTile tile) {
 		return localStorage.isExists(tile);
 	}
-	
+
 	public static void put(RawTile tile, byte[] data) {
 		localStorage.put(tile, data);
 	}

@@ -19,8 +19,7 @@ public class BitmapCacheWrapper {
 
 	private BitmapCache cache = new BitmapCache(15);
 
-	private BitmapCache scaledCache = new BitmapCache(
-			10);
+	private BitmapCache scaledCache = new BitmapCache(10);
 
 	/**
 	 * Поиск в кеше скалированых тайлов
@@ -55,10 +54,11 @@ public class BitmapCacheWrapper {
 	public void putToCache(RawTile tile, Bitmap bitmap) {
 		cache.put(tile, bitmap);
 	}
-	
-	public void gc(){
-		scaledCache.gc();
-		cache.gc();
+
+	public void clear() {
+		scaledCache.clear();
+		
 	}
+
 
 }

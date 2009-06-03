@@ -6,7 +6,6 @@ public class YandexVectorMapStrategy extends MapStrategy {
 
 	private static final String REQUEST_PATTERN = "tiles?l=map&v=2.0.5&x={0}&y={1}d&z={2}";
 
-	
 	@Override
 	public String getServer() {
 		return "http://vec.maps.yandex.net/";

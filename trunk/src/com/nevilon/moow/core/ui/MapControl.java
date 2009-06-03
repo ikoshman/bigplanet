@@ -8,12 +8,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.nevilon.moow.core.AbstractCommand;
@@ -42,7 +39,6 @@ public class MapControl extends RelativeLayout {
 	 */
 	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
-	
 	/*
 	 * Перерисовка панели с картой
 	 */
@@ -90,63 +86,72 @@ public class MapControl extends RelativeLayout {
 	 * Размер ячейки фона
 	 */
 	private final static int BCG_CELL_SIZE = 16;
-	
+
 	public MapControl(Context context, int width, int height, RawTile startTile) {
 		super(context);
-		setId(1);
-		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
-	
-		// панель с картой
-		main = new Panel(context);
-		addView(main, 0, new ViewGroup.LayoutParams(width, height));
+		buildView(width, height, startTile);
 
-		//(new Thread(new CanvasUpdater())).start();
-
-		zoomPanel = new ZoomPanel(context);
-		zoomPanel.setPadding((width-160)/2, height-112, 0, 0);
-		zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				pmap.zoomOut();
-				quickHack();
-				updateZoomControls();
-			}
-		});
-
-		zoomPanel.setOnZoomInClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				pmap.zoomInCenter();
-				quickHack();
-				updateZoomControls();
-			}
-		});
-
-		addView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT));
-		 pmap = new PhysicMap(startTile, new AbstractCommand(){
-
-						@Override
-						public synchronized void execute() {
-							if(main!=null){
-								main.postInvalidate();
-							}
-						}
-			 
-		 });
-		pmap.setHeight(height);
-		pmap.setWidth(width);
-			
 	}
 
-	public void changeMapSource(int sourceId){
+	public void setSize(int width, int height) {
+		buildView(width, height, pmap.getDefaultTile());
+	}
+
+	public void changeMapSource(int sourceId) {
 		pmap.changeMapSource(sourceId);
 	}
-	
-	
-	public PhysicMap getPhysicalMap(){
+
+	public PhysicMap getPhysicalMap() {
 		return pmap;
 	}
-	
-		
+
+	private void buildView(int width, int height, RawTile startTile) {
+		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
+
+		// панель с картой
+		main = new Panel(this.getContext());
+		addView(main, 0, new ViewGroup.LayoutParams(width, height));
+
+		if (zoomPanel == null) {
+			zoomPanel = new ZoomPanel(this.getContext());
+			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					pmap.zoomOut();
+					quickHack();
+					updateZoomControls();
+				}
+			});
+
+			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					pmap.zoomInCenter();
+					quickHack();
+					updateZoomControls();
+				}
+			});
+
+			addView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
+					LayoutParams.WRAP_CONTENT));
+
+		}
+
+		zoomPanel.setPadding((width - 160) / 2, height - 112, 0, 0);
+
+		pmap = new PhysicMap(startTile, new AbstractCommand() {
+
+			@Override
+			public synchronized void execute() {
+				if (main != null) {
+					main.postInvalidate();
+				}
+			}
+
+		});
+		pmap.setHeight(height);
+		pmap.setWidth(width);
+
+	}
+
 	private void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
@@ -176,7 +181,8 @@ public class MapControl extends RelativeLayout {
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.round((pmap.globalOffset.y + pmap.getHeight()) / 256);
+			dy = (int) Math
+					.round((pmap.globalOffset.y + pmap.getHeight()) / 256);
 		} else {
 			dy = (int) Math.round(pmap.globalOffset.y / 256);
 
@@ -187,7 +193,7 @@ public class MapControl extends RelativeLayout {
 
 		tdx += dx;
 		tdy += dy;
-		if(!(tdx==0 && tdy==0)){
+		if (!(tdx == 0 && tdy == 0)) {
 			pmap.move(tdx, tdy);
 		}
 
@@ -216,7 +222,6 @@ public class MapControl extends RelativeLayout {
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
-		
 
 		if (cv == null) {
 			cv = new Canvas();
@@ -224,22 +229,21 @@ public class MapControl extends RelativeLayout {
 			canvas.setBitmap(cvBitmap);
 		}
 
-			Bitmap tmpBitmap;
-			canvas.drawBitmap(mapBg, 0, 0, paint);
+		Bitmap tmpBitmap;
+		canvas.drawBitmap(mapBg, 0, 0, paint);
 
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					tmpBitmap = pmap.getCells()[i][j];
-					if (tmpBitmap != null) {
-						canvas.drawBitmap(tmpBitmap, (i) * 256
-								+ pmap.globalOffset.x, (j) * 256
-								+ pmap.globalOffset.y, paint);
-					}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				tmpBitmap = pmap.getCells()[i][j];
+				if (tmpBitmap != null) {
+					canvas.drawBitmap(tmpBitmap, (i) * 256
+							+ pmap.globalOffset.x, (j) * 256
+							+ pmap.globalOffset.y, paint);
 				}
 			}
+		}
 
 	}
-	
 
 	private void addPointToHistory(float x, float y) {
 		Point tmpPoint = new Point();
@@ -256,12 +260,12 @@ public class MapControl extends RelativeLayout {
 		}
 
 		@Override
-		protected void onAttachedToWindow(){
+		protected void onAttachedToWindow() {
 			super.onAttachedToWindow();
 			postInvalidateDelayed(500);
-			
+
 		}
-		
+
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
@@ -301,7 +305,7 @@ public class MapControl extends RelativeLayout {
 				if (inMove) {
 					pmap.moveCoordinates(event.getX(), event.getY());
 					quickHack();
-					
+
 				} else {
 					if (dcDispatcher.process(event)) {
 						pmap.zoomIn((int) event.getX(), (int) event.getY());
@@ -326,12 +330,5 @@ public class MapControl extends RelativeLayout {
 		startInertion = false;
 	}
 
-	public void clear() {
-		mapBg = null;
-		dcDispatcher = null;
-		moveHistory = null;
-		pmap.clear();
-		
-	}
 
 }

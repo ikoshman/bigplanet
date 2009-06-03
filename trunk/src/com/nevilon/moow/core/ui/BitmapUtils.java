@@ -18,12 +18,12 @@ public class BitmapUtils {
 	 * Цвет фона
 	 */
 	private static int BACKGROUND_COLOR = Color.argb(255, 240, 248, 255);
-	
+
 	/**
 	 * Цвет линий
 	 */
-	private static int LINE_COLOR = Color.argb(255, 122,139,139);
-	
+	private static int LINE_COLOR = Color.argb(255, 122, 139, 139);
+
 	/**
 	 * Рисует фон для карты( в клетку )
 	 * 
