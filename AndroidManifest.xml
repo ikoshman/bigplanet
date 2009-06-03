@@ -17,17 +17,5 @@
 		</activity>
 
 
-
-		<activity android:configChanges="keyboardHidden|orientation"
-
-			android:name=".SettingsMenu" >
-		</activity>
-		
-		<activity android:configChanges="keyboardHidden|orientation"
-
-			android:name=".DoubleTouchSettings">
-		</activity>
-
-
 	</application>
 </manifest> 

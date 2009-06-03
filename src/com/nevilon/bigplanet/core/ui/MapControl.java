@@ -297,16 +297,15 @@ public class MapControl extends RelativeLayout {
 				pmap.moveCoordinates(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
-				if (inMove) {
-					pmap.moveCoordinates(event.getX(), event.getY());
-					quickHack();
-				} //else {
-					if (dcDetector.process(event)) {
+				 if (dcDetector.process(event)) {
 						pmap.zoomIn((int) event.getX(), (int) event.getY());
 						updateZoomControls();
+			    } else {
+			    	if (inMove) {
+						pmap.moveCoordinates(event.getX(), event.getY());
+						quickHack();
 					}
-			//	}
-
+			    }
 				break;
 			}
 

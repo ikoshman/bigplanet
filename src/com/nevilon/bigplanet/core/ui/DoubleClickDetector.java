@@ -21,7 +21,7 @@ public class DoubleClickDetector {
 	 * Максимальное расстояние между касаниями, при котором они воспринимаются
 	 * как двойное
 	 */
-	private static int CLICK_PRECISE = 7;
+	private static int CLICK_PRECISE = 10;
 
 	/**
 	 * Хранит предыдущее событие
