@@ -21,6 +21,12 @@ public class PhysicMap {
 
 	public Point globalOffset = new Point();
 
+	private Point previousMovePoint = new Point();
+
+	public Point nextMovePoint = new Point();
+	
+	boolean block  = false;
+	
 	public PhysicMap(RawTile defTile) {
 		this.defTile = defTile;
 		this.zoom = defTile.z;
@@ -148,6 +154,33 @@ public class PhysicMap {
 		}
 	}
 
+	
+	
+	/**
+	 * Установка текущего отступа
+	 * @param x
+	 * @param y
+	 */
+	public void moveCoordinates(float x, float y) {
+		int newGlobalOffsetY = globalOffset.y
+		+ (nextMovePoint.y - previousMovePoint.y);
+		
+		int bottomOffset = defTile.y*256 + newGlobalOffsetY;
+		//System.out.println(defTile.y);
+		if(defTile.x ==0 && newGlobalOffsetY>=100 ){
+			//System.out.println("lock");
+		}
+		
+			previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
+			nextMovePoint.set((int) x, (int) y);
+			globalOffset.set(globalOffset.x
+					+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
+					+ (nextMovePoint.y - previousMovePoint.y));
+		
+		
+		
+	}
+	
 	private void reload(int x, int y, int z) {
 		defTile.x = x;
 		defTile.y = y;

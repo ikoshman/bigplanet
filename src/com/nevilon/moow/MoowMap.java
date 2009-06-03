@@ -37,10 +37,7 @@ public class MoowMap extends Activity {
 
 	private volatile boolean running = true;
 
-	private Point previousMovePoint = new Point();
-	private Point nextMovePoint = new Point();
-
-	private PhysicMap pmap = new PhysicMap(
+		private PhysicMap pmap = new PhysicMap(
 			new RawTile(0, 0, MoowMap.START_ZOOM));
 
 	boolean inMove = false;
@@ -127,13 +124,7 @@ public class MoowMap extends Activity {
 		
 	}
 
-	private void moveCoordinates(float x, float y) {
-		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
-		nextMovePoint.set((int) x, (int) y);
-		pmap.globalOffset.set(pmap.globalOffset.x
-				+ (nextMovePoint.x - previousMovePoint.x), pmap.globalOffset.y
-				+ (nextMovePoint.y - previousMovePoint.y));
-	}
+
 
 	/**
 	 * Рисует фон для карты( в клетку )
@@ -203,19 +194,18 @@ public class MoowMap extends Activity {
 		 */
 		@Override
 		public boolean onTouchEvent(MotionEvent event) {
-			System.out.println(event.getAction());
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
-				nextMovePoint.set((int) event.getX(), (int) event.getY());
+				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
 				break;
 			case MotionEvent.ACTION_MOVE:
 				inMove = true;
-				moveCoordinates(event.getX(), event.getY());
+				pmap.moveCoordinates(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
 				if (inMove) {
-					moveCoordinates(event.getX(), event.getY());
+					pmap.moveCoordinates(event.getX(), event.getY());
 					quickHack();
 				} else {
 					if (dcDispatcher.process(event)) {
