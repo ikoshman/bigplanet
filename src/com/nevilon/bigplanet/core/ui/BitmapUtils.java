@@ -53,5 +53,15 @@ public class BitmapUtils {
 		}
 		return bitmap;
 	}
+	
+	public static Bitmap drawEmptyBackground(int size){
+		Bitmap bitmap = Bitmap.createBitmap(size, size, Config.RGB_565);
+		Canvas cv = new Canvas(bitmap);
+		// прорисовка фона
+		Paint background = new Paint();
+		background.setColor(BACKGROUND_COLOR);
+		cv.drawRect(0, 0, size, size, background);
+		return bitmap;
+	}
 
 }
