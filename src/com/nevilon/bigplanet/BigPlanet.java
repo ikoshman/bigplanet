@@ -201,7 +201,7 @@ public class BigPlanet extends Activity {
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 					public void onCheckedChanged(RadioGroup group, int checkedId) {
 						Preferences.putSourceId(checkedId);
-						mapControl.changeMapSource(checkedId);
+						mapControl.getPhysicalMap().changeMapSource(checkedId);
 						mapSourceDialog.hide();
 					}
 

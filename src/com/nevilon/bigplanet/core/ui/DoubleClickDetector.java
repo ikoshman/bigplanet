@@ -9,7 +9,7 @@ import android.view.MotionEvent;
  * @author hudvin
  * 
  */
-public class DoubleClickHelper {
+public class DoubleClickDetector {
 
 	/**
 	 * Минимальный временной промежуток между двумя отдельными касаниями, при
@@ -35,7 +35,7 @@ public class DoubleClickHelper {
 
 	public boolean process(MotionEvent currentEvent) {
 		if (previousPoint != null
-				&& (System.currentTimeMillis() - eventTime) < DoubleClickHelper.CLICK_INTERVAL
+				&& (System.currentTimeMillis() - eventTime) < DoubleClickDetector.CLICK_INTERVAL
 				&& isNear((int) currentEvent.getX(), (int) currentEvent.getY())) {
 			return true;
 		}
@@ -53,8 +53,8 @@ public class DoubleClickHelper {
 	 * @return
 	 */
 	private boolean isNear(int x, int y) {
-		boolean checkX = Math.abs(previousPoint.x - x) <= DoubleClickHelper.CLICK_PRECISE;
-		boolean checkY = Math.abs(previousPoint.y - y) <= DoubleClickHelper.CLICK_PRECISE;
+		boolean checkX = Math.abs(previousPoint.x - x) <= DoubleClickDetector.CLICK_PRECISE;
+		boolean checkY = Math.abs(previousPoint.y - y) <= DoubleClickDetector.CLICK_PRECISE;
 		return checkX == checkY && checkX == true;
 	}
 
