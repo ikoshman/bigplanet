@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+		<TextView android:id="@+id/nameLabel" android:textStyle="bold"
+			android:layout_width="wrap_content" android:paddingRight="10px"
+			android:layout_height="wrap_content" android:text="Name" />
+		<EditText android:id="@+id/nameValue" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:singleLine="true"
+			android:text="" android:textSize="18sp" />
+
+
+
+
+		<TextView android:id="@+id/descriptionkLabel"
+			android:textStyle="bold" android:layout_width="wrap_content"
+			android:paddingRight="10px" android:layout_height="wrap_content"
+			android:text="Description" />
+		<EditText android:id="@+id/descriptionValue"
+			android:minLines="5" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:singleLine="false"
+			android:maxLines="5" android:text="" android:textSize="14sp" />
+
+
+
+	</LinearLayout>
+
+	<Button android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true" android:layout_width="wrap_content"
+		android:gravity="bottom" android:text="Add to bookmarks" />
+
+</RelativeLayout>
