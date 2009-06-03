@@ -22,7 +22,7 @@ public class PhysicMap {
 
 	public RawTile defTile;
 
-	public float scaleFactor = 1;
+	public double scaleFactor = 1.00d;
 	
 	private int zoom;
 
@@ -300,7 +300,10 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalize(y, tile.z);
-				setBitmap(MapControl.CELL_BACKGROUND, i, j);
+				if(scaleFactor ==1){
+					setBitmap(MapControl.CELL_BACKGROUND, i, j);
+				}
+				//setBitmap(null, i, j);
 				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
 						.getMapSourceId()));
 			}
