@@ -6,9 +6,11 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -79,27 +81,12 @@ public class BigPlanet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		MyIntentReceiver intentReceiver = new MyIntentReceiver();
+
+		IntentFilter intentFilter = new IntentFilter("com.nevilon.bigplanet.INTENTS.GOTO");
+
+		registerReceiver(intentReceiver, intentFilter); 
 		
-		//Intent i = new Intent(this,ServiceStartArguments.class);
-		//i.putExtra("name", "One"); 
-		//startService(i);
-		
-		
-		Date now = new Date(System.currentTimeMillis());
-		now.getMonth();
-		/*if (now.getMonth() == 2) {
-
-			new AlertDialog.Builder(this).setTitle("Sorry").setNegativeButton(
-					"Ok", new OnClickListener() {
-
-						public void onClick(DialogInterface arg0, int arg1) {
-							finish();
-
-						}
-
-					}).setMessage("Demo version is expired").show();
-		}
-		*/
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
 		mm = new MarkerManager(getResources());
@@ -115,9 +102,41 @@ public class BigPlanet extends Activity {
 		Point globalOffset = Preferences.getOffset();
 		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
 		mapControl.getPhysicalMap().reloadTiles();
-		onSearchRequested();
 	}
 
+	
+	public class MyIntentReceiver extends BroadcastReceiver {
+
+		/**
+
+		* @see adroid.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+
+		*/
+
+		@Override
+
+		public void onReceive(Context context, Intent intent) {
+			int z = SEARCH_ZOOM;
+			Place place = (Place) intent.getSerializableExtra("place");
+			mm.addMarker(place, z, false, MarkerManager.SEARCH_MARKER);
+			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
+					place.getLat(), place.getLon(), z);
+			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
+					.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
+			mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
+			System.out.println("receive");
+		}
+	
+		
+	}
+	@Override
+	 public boolean onSearchRequested() {
+	        startSearch("", false, null, false); 
+	        return true;
+	 }
+
+	
+	
 	/**
 	 * Обрабатывает поворот телефона
 	 */
@@ -144,16 +163,6 @@ public class BigPlanet extends Activity {
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
-		case GO_TO_LOCATION:
-			int z = SEARCH_ZOOM;
-			Place place = (Place) data.getSerializableExtra("place");
-			mm.addMarker(place, z, false, MarkerManager.SEARCH_MARKER);
-			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
-					place.getLat(), place.getLon(), z);
-			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
-					.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
-			mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
-			break;
 		case RESULT_OK:
 			GeoBookmark bookmark = (GeoBookmark) data
 					.getSerializableExtra(BOOKMARK_DATA);
@@ -203,11 +212,12 @@ public class BigPlanet extends Activity {
 		sub = menu.addSubMenu(0, 1, 0, R.string.TOOLS_MENU).setIcon(
 				R.drawable.tools);
 		sub.add(2, 11, 1, R.string.CACHE_MAP_MENU);
-		sub.add(2, 12, 1, R.string.SEARCH_MENU);
 		sub.add(2, 13, 10, R.string.ABOUT_MENU);
 		sub.add(2, 14, 1, R.string.MAP_SOURCE_MENU);
 		sub.add(2, 15, 0, R.string.NETWORK_MODE_MENU);
 
+		menu.add(3, 3, 0, R.string.SEARCH_MENU).setIcon(R.drawable.search);
+		
 		return true;
 	}
 
@@ -275,25 +285,6 @@ public class BigPlanet extends Activity {
 		mapControl.updateZoomControls();
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
-	
-	
-	 @Override
-	    public boolean onSearchRequested() {
-	     
-	        final String queryPrefill = "fa";
-
-	        Bundle appDataBundle = null;
-	        final String queryAppDataString = "fdasfas";
-	        if (queryAppDataString != null) {
-	            appDataBundle = new Bundle();
-	            appDataBundle.putString("demo_key", queryAppDataString);
-	        }
-
-	        // Now call the Activity member function that invokes the Search Manager UI.
-	        startSearch(queryPrefill, false, appDataBundle, false); 
-	        // Returning true indicates that we did launch the search, instead of blocking it.
-	        return false;
-	    }
 
 	/**
 	 * Создает радиокнопку с заданными параметрами
@@ -316,6 +307,9 @@ public class BigPlanet extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		hideMessage();
 		switch (item.getItemId()) {
+		case 3:
+			showSearch();
+			break;
 		case 7:
 			showMyLocation();
 			break;
@@ -329,7 +323,7 @@ public class BigPlanet extends Activity {
 			selectNetworkMode();
 			break;
 	    case 12:
-			showSearch();
+			//showSearch();
 			break;
 		case 13:
 			showAbout();
@@ -408,9 +402,10 @@ public class BigPlanet extends Activity {
 	}
 
 	private void showSearch() {
-		Intent intent = new Intent();
-		intent.setClass(this, FindLocation.class);
-		startActivityForResult(intent, 0);
+		onSearchRequested();
+		//Intent i = new Intent();
+		//i.setClass(this, FindPlace.class);
+		//startActivityForResult(i,0);
 	}
 
 	private void showAbout() {
