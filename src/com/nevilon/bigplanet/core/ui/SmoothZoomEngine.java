@@ -9,7 +9,7 @@ import com.nevilon.bigplanet.core.PhysicMap;
 public class SmoothZoomEngine {
 
 	private static SmoothZoomEngine sze;
-	
+
 	private LinkedList<Integer> scaleQueue = new LinkedList<Integer>();
 
 	private Float scaleFactor = 1000f;
@@ -19,9 +19,7 @@ public class SmoothZoomEngine {
 	private AbstractCommand reloadMap;
 
 	public static SmoothZoomEngine getInstance() {
-		
-			
-		
+
 		if (sze == null) {
 			sze = new SmoothZoomEngine();
 		}
@@ -58,7 +56,7 @@ public class SmoothZoomEngine {
 
 				}
 				double endScaleFactor;
-				int PAUSE = 15;
+				int PAUSE = 12;
 				while (true) {
 					if (scaleQueue.size() > 0) {
 						isEmpty = false;
@@ -71,40 +69,39 @@ public class SmoothZoomEngine {
 							if (!(endScaleFactor > 8000 || endScaleFactor < 125)) {
 								System.out.println("smooth scaling");
 								synchronized (sze) {
-									// synchronized (scaleFactor) {
-									do {
-										try {
-											Thread.sleep(PAUSE);
-											scaleFactor = scaleFactor
-													+ (scaleDirection) * 25;
-											// обновить экран
+									synchronized (scaleFactor) {
+										do {
+											try {
+												Thread.sleep(PAUSE);
+												scaleFactor = scaleFactor
+														+ (scaleDirection) * 25;
+												// обновить экран
 
-											updateScreen.execute(new Float(
-													scaleFactor / 1000));
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-									} while (!(scaleFactor == (endScaleFactor)));
+												updateScreen.execute(new Float(
+														scaleFactor / 1000));
+											} catch (InterruptedException e) {
+												e.printStackTrace();
+											}
+										} while (!(scaleFactor == (endScaleFactor)));
+									}
 								}
 							}
-							// }
 
 						}
-						
 
-							if (!isEmpty && scaleQueue.size() == 0) {
-								System.out.println("reload");
-								isEmpty = true;
-								try {
-									Thread.sleep(100);
-									reloadMap.execute(new Float(
-											scaleFactor / 1000));
-									//semaphore.release();
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							
+						if (!isEmpty && scaleQueue.size() == 0) {
+							System.out.println("reload");
+							isEmpty = true;
+							try {
+								Thread.sleep(100);
+								reloadMap
+										.execute(new Float(scaleFactor / 1000));
+								// semaphore.release();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
 						}
 
 					}

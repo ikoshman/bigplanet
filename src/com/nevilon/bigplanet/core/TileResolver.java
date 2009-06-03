@@ -22,7 +22,7 @@ public class TileResolver {
 
 	private int strategyId = -1;
 
-	public int loaded = 0;
+	private int loaded = 0;
 
 	public TileResolver(final PhysicMap physicMap) {
 		this.physicMap = physicMap;
@@ -118,6 +118,7 @@ public class TileResolver {
 	 */
 	public void getTile(final RawTile tile) {
 		if (tile.s == -1) {
+			System.out.println("6666666");
 			return;
 		}
 		Bitmap bitmap = cacheProvider.getTile(tile);
@@ -190,4 +191,18 @@ public class TileResolver {
 		return cells;
 	}
 
+	public synchronized void incLoaded(){
+		this.loaded++;
+		System.out.println("inc " + this.loaded);
+	}
+	
+	public synchronized int getLoaded(){
+		System.out.println("getLoaded " + this.loaded);
+		return this.loaded;
+	}
+	
+	public synchronized void resetLoaded(){
+		System.out.println("inc " + this.loaded);
+		this.loaded = 0;
+	}
 }

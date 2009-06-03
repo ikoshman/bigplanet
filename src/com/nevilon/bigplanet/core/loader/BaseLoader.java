@@ -62,7 +62,6 @@ public abstract class BaseLoader extends Thread {
 		HttpURLConnection connection = null;
 		try {
 			String tilePath = getStrategy().getURL(tile.x, tile.y, tile.z, 0);
-			System.out.println(tilePath);
 			URL u = new URL(tilePath);
 			connection = (HttpURLConnection) u
 					.openConnection();
