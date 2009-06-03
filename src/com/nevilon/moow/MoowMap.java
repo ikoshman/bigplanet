@@ -1,6 +1,5 @@
 package com.nevilon.moow;
 
-import java.security.acl.LastOwnerException;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +19,6 @@ import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
 
 public class MoowMap extends Activity {
-	public static final int DIRECTION_RIGHT = 0, DIRECTION_LEFT = 1;
 
 	private Panel main;
 
@@ -32,13 +30,9 @@ public class MoowMap extends Activity {
 
 	private  int zoom = 12; // whole world
 
-	PhysicMap pmap = new PhysicMap(new RawTile(9, 7, zoom));
-
-	boolean moving = false;
+	private PhysicMap pmap = new PhysicMap(new RawTile(9, 7, zoom));
 	
 	boolean inMove = false;
-
-	Bitmap[][] tiles = new Bitmap[4][4];
 	
 	private long lastTouchTime =-1;
 
@@ -46,7 +40,6 @@ public class MoowMap extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
-
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
 		(new Thread(new CanvasUpdater())).start();
 
@@ -130,10 +123,13 @@ public class MoowMap extends Activity {
 		zoomIn(160, 240);
 	}
 	
-	// приближение
-	private void zoomIn(int offsetX, int offsetY){
+	/**
+	 * Увеличение уровня детализации
+	 * @param offsetX
+	 * @param offsetY
+	 */
+   private void zoomIn(int offsetX, int offsetY){
 		if(zoom>0){
-			System.out.println("ZOOOOM");
 			//получение отступа он начала координат
 			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+offsetX;
 			int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+offsetY;
@@ -141,12 +137,13 @@ public class MoowMap extends Activity {
 			int tileX = (currentZoomX*2)/256;
 			int tileY = (currentZoomY*2)/256;
 			zoom--;
-			System.out.println("zoom in to " + zoom);
 			pmap.zoom(tileX, tileY, zoom);
 		}
 	}
 	
-	//удаление
+	/**
+	 * Уменьшение уровня детализации
+	 */
 	private void zoomOut(){
 		if((zoom)<16){
 			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+160;
@@ -168,7 +165,6 @@ public class MoowMap extends Activity {
 		globalOffset.set(globalOffset.x
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
-
 	}
 
 	

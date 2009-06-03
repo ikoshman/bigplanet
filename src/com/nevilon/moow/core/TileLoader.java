@@ -4,11 +4,19 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.MessageFormat;
 import java.util.LinkedList;
 
 import android.util.Log;
 
+/**
+ * Загрузчик тайлов с сервера
+ * @author hudvin
+ *
+ */
 public class TileLoader implements Runnable{
+	
+	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?v=w2.99&x={0}&y={1}&zoom={2}";
 	
 	private TileProvider tileProvider;
 	
@@ -18,7 +26,6 @@ public class TileLoader implements Runnable{
 
 	public TileLoader(TileProvider tileProvider){
 		this.tileProvider = tileProvider;
-	//	new Thread(this).start();
 	}
 	
 	public void load(RawTile tile){
@@ -54,7 +61,6 @@ public class TileLoader implements Runnable{
 					}
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -62,6 +68,7 @@ public class TileLoader implements Runnable{
 	
 	private  class ThreadLoader extends Thread{
 
+		private static final String MIME_TEXT = "text/";
 		private RawTile tile;
 		
 		public ThreadLoader(RawTile tile) {
@@ -70,12 +77,16 @@ public class TileLoader implements Runnable{
 		}
 		
 		private  byte[] load() throws Exception {
-	        URL u = new URL("http://mt1.google.com/mt?v=w2.99&x="+tile.x+
-	        		"&y="+tile.y+"&zoom="+tile.z);
+	        URL u = new URL(MessageFormat.format(
+	        		TileLoader.REQUEST_PATTERN,
+	        		String.valueOf(tile.x),
+	        		String.valueOf(tile.y),
+	        		String.valueOf(tile.z))
+	        		);
 	        URLConnection uc = u.openConnection();
 	        String contentType = uc.getContentType();
 	        int contentLength = uc.getContentLength();
-	        if (contentType==null || contentType.startsWith("text/") || contentLength == -1) {
+	        if (contentType==null || contentType.startsWith(ThreadLoader.MIME_TEXT) || contentLength == -1) {
 	        	Log.e("LOADER","Can't load tile "+ tile.x+" "+ tile.y+" "+ tile.z);
 	        	return null;
 	        }
@@ -91,20 +102,17 @@ public class TileLoader implements Runnable{
 	            offset += bytesRead;
 	        }
 	        in.close();
-
 	        if (offset != contentLength) {
 	        	return null;
 	        }
 	        Log.i("LOADER", "Receive tile " + tile);
 	        return data;
-	        
 	    }
 		
 		public void run(){
 			try {
 				TileLoader.this.tileLoaded(tile,load());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

@@ -79,22 +79,6 @@ public class TileProvider implements Runnable {
 		}
 		
 		public void run(){
-			double scaledX = tile.x/2.0;
-		 	double scaledY = tile.y/2.0;
-		 	int tx = (int) Math.floor(scaledX);
-		 	int ty = (int) Math.floor(scaledY);
-		 	int ox, oy;
-		 	if (tx<scaledX){
-		 		ox = 1;
-		 	} else {
-		 		ox = 0;
-		 	}
-		 	if(ty<scaledY){
-		 		oy = 1;
-		 	} else {
-		 		oy = 0;
-		 	}
-		 	
 		 	Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
 		 	if (bmp4scale!=null){
 		 		returnTile(bmp4scale, tile); 	
@@ -151,7 +135,6 @@ public class TileProvider implements Runnable {
 				// необходимо возвращать, во сколько раз увеличить!!! pow(2,tmp-z)
 				bitmap =  loadTile(new RawTile(parentTileX, parentTileY,tmpZ));
 				if(bitmap == null){
-					System.out.println("not found");
 				} else { // родительский тайл найден и загружен
 					// получение отступа в родительском тайле
 					offsetParentX=offsetParentX - parentTileX*256;
