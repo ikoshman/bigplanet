@@ -152,6 +152,14 @@ public class MapControl extends RelativeLayout {
 	 * @param startTile
 	 */
 	private void buildView(int width, int height, RawTile startTile) {
+		final Handler h = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+               updateZoomControls();
+            }
+        }; 
+		
+		
 		// создание панели с картой
 		main = new Panel(this.getContext());
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
@@ -161,18 +169,34 @@ public class MapControl extends RelativeLayout {
 			// обработчик уменьшения
 			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					pmap.zoomOut();
-					quickHack();
-					updateZoomControls();
+                       new Thread(){
+						
+						@Override
+						public void run(){
+							while(!(pmap.scaleFactor<=0.5)){
+								try {
+									Thread.sleep(20);
+									pmap.scaleFactor-=0.05f;
+									postInvalidate();
+								//	quickHack();
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+							pmap.zoomOut();
+							
+							//quickHack();
+							h.sendEmptyMessage(0);
+						}
+						
+					}.start();
+					
+					//quickHack();
+					//updateZoomControls();
 				}
 			});
 			
-			final Handler h = new Handler(){
-	               @Override
-	               public void handleMessage(Message msg) {
-	                  updateZoomControls();
-	               }
-	        }; 
 			
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
