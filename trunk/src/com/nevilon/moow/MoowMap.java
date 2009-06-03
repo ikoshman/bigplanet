@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +22,8 @@ import com.nevilon.moow.core.RawTile;
 
 public class MoowMap extends Activity {
 
+	private final static int BCG_CELL_SIZE = 16; 
+	
 	private Panel main;
 
 	private volatile boolean running = true;
@@ -35,6 +39,8 @@ public class MoowMap extends Activity {
 	
 	private DoubleClickDispatcher dcDispatcher = new DoubleClickDispatcher();
 
+	private Bitmap mapBg = drawBackground();
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -141,7 +147,6 @@ public class MoowMap extends Activity {
 					zoomIn((int)event.getX(), (int)event.getY());				
 				}
 			}
-			
 			break;
 		}
 
@@ -225,10 +230,35 @@ public class MoowMap extends Activity {
 				+ (nextMovePoint.y - previousMovePoint.y));
 	}
 
-	
+	/**
+	 * Рисует фон для карты( в клетку )
+	 * @return
+	 */
+	private Bitmap drawBackground(){
+		// создание битмапа по размеру экрана
+		Bitmap bitmap = Bitmap.createBitmap(320, 480, Config.RGB_565);
+		Canvas cv = new Canvas(bitmap);
+		//прорисовка фона
+	 	Paint background = new Paint();
+	    background.setARGB(255, 128, 128, 128);
+	    cv.drawRect(0, 0, 320, 480, background);
+	    background.setAntiAlias(true);
+	    //установка цвета линий
+	    background.setColor(Color.WHITE);
+	    // продольные линии
+	    for (int i=0;i<320/MoowMap.BCG_CELL_SIZE;i++){
+	    	cv.drawLine(MoowMap.BCG_CELL_SIZE*i, 0, MoowMap.BCG_CELL_SIZE*i, 480, background);   
+	    }
+	    // поперечные линии
+	    for (int i=0;i<480/MoowMap.BCG_CELL_SIZE;i++){
+	    	cv.drawLine(0, MoowMap.BCG_CELL_SIZE*i,  320,MoowMap.BCG_CELL_SIZE*i, background);
+	    }
+	    return bitmap;
+	}
 	
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
+		canvas.drawBitmap(mapBg,0,0,paint);
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
