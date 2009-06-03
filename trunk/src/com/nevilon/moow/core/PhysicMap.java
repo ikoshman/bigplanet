@@ -12,7 +12,7 @@ public class PhysicMap {
 	private RawTile defTile;
 
 	private int zoom;
-
+	
 	public Point globalOffset = new Point();
 
 	private Point previousMovePoint = new Point();
@@ -161,6 +161,8 @@ public class PhysicMap {
 				+ (nextMovePoint.y - previousMovePoint.y));
 
 	}
+	
+	
 
 	private void reload(int x, int y, int z) {
 		if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
