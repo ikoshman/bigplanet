@@ -76,12 +76,15 @@ public class LocalStorage {
 
 	public InputStream get(RawTile tile) {
 		String path = buildPath(tile.getX(), tile.getY(), tile.getZ());
-		try {
-			return new FileInputStream(new File(path + "/tile.png"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
+		File tileFile = new File(path + "/tile.png");
+		if (tileFile.exists()){
+			try {
+				return new FileInputStream(tileFile);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		} 
+		return null;
 	}
 
 }

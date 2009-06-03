@@ -26,8 +26,8 @@ public class DrawTesting extends Activity {
 
 	private boolean inMove = false;
 
-
 	private int nx = -1;
+	private int ny = -1;
 
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
@@ -72,34 +72,45 @@ public class DrawTesting extends Activity {
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
 		boolean moved = false;
-		
-		
-		
-		
-	
-	if(isMovedRight()){
+		boolean movedy = false;
+
+		if (isMovedRight()) {
 			System.out.println("moved right");
 			if (previousMovePoint.x > nextMovePoint.x) {
 				globalOffset.x += (256);
 				pmap.moveRight();
 				moved = true;
 			}
-		}
-		 else
-		if (isMovedLeft()) {
+		} else if (isMovedLeft()) {
 			if (previousMovePoint.x < nextMovePoint.x) {
 				globalOffset.x -= 256;
 				pmap.moveLeft();
 				moved = true;
 			}
 		}
-		
-		if(!moved){
-		    nx = (int) Math.ceil((globalOffset.x-70) / 256);
+
+		if (!moved) {
+			nx = (int) Math.ceil((globalOffset.x - 70) / 256);
 		} else {
 			nx = 0;
 		}
-		
+		// перемещение вверх-вниз
+		if (isMovedBottom()) {
+			if (previousMovePoint.y < nextMovePoint.y) {
+				globalOffset.y -= (256);
+				pmap.moveBottom();
+				movedy = true;
+			}
+	
+		}
+
+		if (!movedy) {
+			ny = (int) Math.ceil((globalOffset.y-(256)) / 256);
+		} else {
+			ny = 0;
+		}
+
+
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
@@ -113,13 +124,23 @@ public class DrawTesting extends Activity {
 	}
 
 	private boolean isMovedLeft() {
-		return inMove && nx != -1 && Math.abs(Math.ceil((globalOffset.x + 256) / 256) - nx) == 1;
-	}
-	
-	private boolean isMovedRight() {
-		return inMove && nx != -1 && Math.abs(Math.ceil((globalOffset.x - 256+320) / 256) - nx) == 1;
+		return inMove && nx != -1
+				&& Math.abs(Math.ceil((globalOffset.x + 256) / 256) - nx) == 1;
 	}
 
+	private boolean isMovedRight() {
+		return inMove
+				&& nx != -1
+				&& Math.abs(Math.ceil((globalOffset.x - 256 + 320) / 256) - nx) == 1;
+	}
+
+	
+		private boolean isMovedBottom() {
+		return inMove
+				&& ny != -1
+				&& Math.abs(Math.ceil((globalOffset.y + 256) / 256) - ny) == 1;
+	}
+	
 	class Panel extends View {
 		Paint paint;
 
