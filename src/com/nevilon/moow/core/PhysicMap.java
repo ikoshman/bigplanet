@@ -18,6 +18,8 @@ public class PhysicMap {
 	private Point previousMovePoint = new Point();
 
 	public Point nextMovePoint = new Point();
+	
+	public boolean canDraw = true;
 
 	public PhysicMap(RawTile defTile) {
 		this.defTile = defTile;
@@ -41,6 +43,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
+		//canDraw = false;
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
 		if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
@@ -51,6 +54,10 @@ public class PhysicMap {
 					e.printStackTrace();
 				}
 			}
+		}
+		if(tileProvider.count ==0){
+			canDraw = true;
+
 		}
 
 	}
@@ -224,6 +231,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private void loadCells(RawTile tile) {
+		canDraw = false;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
@@ -243,5 +251,6 @@ public class PhysicMap {
 
 			}
 		}
+		//canDraw = true;
 	}
 }
