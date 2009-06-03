@@ -134,6 +134,8 @@ public class BigPlanet extends Activity {
 			mapControl.getPhysicalMap().getDefaultTile().s = mapSourceId;
 			// величина отступа
 			Point globalOffset = Preferences.getOffset();
+			//globalOffset.x = 0;
+			//globalOffset.y = -32;
 			mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
 			mapControl.getPhysicalMap().reloadTiles();
 			if (BigPlanetApp.isDemo) {
@@ -280,6 +282,13 @@ public class BigPlanet extends Activity {
 		Display display = wm.getDefaultDisplay();
 		int height = display.getHeight();
 		int width = display.getWidth();
+		if(height==480){
+			height =430;
+		}
+		if(height==320){
+			height = 270;
+		}
+		
 		if (mapControl == null) {
 			mapControl = new MapControl(this, width, height, tile, mm);
 			mapControl.setOnMapLongClickListener(new OnMapLongClickListener() {

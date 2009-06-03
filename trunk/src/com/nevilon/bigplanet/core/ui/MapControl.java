@@ -242,7 +242,7 @@ public class MapControl extends RelativeLayout {
 					LayoutParams.WRAP_CONTENT));
 
 		}
-		zoomPanel.setPadding((width - 160) / 2, height - 112, 0, 0);
+		zoomPanel.setPadding((width - 160) / 2, height - 112+50, 0, 0);
 
 		if (pmap == null) { // если не был создан раньше
 			pmap = new PhysicMap(startTile, new AbstractCommand() {
