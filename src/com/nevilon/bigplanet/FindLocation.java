@@ -1,10 +1,20 @@
 package com.nevilon.bigplanet;
 
+import java.io.StringReader;
+import java.util.List;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.http.HttpStatus;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
+import com.nevilon.bigplanet.core.Place;
 import com.nevilon.bigplanet.core.loader.BaseLoader;
+import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -75,7 +85,17 @@ public class FindLocation extends Activity implements Runnable {
 			int statusCode = client.executeMethod(method);
 			if (statusCode != -1 && method.getStatusCode() == HttpStatus.SC_OK) {
 				String response = method.getResponseBodyAsString();
-				System.out.println(response);
+				//System.out.println(response);
+				
+				SAXParserFactory spf = SAXParserFactory.newInstance();
+				SAXParser sp = spf.newSAXParser();
+				XMLReader xr = sp.getXMLReader();
+				GeoLocationHandler h = new GeoLocationHandler(); 
+				xr.setContentHandler(h);
+				xr.parse(new InputSource(new StringReader(response)));
+				
+				List<Place> p = h.places;
+				System.out.println(p);
 				method.releaseConnection();
 			} else {
 
