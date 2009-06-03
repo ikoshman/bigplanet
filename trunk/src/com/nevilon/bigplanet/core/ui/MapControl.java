@@ -194,7 +194,7 @@ public class MapControl extends RelativeLayout {
 	private synchronized void updateScreen() {
 		if (main != null) {
 			main.postInvalidate();
-		}
+		}	
 	}
 
 	private void quickHack() {
@@ -273,27 +273,8 @@ public class MapControl extends RelativeLayout {
 	 * @param canvas
 	 * @param paint
 	 */
-	private void doDraw(Canvas canvas, Paint paint) {
-		/*
-		if (cvBitmap == null) {
-			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
-		}
-		if (cv == null) {
-			cv = new Canvas();
-			cv.setBitmap(cvBitmap);
-			canvas = cv;
-			
-		}
-		*/
+	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
-		
-		// canvas.drawBitmap(mapBg, 0, 0, paint);
-		// отрисовка тайлов
-		
-
-		//Matrix matr = canvas.getMatrix();
-		//matr.postScale(0.5f, 0.5f);
-		//canvas.setMatrix(matr);
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
@@ -310,9 +291,6 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-		//zoomPanel.postInvalidate();
-		//canvas.scale(2f, 2f); 
-		//canvas.restore();
 	}
 
 	/**
