@@ -92,7 +92,6 @@ public class PhysicMap {
 				if(tmpBitmap!=null){
 					cells[i][j] = tmpBitmap;
 				} else {
-					System.out.println("null");
 					cells[i][j] = null;
 					tileProvider.getTile(new RawTile(x, y, tile.z));
 				}
