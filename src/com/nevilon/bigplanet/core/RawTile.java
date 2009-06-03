@@ -1,6 +1,5 @@
 package com.nevilon.bigplanet.core;
 
-import java.io.Serializable;
 
 /**
  * Представляет параметры тайла
@@ -8,16 +7,10 @@ import java.io.Serializable;
  * @author hudvin
  * 
  */
-public class RawTile implements Serializable {
+public class RawTile {
 
 	public int x, y, z, s;
 
-	public RawTile() {
-		x = 0;
-		y = 0;
-		z = 16;
-		s = -1;
-	}
 
 	public RawTile(int x, int y, int z, int s) {
 		this.x = x;
@@ -60,7 +53,8 @@ public class RawTile implements Serializable {
 
 	@Override
 	public String toString() {
-		return x + " : " + y + " : " + z + " : " + s;
+		String path = s+"/"+z+"/"+x+"/"+y+"/";
+		return path;
 	}
 
 }

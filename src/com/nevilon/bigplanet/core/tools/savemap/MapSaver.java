@@ -82,6 +82,10 @@ public class MapSaver {
 		protected void handle(RawTile tile, byte[] data, int meta) {
 			MapSaver.this.handle(tile, data, meta);
 		}
+		
+		protected boolean checkTile(RawTile tile) {
+			return !LocalStorageWrapper.isExists(tile);
+		}
 
 	}
 

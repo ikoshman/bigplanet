@@ -29,15 +29,16 @@ public class TileResolver {
 				new Handler() {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
-						LocalStorageWrapper.put(tile, data);
 						if (tile.s == strategyId) {
+							LocalStorageWrapper.put(tile, data);
 							Bitmap bmp = LocalStorageWrapper.get(tile);
 							cacheProvider.putToCache(tile, bmp);
 							updateMap(tile, bmp);
 						}
 					}
 				});
-		setMapSource(strategyId);
+		//TODO может можно убрать
+		//setMapSource(strategyId);
 		new Thread(tileLoader).start();
 
 		// обработчик загрузки скалированых картинок
@@ -62,6 +63,7 @@ public class TileResolver {
 			@Override
 			public synchronized void handle(RawTile tile, Bitmap bitmap,
 					boolean isScaled) {
+				
 				if (tile.s != strategyId) {
 					return;
 				}
@@ -87,7 +89,9 @@ public class TileResolver {
 	}
 
 	private void load(RawTile tile) {
-		tileLoader.load(tile);
+		if(tile.s!=-1){
+			tileLoader.load(tile);
+		}
 	}
 
 	private void updateMap(RawTile tile, Bitmap bitmap) {
@@ -112,8 +116,9 @@ public class TileResolver {
 		LocalStorageWrapper.get(tile, localLoaderHandler);
 	}
 
-	public void setMapSource(int sourceId) {
+	public synchronized void setMapSource(int sourceId) {
 		cacheProvider.clear();
+		System.gc();
 		MapStrategy mapStrategy = MapStrategyFactory.getStrategy(sourceId);
 		this.strategyId = sourceId;
 		tileLoader.setMapStrategy(mapStrategy);

@@ -15,11 +15,10 @@ public class BitmapCacheWrapper {
 	/*
 	 * размер кеша (для каждого обоих типов)
 	 */
-	public final static int CACHE_SIZE = 20;
+	public final static int CACHE_SIZE = 10;
+	private BitmapCache cache = new BitmapCache(CACHE_SIZE);
 
-	private BitmapCache cache = new BitmapCache(15);
-
-	private BitmapCache scaledCache = new BitmapCache(10);
+	private BitmapCache scaledCache = new BitmapCache(CACHE_SIZE);
 
 	/**
 	 * Поиск в кеше скалированых тайлов
@@ -57,7 +56,7 @@ public class BitmapCacheWrapper {
 
 	public void clear() {
 		scaledCache.clear();
-		
+		cache.clear();
 	}
 
 

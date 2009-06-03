@@ -15,13 +15,13 @@ public class DoubleClickDetector {
 	 * Минимальный временной промежуток между двумя отдельными касаниями, при
 	 * котором они воспринимаются как двойное касание
 	 */
-	private static int CLICK_INTERVAL = 500;
+	private static int CLICK_INTERVAL = 600;
 
 	/**
 	 * Максимальное расстояние между касаниями, при котором они воспринимаются
 	 * как двойное
 	 */
-	private static int CLICK_PRECISE = 10;
+	private static int CLICK_PRECISE = 12;
 
 	/**
 	 * Хранит предыдущее событие

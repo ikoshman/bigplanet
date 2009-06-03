@@ -18,11 +18,7 @@
 				android:layout_height="wrap_content" android:layout_width="fill_parent"
 				android:text="Radius: " />
 
-			<EditText android:id="@+id/radiusValue"
-			android:numeric="decimal"
-				android:layout_height="40sp" android:layout_width="70sp"
-				android:text="" android:maxLength="4" />
-
+			
 			<TextView android:id="@+id/downloadInfo" android:gravity="left"
 				android:layout_height="wrap_content" android:layout_width="fill_parent"
 				android:text="Download: " />

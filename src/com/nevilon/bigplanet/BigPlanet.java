@@ -2,7 +2,6 @@ package com.nevilon.bigplanet;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -30,7 +29,7 @@ public class BigPlanet extends Activity {
 	/*
 	 * Графический движок, реализующий карту
 	 */
-	private MapControl mapControl;
+	public MapControl mapControl;
 
 	/**
 	 * Конструктор
@@ -59,6 +58,7 @@ public class BigPlanet extends Activity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+		System.gc();
 		configMapControl(mapControl.getPhysicalMap().getDefaultTile());
 	}
 
