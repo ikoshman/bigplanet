@@ -75,7 +75,7 @@ public class TileLoader implements Runnable{
 	        URLConnection uc = u.openConnection();
 	        String contentType = uc.getContentType();
 	        int contentLength = uc.getContentLength();
-	        if (contentType.startsWith("text/") || contentLength == -1) {
+	        if (contentType==null || contentType.startsWith("text/") || contentLength == -1) {
 	        	Log.e("LOADER","Can't load tile "+ tile.x+" "+ tile.y+" "+ tile.z);
 	        	return null;
 	        }

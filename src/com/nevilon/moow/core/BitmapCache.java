@@ -22,6 +22,10 @@ public class BitmapCache {
 		return cacheMap.get(tile);
 	}
 	
+	public Bitmap get(int x, int y, int z){
+		return cacheMap.get(new RawTile(x,y,z));
+	}
+	
 	
 	private static class ExpiredHashMap{
 		

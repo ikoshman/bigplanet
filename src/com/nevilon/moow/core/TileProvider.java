@@ -48,59 +48,17 @@ public class TileProvider implements Runnable {
 					inMemoryCache.put(tile, tmpBitmap);
 					returnTile(tmpBitmap, tile);
 				} else {
-					
-
+					// скалирование существующего тайла с предыдущего уровня
+					new Thread(new TileScaler(tile)).start();
+					//запрос на загрузку тайла с сервера
 					tileLoader.load(tile);
-					
-					double scaledX = tile.x/2.0;
-				 	double scaledY = tile.y/2.0;
-				 	int tx = (int) Math.floor(scaledX);
-				 	int ty = (int) Math.floor(scaledY);
-				 	int ox, oy;
-				 	if (tx<scaledX){
-				 		ox = 1;
-				 	} else {
-				 		ox = 0;
-				 	}
-				 	if(ty<scaledY){
-				 		oy = 1;
-				 	} else {
-				 		oy = 0;
-				 	}
-				 	Bitmap bmp4scale;
-				 	RawTile tile4scale = new RawTile(tx, ty,tile.z+1);
-				 	bmp4scale = inMemoryCache.get(tile);
-				 	if(bmp4scale == null){
-				 		outStream = localStorage.get(tile4scale); 
-				 		if (outStream!=null){
-				 			bmp4scale = BitmapFactory.decodeStream(outStream);
-				 		}
-				 	}
-				 	if (bmp4scale!=null){
-				 		long start = System.currentTimeMillis();
-				 		 
-				 		System.out.println(bmp4scale.getWidth());
-				 		int[] pixels = new int[128*128];
-				 		
-				 		bmp4scale.getPixels(pixels, 0, 128, ox*128 ,oy*128, 128, 128);
-				 		bmp4scale = Bitmap.createBitmap(pixels, 128, 128, Config.RGB_565);
-				 	
-				 		
-				 		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp4scale, 256, 256, false);
-				 		System.out.println(System.currentTimeMillis() - start);
-				 	 	returnTile(scaledBitmap, tile);
-				 	
-				 	}
-				 	
-					
-					// return scaled tile
 				}
 
 			}
 		}
 	}
 
-	public void returnTile(Bitmap bitmap, RawTile tile) {
+	public synchronized void returnTile(Bitmap bitmap, RawTile tile) {
 		physicMap.update(bitmap, tile);
 	}
 
@@ -110,6 +68,99 @@ public class TileProvider implements Runnable {
 
 	private void addToQueue(RawTile tile) {
 		queue.push(tile);
+	}
+	
+	private  class TileScaler implements Runnable{
+		
+		private RawTile tile;
+		
+		public TileScaler(RawTile tile){
+			this.tile = tile;
+		}
+		
+		public void run(){
+			double scaledX = tile.x/2.0;
+		 	double scaledY = tile.y/2.0;
+		 	int tx = (int) Math.floor(scaledX);
+		 	int ty = (int) Math.floor(scaledY);
+		 	int ox, oy;
+		 	if (tx<scaledX){
+		 		ox = 1;
+		 	} else {
+		 		ox = 0;
+		 	}
+		 	if(ty<scaledY){
+		 		oy = 1;
+		 	} else {
+		 		oy = 0;
+		 	}
+		 	Bitmap bmp4scale = null;
+		 	bmp4scale = findTile(tile.x, tile.y, tile.z);
+	 		
+		 	if (bmp4scale!=null){
+		 		
+		 		int[] pixels = new int[128*128];
+		 		
+		 		bmp4scale.getPixels(pixels, 0, 128, ox*128 ,oy*128, 128, 128);
+		 		bmp4scale = Bitmap.createBitmap(pixels, 128, 128, Config.RGB_565);
+		 		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp4scale, 256, 256, false);
+		 		returnTile(scaledBitmap, tile);
+		 	
+		 	}	
+		}
+		
+		private Bitmap loadTile(RawTile tile){
+			Bitmap bmp4scale = null;
+		 	bmp4scale = TileProvider.this.inMemoryCache.get(tile);
+		 	BufferedInputStream outStream;
+		 	if(bmp4scale == null){
+		 		outStream = localStorage.get(tile); 
+		 		if (outStream!=null){
+		 			bmp4scale = BitmapFactory.decodeStream(outStream);
+		 		}
+		 	}
+		 	if(bmp4scale==null){System.out.println("not loaded blya");}
+		 	return bmp4scale;
+		}
+		
+		
+		private Bitmap findTile(int x, int y, int z){
+			Bitmap bitmap = null;
+			int offsetX;
+			int offsetY;
+			int offsetParentX;
+			int offsetParentY;
+			int parentTileX;
+			int parentTileY;
+			// получение отступа от начала координат на начальном уровне
+			offsetX = x*256; // отступ от начала координат по ox
+			offsetY = y*256; // отступ от начала координат по oy
+
+			int tmpZ = z;
+			while(bitmap == null && tmpZ<=17){
+				tmpZ++;
+			
+				// получение отступа от начала координат на предыдущем уровне
+				offsetParentX = (int) (offsetX/Math.pow(2, tmpZ-z));
+				offsetParentY = (int) (offsetY/Math.pow(2, tmpZ-z));
+				
+				// получение координат тайла на предыдущем уровне
+				parentTileX = offsetParentX/256; 
+				parentTileY = offsetParentY/256;
+				
+				// получение четверти 
+				
+				bitmap =  loadTile(new RawTile(parentTileX, parentTileY,tmpZ));
+				if(bitmap == null){
+					System.out.println("not found");
+				} else {
+					System.out.println("found " + parentTileX + " " + parentTileY+ " "+ tmpZ);
+				}
+			}
+			
+			return bitmap;
+		}
+		
 	}
 
 }

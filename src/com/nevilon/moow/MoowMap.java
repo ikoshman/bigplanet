@@ -36,7 +36,7 @@ public class MoowMap extends Activity {
 
 	boolean moving = false;
 	
-	boolean canDraw = true;
+	boolean inMove = false;
 
 	Bitmap[][] tiles = new Bitmap[4][4];
 	
@@ -77,6 +77,7 @@ public class MoowMap extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			inMove = false;
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
 			if (System.currentTimeMillis() - lastTouchTime<1000){
 				zoomIn((int)event.getX(), (int)event.getY());
@@ -85,15 +86,18 @@ public class MoowMap extends Activity {
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
+			inMove = true;
 			moveCoordinates(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_UP:
-			canDraw = false;
-			moveCoordinates(event.getX(), event.getY());
-		    quickHack();
-		    quickHack();
-		    canDraw = true;
-		    break;
+			if(inMove){
+				moveCoordinates(event.getX(), event.getY());
+			    quickHack();
+			    quickHack();
+			    
+			}
+			
+			break;
 		}
 
 		return super.onTouchEvent(event);
@@ -126,24 +130,30 @@ public class MoowMap extends Activity {
 		zoomIn(160, 240);
 	}
 	
+	// приближение
 	private void zoomIn(int offsetX, int offsetY){
-		//получение отступа он начала координат
-		int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+offsetX;
-		int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+offsetY;
-		// получение координат углового тайла
-		int tileX = (currentZoomX*2)/256;
-		int tileY = (currentZoomY*2)/256;
-		zoom-=1;
-		pmap.zoom(tileX, tileY, zoom);
+		if(zoom>0){
+			System.out.println("ZOOOOM");
+			//получение отступа он начала координат
+			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+offsetX;
+			int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+offsetY;
+			// получение координат углового тайла
+			int tileX = (currentZoomX*2)/256;
+			int tileY = (currentZoomY*2)/256;
+			zoom--;
+			System.out.println("zoom in to " + zoom);
+			pmap.zoom(tileX, tileY, zoom);
+		}
 	}
 	
+	//удаление
 	private void zoomOut(){
 		if((zoom)<16){
 			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+160;
 			int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+240;
 			int tileX = (currentZoomX/2)/256;
 			int tileY = (currentZoomY/2)/256;
-			zoom+=1;
+			zoom++;
 			pmap.zoom(tileX, tileY, zoom);
 
 		}
@@ -164,7 +174,6 @@ public class MoowMap extends Activity {
 	
 	
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		if(!canDraw){return;}
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
