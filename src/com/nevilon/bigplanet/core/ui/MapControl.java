@@ -352,7 +352,7 @@ public class MapControl extends RelativeLayout {
 						updateZoomControls();
 					} else {
 						if (onMapLongClickListener != null) {
-							onMapLongClickListener.onMapLongClick(0, 0);
+							onMapLongClickListener.onMapLongClick((int)event.getX(), (int)event.getY());
 						}
 					}
 				} else {
