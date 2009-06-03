@@ -1,5 +1,9 @@
 package com.nevilon.bigplanet.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -12,8 +16,10 @@ public class PhysicMap {
 
 	private TileResolver tileResolver;
 
-	private Bitmap[][] cells = new Bitmap[3][3];
+	//private ArrayList<Bitmap>[][] cells = new ArrayList<Bitmap>[3][3];
 
+	private HashMap<Tile,Bitmap> cells = new HashMap<Tile,Bitmap>(9);
+	
 	private RawTile defTile;
 
 	private int zoom;
@@ -38,6 +44,24 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
+	public Bitmap getCell(int x, int y){
+		int ind = 3*(y+1)-(3-x);
+		Tile t = new Tile();
+		t.x = x;
+		t.y = y;
+		System.out.println(cells.size());
+		return cells.get(t);
+	}
+	
+	private void setBitmap(Bitmap bmp, int x, int y){
+		int ind = 3*(y+1)-(3-x);
+		Tile t = new Tile();
+		t.x = x;
+		t.y = y;
+		cells.put(t, bmp);
+		
+	}
+	
 	public Point getNextMovePoint(){
 		return this.nextMovePoint;
 	}
@@ -70,7 +94,8 @@ public class PhysicMap {
 		if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
 			if (dx >= 0 && dy >= 0) {
 				try {
-					cells[dx][dy] = bitmap;
+					setBitmap(bitmap, dx, dy);
+					//cells[dx][dy] = bitmap;
 					updateMap();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -86,10 +111,11 @@ public class PhysicMap {
 
 	}
 
+	/*
 	public Bitmap[][] getCells() {
 		return cells;
 	}
-
+*/
 	public void zoom(int x, int y, int z) {
 		reload(x, y, z);
 	}
@@ -260,7 +286,8 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-				cells[i][j] = MapControl.bp;
+				setBitmap(MapControl.bp, i, j);
+				//cells[i][j] = MapControl.bp;
 				tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
 						.getMapSourceId()));
 			}
@@ -296,6 +323,45 @@ public class PhysicMap {
 	public void setDefTile(RawTile defTile) {
 		this.defTile = defTile;
 		this.zoom = defTile.z;
+	}
+	
+	
+	class Tile {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + x;
+			result = prime * result + y;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Tile other = (Tile) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (x != other.x)
+				return false;
+			if (y != other.y)
+				return false;
+			return true;
+		}
+
+		public int x;
+		
+		public int y;
+		
+			private PhysicMap getOuterType() {
+			return PhysicMap.this;
+		}
 	}
 
 }
