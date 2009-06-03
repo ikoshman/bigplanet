@@ -24,7 +24,8 @@ public class TileLoader implements Runnable {
 
 	private int counter = 0;
 
-
+	private boolean useNet =  true;
+	
 	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
 
 	/**
@@ -41,6 +42,9 @@ public class TileLoader implements Runnable {
 		this.mapStrategy = mapStrategy;
 	}
 	
+	public synchronized void setUseNet(boolean useNet){
+		this.useNet = useNet;
+	}
 
 	/**
 	 * Добавляет в очередь на загрузку
@@ -52,7 +56,9 @@ public class TileLoader implements Runnable {
 	}
 
 	public synchronized void addToQueue(RawTile tile) {
-		loadQueue.add(tile);
+		if(useNet){
+			loadQueue.add(tile);
+		}
 	}
 
 	public synchronized RawTile getFromQueue() {
@@ -68,19 +74,19 @@ public class TileLoader implements Runnable {
 
 	public void run() {
 		while (true) {
-			try {
-				Thread.sleep(200);
-				if (counter < MAX_THREADS && loadQueue.size() > 0) {
-					RawTile rt = getFromQueue();
-					Log.i("LOADER", "Tile " + rt + " start loading");
-					if (null != rt) {
-						new ThreadLoader(rt).start();
-						counter++;
+				try {
+					Thread.sleep(200);
+					if (useNet && counter < MAX_THREADS && loadQueue.size() > 0) {
+						RawTile rt = getFromQueue();
+						Log.i("LOADER", "Tile " + rt + " start loading");
+						if (null != rt) {
+							new ThreadLoader(rt).start();
+							counter++;
+						}
 					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

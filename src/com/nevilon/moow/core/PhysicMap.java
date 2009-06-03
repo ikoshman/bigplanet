@@ -275,6 +275,10 @@ public class PhysicMap {
 		}
 	}
 
+	public void reloadTiles(){
+		loadCells(defTile);
+	}
+	
 	public void changeMapSource(int sourceId) {
 		tileProvider.setMapSource(sourceId);
 		loadCells(defTile);
@@ -298,6 +302,11 @@ public class PhysicMap {
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	public TileResolver getTileResolver() {
+		return this.tileProvider;
+		
 	}
 
 }
