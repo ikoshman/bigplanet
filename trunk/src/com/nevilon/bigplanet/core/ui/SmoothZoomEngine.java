@@ -13,7 +13,7 @@ public class SmoothZoomEngine {
 	
 	private LinkedList<Integer> scaleQueue = new LinkedList<Integer>();
 
-	private Double scaleFactor = 1000d;
+	private Float scaleFactor = 1000f;
 	
 	
 	private AbstractCommand updateScreen;
@@ -37,7 +37,7 @@ public class SmoothZoomEngine {
 	
 	public void nullScaleFactor(){
 		synchronized (scaleFactor) {
-			scaleFactor = 1000d;
+			scaleFactor = 1000f;
 		} 
 	}
 	
@@ -72,7 +72,7 @@ public class SmoothZoomEngine {
 													+ (scaleDirection) * 25;
 											// обновить экран
 							
-											updateScreen.execute(new Double(
+											updateScreen.execute(new Float(
 													scaleFactor / 1000));
 										} catch (InterruptedException e) {
 											e.printStackTrace();
@@ -84,7 +84,7 @@ public class SmoothZoomEngine {
 						} if (!isEmpty && scaleQueue.size()==0) {
 							System.out.println("reload");
 							isEmpty = true;
-							reloadMap.execute(new Double(scaleFactor / 1000));
+							reloadMap.execute(new Float(scaleFactor / 1000));
 						}
 
 						}

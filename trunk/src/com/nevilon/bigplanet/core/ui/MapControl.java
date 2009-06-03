@@ -109,7 +109,7 @@ public class MapControl extends RelativeLayout {
 		szEngine.setReloadMapCommand( new AbstractCommand(){
 			
 			public void execute(Object object){
-				double sf = (Double)object;
+				double sf = (Float)object;
 				//pmap.inMove = false;
 				pmap.zoomS(sf);
 			}
@@ -118,7 +118,7 @@ public class MapControl extends RelativeLayout {
 		szEngine.setUpdateScreenCommand(new AbstractCommand(){
 			public void execute(Object object){
 				///pmap.inMove = true;
-				pmap.scaleFactor = (Double)object;
+				pmap.scaleFactor = (Float)object;
 				postInvalidate();
 			}
 			
@@ -427,11 +427,14 @@ public class MapControl extends RelativeLayout {
 			case MotionEvent.ACTION_UP:
 				if (dcDetector.process(event)) {
 					if (mapMode == MapControl.ZOOM_MODE) {
+						// точка, по которой будет производиться центирование
+						System.gc();
 						scalePoint.set((int) event.getX(), (int) event.getY());
+						final float STEP = 0.1f;
 						float sx = (pmap.getWidth() / 2 - event.getX());
 						float sy = (pmap.getHeight() / 2 - event.getY());
-						final float dx = (sx / (1f / 0.2f));
-						final float dy = (sy / (1f / 0.2f));
+						final float dx = (sx / (1f / STEP));
+						final float dy = (sy / (1f / STEP));
 						
 						new Thread() {
 
@@ -445,22 +448,21 @@ public class MapControl extends RelativeLayout {
 								float ox = pmap.getGlobalOffset().x;
 								float oy = pmap.getGlobalOffset().y;
 							    
-								double endScaleFactor = pmap.scaleFactor*2;
+								float endScaleFactor = pmap.scaleFactor*2;
 								while (pmap.scaleFactor <= endScaleFactor) {
 									try {
-										Thread.sleep(20);
-										
-										pmap.scaleFactor += 0.2f;
+										Thread.sleep(30);
+										pmap.scaleFactor += STEP;
 
 										tx += dx;
 										ty += dy;
-										scalePoint.set((int) (scaleX + tx),
-												(int) (scaleY + ty));
+										scalePoint.set((int) ( (scaleX + tx)),
+												(int)((scaleY + ty)));
 										ox += dx;
 										oy += dy;
 										
-										pmap.getGlobalOffset().x = (int) ox;
-										pmap.getGlobalOffset().y = (int) oy;
+										pmap.getGlobalOffset().x =  (int)Math.floor(ox);
+										pmap.getGlobalOffset().y =  (int)Math.floor(oy);
 										postInvalidate();
 
 										
@@ -471,7 +473,7 @@ public class MapControl extends RelativeLayout {
 								}
 
 								try{
-									Thread.sleep(200);
+									Thread.sleep(600);
 									pmap.zoomInCenter();
 									h.sendEmptyMessage(0);
 								} catch(InterruptedException e){
