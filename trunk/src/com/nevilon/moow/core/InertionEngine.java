@@ -1,5 +1,6 @@
 package com.nevilon.moow.core;
 
+import java.util.List;
 import java.util.Stack;
 
 import android.graphics.Point;
@@ -25,10 +26,10 @@ public class InertionEngine {
 	
 	public double ay;
 	
-	private Stack<Point> moveHistory;
+	private List<Point> moveHistory;
 	
 	
-	public InertionEngine(Stack<Point> moveHistory, long interval){
+	public InertionEngine(List<Point> moveHistory, long interval){
 		this.interval = interval;
 		this.moveHistory = moveHistory;
 		findAB();
@@ -37,6 +38,13 @@ public class InertionEngine {
 		dy = b.y - a.y;
 		ax = (dx/interval);
 		ay = (dy/interval);
+		
+		while(Math.abs(dx)>5 || Math.abs(dy)>5){
+			dx = dx/2;
+			dy = dy/2;
+		}
+		System.out.println("bl " + dx + " " + dy);
+		
 	}
 	
 	
@@ -45,6 +53,9 @@ public class InertionEngine {
 	}
 	
 	private void findAB(){
+		a = moveHistory.get(0);
+		b = moveHistory.get(moveHistory.size()/2);
+		/*
 		Point tmpPoint = new Point();
 		for (Point pp : moveHistory){
 			if(!pp.equals(tmpPoint) && tmpPoint.x!=0 && tmpPoint.y!=0){
@@ -55,6 +66,7 @@ public class InertionEngine {
 				tmpPoint = pp;
 			}
 		}
+		*/
 	}
 	
 	

@@ -200,18 +200,15 @@ public class PhysicMap {
 	}
 	
 	private int normalize(int x,int z){
-		System.out.println("before " + x);
 		int tileCount = (int) Math.pow(2, 17 - z);
 		while(x<0){
-			x = tileCount+x;
-			
+			x = tileCount+x;		
 		}
 		if (x<0){
 			//x = tileCount+x;
 		} else if (x>tileCount-1){
 			x = x - tileCount;
 		}
-		System.out.println("after "+x);
 		return x;
 	}
 	

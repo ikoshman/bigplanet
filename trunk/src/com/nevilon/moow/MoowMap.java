@@ -1,5 +1,7 @@
 package com.nevilon.moow;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import android.app.Activity;
@@ -55,13 +57,12 @@ public class MoowMap extends Activity {
 	// последнее время, когда происходило передвижение карты
 	private long lastMoveTime = -1;
 
-	private Stack<Point> moveHistory = new Stack<Point>();
+	private List<Point> moveHistory = new ArrayList<Point>();
 
 	private InertionEngine iengine;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		System.out.println("created");
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, MAP_HEIGHT));
@@ -216,11 +217,12 @@ public class MoowMap extends Activity {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
+				moveHistory.clear();
 				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
 				Point pxx = new Point();
 				pxx.set((int) event.getX(), (int) event.getY());
 				lastMoveTime = 0;
-				moveHistory.push(pxx);
+				moveHistory.add(pxx);
 				break;
 			case MotionEvent.ACTION_MOVE:
 				lastMoveTime = System.currentTimeMillis();
@@ -228,18 +230,15 @@ public class MoowMap extends Activity {
 				pmap.moveCoordinates(event.getX(), event.getY());
 				Point p = new Point();
 				p.set((int) event.getX(), (int) event.getY());
-				System.out.println(p);
-				moveHistory.push(p);
+				//System.out.println(p);
+				moveHistory.add(p);
 				break;
 			case MotionEvent.ACTION_UP:
-				System.out.println("up " + event.getX() + " " + event.getY());
+				//System.out.println("up " + event.getX() + " " + event.getY());
 				long interval = System.currentTimeMillis() - lastMoveTime;
-				System.out.println(interval);
 				if (interval < 1000) {
 					iengine = new InertionEngine(moveHistory, interval);
 					lastMoveTime = 0;
-					// iengine.x = pmap.globalOffset.x;
-					// iengine.y = pmap.globalOffset.y;
 					startInertion = true;
 					return false;
 				}
@@ -264,7 +263,7 @@ public class MoowMap extends Activity {
 
 	class CanvasUpdater implements Runnable {
 
-		private static final int UPDATE_INTERVAL = 40;
+		private static final int UPDATE_INTERVAL = 30;
 
 		int step = 0;
 
@@ -289,7 +288,7 @@ public class MoowMap extends Activity {
 				d--;
 			}
 
-			if (step > 100 || d < 0) {
+			if (step > 35 || d < 0) {
 				startInertion = false;
 				quickHack();
 				step = 0;
@@ -299,8 +298,8 @@ public class MoowMap extends Activity {
 
 			step++;
 
-			pmap.globalOffset.x += d;
-			pmap.globalOffset.y += d;
+			pmap.globalOffset.x += iengine.dx;
+			pmap.globalOffset.y += iengine.dy;
 
 		}
 
