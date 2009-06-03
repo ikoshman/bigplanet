@@ -26,8 +26,9 @@ public class DrawTesting extends Activity {
 
 	private boolean inMove = false;
 
-	private int nx = -1;
-	private int ny = -1;
+	private int nL = -1;
+	private int nR = -1;
+	private int nB = -1;
 
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
@@ -49,7 +50,6 @@ public class DrawTesting extends Activity {
 
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
-
 		case MotionEvent.ACTION_DOWN:
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
 			inMove = true;
@@ -70,47 +70,55 @@ public class DrawTesting extends Activity {
 	}
 
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		Bitmap tmpBitmap;
-		boolean moved = false;
-		boolean movedy = false;
+		boolean movedR = false;
+		boolean movedL = false;
+		boolean movedB = false;
 
+		// обработка перемещения вправо
 		if (isMovedRight()) {
-			System.out.println("moved right");
-			if (previousMovePoint.x > nextMovePoint.x) {
-				globalOffset.x += (256);
-				pmap.moveRight();
-				moved = true;
-			}
-		} else if (isMovedLeft()) {
 			if (previousMovePoint.x < nextMovePoint.x) {
 				globalOffset.x -= 256;
 				pmap.moveLeft();
-				moved = true;
+				movedR = true;
 			}
 		}
-
-		if (!moved) {
-			nx = (int) Math.ceil((globalOffset.x - 70) / 256);
+		if (!movedR) {
+			nR = (int) Math.ceil((globalOffset.x - 256) / 256);
 		} else {
-			nx = 0;
+			nR = 0;
 		}
-		// перемещение вверх-вниз
+
+		// обработка перемещения влево
+		/*if (isMovedLeft()) {
+			if (previousMovePoint.x > nextMovePoint.x) {
+				globalOffset.x += 256;
+				pmap.moveRight();
+				movedL = true;
+			}
+		}
+		if (!movedL) {
+			nL = (int) Math.ceil((globalOffset.x - 256 + 320) / 256);
+		} else {
+			nL = 0;
+		}
+        */
+
+		// обработка перемещения вниз
 		if (isMovedBottom()) {
 			if (previousMovePoint.y < nextMovePoint.y) {
 				globalOffset.y -= (256);
 				pmap.moveBottom();
-				movedy = true;
+				movedB = true;
 			}
-	
-		}
 
-		if (!movedy) {
-			ny = (int) Math.ceil((globalOffset.y-(256)) / 256);
+		}
+		if (!movedB) {
+			nB = (int) Math.ceil((globalOffset.y - (256)) / 256);
 		} else {
-			ny = 0;
+			nB = 0;
 		}
 
-
+		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
@@ -123,24 +131,26 @@ public class DrawTesting extends Activity {
 
 	}
 
-	private boolean isMovedLeft() {
-		return inMove && nx != -1
-				&& Math.abs(Math.ceil((globalOffset.x + 256) / 256) - nx) == 1;
-	}
-
+	// проверка, передвинуто ли вправо
 	private boolean isMovedRight() {
-		return inMove
-				&& nx != -1
-				&& Math.abs(Math.ceil((globalOffset.x - 256 + 320) / 256) - nx) == 1;
+		return inMove && nR != -1
+				&& Math.abs(Math.ceil((globalOffset.x + 256) / 256) - nR) == 1;
 	}
 
-	
-		private boolean isMovedBottom() {
+	// проверка, передвинуто ли влево
+	private boolean isMovedLeft() {
 		return inMove
-				&& ny != -1
-				&& Math.abs(Math.ceil((globalOffset.y + 256) / 256) - ny) == 1;
+				&& nL != -1
+				&& Math.abs(Math.ceil((globalOffset.x + 256 + 320) / 256) - nL) == 1;
+
 	}
-	
+
+	// проверка, передвино ли вниз
+	private boolean isMovedBottom() {
+		return inMove && nB != -1
+				&& Math.abs(Math.ceil((globalOffset.y + 256) / 256) - nB) == 1;
+	}
+
 	class Panel extends View {
 		Paint paint;
 
@@ -166,7 +176,7 @@ public class DrawTesting extends Activity {
 			while (true) {
 				while (running) {
 					try {
-						Thread.sleep(30);
+						Thread.sleep(10);
 					} catch (InterruptedException ex) {
 					}
 					main.postInvalidate();

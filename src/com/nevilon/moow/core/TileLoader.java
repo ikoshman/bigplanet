@@ -20,7 +20,7 @@ public class TileLoader{
 
 	public synchronized void tileLoaded(RawTile tile, byte[] data){
 		this.tileProvider.putToStorage(tile,data);
-		this.tileProvider.getTile(tile,false);
+		this.tileProvider.getTile(tile, true);
 	}
 	
 	private  class ThreadLoader extends Thread{
