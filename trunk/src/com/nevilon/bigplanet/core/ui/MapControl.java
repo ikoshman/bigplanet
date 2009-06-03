@@ -278,7 +278,8 @@ public class MapControl extends RelativeLayout {
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
-					tmpBitmap = pmap.getCells()[i - 2][j - 2];
+					tmpBitmap = pmap.getCell(i-2, j-2);
+					//tmpBitmap = pmap.getCells()[i - 2][j - 2];
 					if (tmpBitmap != null) {
 						canvas.drawBitmap(tmpBitmap, (i - 2) * 256
 								+ pmap.getGlobalOffset().x, (j - 2) * 256
