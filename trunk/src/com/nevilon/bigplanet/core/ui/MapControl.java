@@ -1,9 +1,7 @@
 package com.nevilon.bigplanet.core.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -12,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.nevilon.bigplanet.R;
 import com.nevilon.bigplanet.core.AbstractCommand;
 import com.nevilon.bigplanet.core.PhysicMap;
 import com.nevilon.bigplanet.core.RawTile;

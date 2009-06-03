@@ -2,16 +2,13 @@ package com.nevilon.bigplanet.core.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.nevilon.bigplanet.BigPlanet;
 import com.nevilon.bigplanet.R;
-import com.nevilon.bigplanet.core.db.DAO;
 import com.nevilon.bigplanet.core.db.GeoBookmark;
 
 /**
@@ -28,7 +25,7 @@ public class AddBookmarkDialog {
 		
 		final AlertDialog dialog = new AlertDialog.Builder(context).create();
 		dialog.setView(v);
-		dialog.setTitle("Add bookmark");
+		dialog.setTitle(R.string.ADD_BOOKMARK_TITLE);
 		
 		final EditText nameValue = (EditText) v.findViewById(R.id.nameValue);
 		final EditText descriptionValue = (EditText) v
@@ -56,7 +53,7 @@ public class AddBookmarkDialog {
 				String name = nameValue.getText().toString();
 				String description = descriptionValue.getText().toString();
 				if(name.trim().length() ==0){
-					validationError.setText("Name cannot be empty");
+					validationError.setText(R.string.EMPTY_NAME_ERROR);
 				} else {				
 					geoBookmark.setName(name);
 					geoBookmark.setDescription(description);

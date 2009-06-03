@@ -6,9 +6,9 @@ package com.nevilon.bigplanet.core.geoutils;
  * No warranty for this code is taken in any way. 
  */
 
-import com.nevilon.bigplanet.core.RawTile;
-
 import android.graphics.Point;
+
+import com.nevilon.bigplanet.core.RawTile;
 
 /**
  * A utility class to assist in encoding and decoding google tile references

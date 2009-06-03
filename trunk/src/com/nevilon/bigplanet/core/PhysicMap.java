@@ -1,10 +1,9 @@
 package com.nevilon.bigplanet.core;
 
-import com.nevilon.bigplanet.core.ui.BitmapUtils;
-import com.nevilon.bigplanet.core.ui.MapControl;
-
 import android.graphics.Bitmap;
 import android.graphics.Point;
+
+import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class PhysicMap {
 

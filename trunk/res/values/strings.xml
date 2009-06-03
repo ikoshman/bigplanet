@@ -8,4 +8,46 @@
     <string name="GOOGLE_SATELLITE"></string>
     <string name="GOOGLE_VECTOR"></string>
     
+    
+    <string name="EDIT_MENU">Edit</string>
+    <string name="DELETE_MENU">Delete</string>
+    
+    <string name="YES_LABEL">Yes</string>
+    <string name="NO_LABEL">No</string>
+    <string name="OK_LABEL">OK</string>
+    <string name="CANCEL_LABEL">Cancel</string>
+    
+    <string name="REMOVE_BOOKMARK_TITLE">Bookmark removing</string>
+    <string name="REMOVE_BOOKMARK_MESSAGE">Are you really want to remove this bookmark?</string>
+    
+    <string name="MAP_SOURCE_MENU">Map source</string>
+    <string name="TOOLS_MENU">Tools</string>
+    <string name="CACHE_MAP_MENU">Cache map</string>
+    <string name="NETWORK_MODE_MENU">Network mode</string>
+    <string name="BOOKMARKS_MENU">Bookmarks</string>
+    <string name="BOOKMARK_ADD_MENU">Add</string>
+    <string name="BOOKMARKS_VIEW_MENU">View</string>
+    
+    <string name="SELECT_OBJECT_MESSAGE">Select object</string>
+    
+    <string name="SELECT_NETWORK_MODE_LABEL">Select network mode</string>
+    <string name="OFFLINE_MODE_LABEL">Offline</string>
+    <string name="ONLINE_MODE_LABEL">Online</string>
+    
+    <string name="SELECT_MAP_SOURCE_TITLE">Select map source</string>
+    
+    <string name="DOWNLOAD_MESSAGE_PATTERN">{0} tile(s) of {1} downloaded({2}KB), {3} error(s)</string>
+
+    <string name="REGION_RADIUS_TITLE">"Select radius of region"</string>
+    
+    <string name="DOWNLOAD_COMPLETE_TITLE">Download complete</string>
+    <string name="ADD_BOOKMARK_TITLE">Add bookmark</string>
+    <string name="DOWNLOAD_COMPLETE_MESSAGE">All tiles were saved</string>
+    
+    <string name="EMPTY_NAME_ERROR">Name cannot be empty</string>
+    
+    <string name="DOWNLOAD_IN_PROGRESS_MESSAGE">Downloading...</string>
+    
+    <string name="DOWNLOAD_PROGRESS_MESSAGE_PATTERN">{0} km, {1} tile(s) / {2} KB</string>
+    
 </resources>
