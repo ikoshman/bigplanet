@@ -314,4 +314,9 @@ public class MapControl extends RelativeLayout {
 
 	}
 
+	public void setMapSource(int sourceId) {
+		getPhysicalMap().getTileResolver().setMapSource(sourceId);
+		getPhysicalMap().reloadTiles();
+	}
+
 }

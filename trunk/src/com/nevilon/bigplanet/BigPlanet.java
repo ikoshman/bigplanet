@@ -41,15 +41,16 @@ public class BigPlanet extends Activity {
 		// создание карты
 		RawTile savedTile = Preferences.getTile();
 		configMapControl(savedTile);
+		// использовать ли сеть
+		boolean useNet = Preferences.getUseNet();
+		mapControl.getPhysicalMap().getTileResolver().setUseNet(useNet);
 		// источник карты
 		int mapSourceId = Preferences.getSourceId();
 		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
 		// величина отступа
 		Point globalOffset = Preferences.getOffset();
 		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
-		// использовать ли сеть
-		boolean useNet = Preferences.getUseNet();
-		mapControl.getPhysicalMap().getTileResolver().setUseNet(useNet);
+		mapControl.getPhysicalMap().reloadTiles();
 	}
 
 	/**
@@ -260,7 +261,7 @@ public class BigPlanet extends Activity {
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 					public void onCheckedChanged(RadioGroup group, int checkedId) {
 						Preferences.putSourceId(checkedId);
-						mapControl.getPhysicalMap().changeMapSource(checkedId);
+						mapControl.setMapSource(checkedId);
 						mapSourceDialog.hide();
 					}
 
