@@ -1,4 +1,4 @@
-package com.nevilon.moow.core;
+package com.nevilon.moow.core.ui;
 
 import java.util.List;
 import java.util.Stack;

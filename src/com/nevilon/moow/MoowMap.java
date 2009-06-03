@@ -19,10 +19,10 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 
-import com.nevilon.moow.core.InertionEngine;
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
 import com.nevilon.moow.core.ui.DoubleClickHelper;
+import com.nevilon.moow.core.ui.InertionEngine;
 import com.nevilon.moow.core.ui.ZoomPanel;
 
 public class MoowMap extends Activity {
@@ -251,8 +251,9 @@ public class MoowMap extends Activity {
 				}
 
 				if (inMove) {
-					pmap.moveCoordinates(event.getX(), event.getY());
 					quickHack();
+					
+					pmap.moveCoordinates(event.getX(), event.getY());
 				} else {
 					if (dcDispatcher.process(event)) {
 						pmap.zoomIn((int) event.getX(), (int) event.getY());
@@ -291,7 +292,7 @@ public class MoowMap extends Activity {
 					Thread.sleep(CanvasUpdater.UPDATE_INTERVAL);
 					canDraw = false;
 					if (startInertion) {
-						processInertion();
+						//processInertion();
 					}
 					canDraw = true;
 					main.postInvalidate();
@@ -308,7 +309,7 @@ public class MoowMap extends Activity {
 
 			if (step > iengine.step/7 || d < 0) {
 				startInertion = false;
-				quickHack();
+				//quickHack();
 				step = 0;
 				return;
 			}

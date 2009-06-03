@@ -1,5 +1,7 @@
 package com.nevilon.moow.core;
 
+import com.nevilon.moow.core.storage.LocalStorageWrapper;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
@@ -62,7 +64,7 @@ public class TileScaler implements Runnable {
 			parentTileY = offsetParentY / 256;
 
 			// необходимо возвращать, во сколько раз увеличить!!!
-			bitmap = LocalStorageProvider.get(new RawTile(parentTileX,
+			bitmap = LocalStorageWrapper.get(new RawTile(parentTileX,
 					parentTileY, tmpZ));
 			if (bitmap == null) {
 			} else { // родительский тайл найден и загружен
