@@ -19,26 +19,29 @@ public class DrawTesting extends Activity {
 
 	private volatile boolean running = true;
 
-	private float oldX = 0;
-
-	private float oldY = 0;
-
-	private float currentX = 0;
-
-	private float currentY = 0;
-
-	private float totalX = 0;
-	private float totalY = 0;
-	
 	private boolean isLoaded = false;
 
 	private long lastUpdates = System.currentTimeMillis();
+
+	private float dx = 0;
+
+	private float dy = 0;
+
+	private float startX = 0;
+
+	private float startY = 0;
+
+	private float curerntX = 0;
+
+	private float currentY = 0;
+
+	boolean moving = false;
 
 	Bitmap[][] tiles = new Bitmap[4][4];
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
@@ -47,45 +50,30 @@ public class DrawTesting extends Activity {
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
-		boolean moving = false;
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_MOVE:
-
-			if (oldX > currentX) {
-				// вправо
-				totalX -= oldX-currentX;
-			} else {
-				//влево
-				totalX += currentX-oldX;
+			if (!moving) {
+				startX = event.getX();
+				startY = event.getY();
+				System.out.println("startX " + startX + " startX " + startY);
 			}
-			
-
-			if (oldY > currentY) {
-				// вниз
-				totalY -= oldY-currentY;
-			} else {
-				//вверх
-				totalY += currentY-oldY;
-			}
-
-			oldX = currentX;
-			oldY = currentY;
-			currentX = event.getX();
-			currentY = event.getY();
-
+			dx = event.getX();
+			dy = event.getY();
 			moving = true;
 			System.out.println("ACTION_MOVE");
-			System.out.println(event.getX());
 			break;
 		case MotionEvent.ACTION_UP:
 			System.out.println("ACTION_UP");
 			if (moving) {
-			}
+			currentY = dy - startY;
+			curerntX = dx - startX;
+			startX = 0;
+			startY = 0;
+			dx = 0;
+			dy = 0;
+
+			 }
 			moving = false;
-			oldX =0;
-			oldY = 0;
-			//currentX =0;
-			//currentY = 0;
 			break;
 		}
 
@@ -116,18 +104,20 @@ public class DrawTesting extends Activity {
 		}
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				canvas
-						.drawBitmap(tiles[i][j], (i-1) * 256 + totalX, (j-1) * 256+totalY,
-								paint);
+				if (moving) {
+					canvas.drawBitmap(tiles[i][j], (i - 1) * 256 + dx - startX,
+							(j - 1) * 256 + dy - startY, paint);
+				} else {
+					canvas.drawBitmap(tiles[i][j], (i - 1) * 256 + curerntX,
+							(j - 1) * 256 + currentY, paint);
 
+				}
 			}
 
-			
-			 // canvas.clipRect( (0)*256-totalX, (0)*256, (0)*256+256, (0)*256+256);
-			 
+			// canvas.clipRect( (0)*256-dx, (0)*256, (0)*256+256, (0)*256+256);
 
 		}
-	
+
 	}
 
 	class Panel extends View implements OnLongClickListener {
@@ -138,7 +128,9 @@ public class DrawTesting extends Activity {
 			paint = new Paint();
 			TextView txt = new TextView(getContext());
 			txt.setText("xxxxxxxx");
-			addContentView(txt,new ViewGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT) );
+			addContentView(txt, new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.WRAP_CONTENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT));
 		}
 
 		@Override
