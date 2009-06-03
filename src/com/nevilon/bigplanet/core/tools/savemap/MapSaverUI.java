@@ -135,7 +135,6 @@ public class MapSaverUI {
 					public void onClick(DialogInterface dialog, int which) {
 						mapSaver.stopDownload();
 						downloadDialog.dismiss();
-						System.gc();
 						timer.cancel();
 					}
 
@@ -177,7 +176,6 @@ public class MapSaverUI {
 
 												});
 								completeDialog.show();
-								System.gc();
 							}
 
 							break;
