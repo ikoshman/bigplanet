@@ -64,7 +64,7 @@ public class PhysicMap {
 				x = (tile.getX()+i);
 				y = (tile.getY()+j);
 				cells[i][j] = null;
-				tileProvider.getTile(new RawTile(x,y,tile.getZ()),true);
+				tileProvider.getTile(new RawTile(x,y,tile.getZ()));
 			}
 		}
 	}

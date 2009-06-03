@@ -88,20 +88,21 @@ public class DrawTesting extends Activity {
 			nR = 0;
 		}
 
-		// обработка перемещения влево
-		/*if (isMovedLeft()) {
+		//обработка перемещения влево
+		if (isMovedLeft()) {
 			if (previousMovePoint.x > nextMovePoint.x) {
-				globalOffset.x += 256;
+				globalOffset.x += (256);
 				pmap.moveRight();
 				movedL = true;
 			}
 		}
 		if (!movedL) {
-			nL = (int) Math.ceil((globalOffset.x - 256 + 320) / 256);
+			nL = (int) Math.ceil((globalOffset.x - 256+320) / 256);
+			//System.out.println(nL);
 		} else {
 			nL = 0;
 		}
-        */
+        
 
 		// обработка перемещения вниз
 		if (isMovedBottom()) {
@@ -139,9 +140,10 @@ public class DrawTesting extends Activity {
 
 	// проверка, передвинуто ли влево
 	private boolean isMovedLeft() {
-		return inMove
-				&& nL != -1
-				&& Math.abs(Math.ceil((globalOffset.x + 256 + 320) / 256) - nL) == 1;
+		//return false;
+		//System.out.println("e " + Math.abs(Math.ceil((globalOffset.x + 320) / 256) - nL));
+		return 
+			 Math.abs(Math.ceil((globalOffset.x -256 + 320) / 256) - nL) == 1;
 
 	}
 
