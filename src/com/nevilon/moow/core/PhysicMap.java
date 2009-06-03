@@ -15,11 +15,11 @@ public class PhysicMap {
 
 	private int zoom;
 
-	public Point globalOffset = new Point();
+	private Point globalOffset = new Point();
 
 	private Point previousMovePoint = new Point();
 
-	public Point nextMovePoint = new Point();
+	private Point nextMovePoint = new Point();
 
 	private int width;
 
@@ -35,9 +35,16 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	public void create() {
-		loadCells(defTile);
-		updateScreenCommand.execute();
+	public Point getNextMovePoint(){
+		return this.nextMovePoint;
+	}
+	
+	public Point getGlobalOffset(){
+		return this.globalOffset;
+	}
+	
+	public void setGlobalOffset(Point globalOffset){
+		this.globalOffset = globalOffset;
 	}
 
 	public RawTile getDefaultTile() {
