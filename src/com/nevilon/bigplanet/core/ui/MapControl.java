@@ -3,6 +3,7 @@ package com.nevilon.bigplanet.core.ui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.view.MotionEvent;
@@ -273,16 +274,26 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private void doDraw(Canvas canvas, Paint paint) {
+		/*
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
 		if (cv == null) {
 			cv = new Canvas();
+			cv.setBitmap(cvBitmap);
 			canvas = cv;
+			
 		}
+		*/
 		Bitmap tmpBitmap;
+		
 		// canvas.drawBitmap(mapBg, 0, 0, paint);
 		// отрисовка тайлов
+		
+
+		//Matrix matr = canvas.getMatrix();
+		//matr.postScale(0.5f, 0.5f);
+		//canvas.setMatrix(matr);
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
@@ -299,17 +310,9 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-		/*
-		 * for (int i = 0; i < 3; i++) { for (int j = 0; j < 3; j++) {
-		 * 
-		 * tmpBitmap = pmap.getCells()[i][j]; if (tmpBitmap != null) {
-		 * 
-		 * //canvas.drawBitmap(photoBitmap, 120, 120, paint);
-		 * 
-		 * canvas.drawBitmap(tmpBitmap, (i) 256 + pmap.getGlobalOffset().x, (j)
-		 * 256 + pmap.getGlobalOffset().y, paint); } } }
-		 */
-
+		//zoomPanel.postInvalidate();
+		//canvas.scale(2f, 2f); 
+		//canvas.restore();
 	}
 
 	/**
@@ -327,12 +330,6 @@ public class MapControl extends RelativeLayout {
 
 		}
 
-		@Override
-		protected void onAttachedToWindow() {
-			super.onAttachedToWindow();
-			postInvalidateDelayed(500);
-
-		}
 
 		@Override
 		protected void onDraw(Canvas canvas) {

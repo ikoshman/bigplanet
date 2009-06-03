@@ -9,7 +9,7 @@ public class PhysicMap {
 
 	private static final int TILE_SIZE = 256;
 
-	private TileResolver tileProvider;
+	private TileResolver tileResolver;
 
 	private Bitmap[][] cells = new Bitmap[3][3];
 
@@ -26,14 +26,17 @@ public class PhysicMap {
 	private int width;
 
 	private int height;
-
+	
+	private boolean inZoom = false;
+	
+	
 	private AbstractCommand updateScreenCommand;
 
 	public PhysicMap(RawTile defTile, AbstractCommand updateScreenCommand) {
 		this.defTile = defTile;
 		this.updateScreenCommand = updateScreenCommand;
 		this.zoom = defTile.z;
-		tileProvider = new TileResolver(this);
+		tileResolver = new TileResolver(this);
 		loadCells(defTile);
 	}
 
@@ -70,7 +73,7 @@ public class PhysicMap {
 			if (dx >= 0 && dy >= 0) {
 				try {
 					cells[dx][dy] = bitmap;
-					updateScreenCommand.execute();
+					updateMap();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -90,6 +93,7 @@ public class PhysicMap {
 	}
 
 	public void zoom(int x, int y, int z) {
+		inZoom = true;
 		System.gc();
 		reload(x, y, z);
 	}
@@ -185,8 +189,7 @@ public class PhysicMap {
 		globalOffset.set(globalOffset.x
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
-
-		updateScreenCommand.execute();
+		updateMap();
 	}
 
 	public Point getAbsoluteCenter() {
@@ -199,6 +202,11 @@ public class PhysicMap {
 		return centerPoint;
 	}
 
+	
+	private void updateMap(){
+		updateScreenCommand.execute();
+	}
+	
 	private int getDistance(int tileCount) {
 		return tileCount * TILE_SIZE;
 	}
@@ -254,7 +262,7 @@ public class PhysicMap {
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
 				cells[i][j] = MapControl.bp;
-				tileProvider.getTile(new RawTile(x, y, tile.z, tileProvider
+				tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
 						.getMapSourceId()), true);
 			}
 		}
@@ -282,7 +290,7 @@ public class PhysicMap {
 	}
 
 	public TileResolver getTileResolver() {
-		return this.tileProvider;
+		return this.tileResolver;
 
 	}
 

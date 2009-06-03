@@ -1,8 +1,11 @@
 package com.nevilon.bigplanet.core;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Bitmap.Config;
 
+import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
 import com.nevilon.bigplanet.core.storage.LocalStorageWrapper;
 
 /**
@@ -23,8 +26,10 @@ public class TileScaler implements Runnable {
 	}
 
 	public void run() {
+		long start = System.currentTimeMillis();
 		Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
 		handler.handle(tile, bmp4scale, true);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
 	/**
@@ -61,8 +66,17 @@ public class TileScaler implements Runnable {
 			parentTileY = offsetParentY / 256;
 
 			// необходимо возвращать, во сколько раз увеличить!!!
-			bitmap = LocalStorageWrapper.get(new RawTile(parentTileX,
-					parentTileY, tmpZ, tile.s));
+			
+			RawTile tmpTile = new RawTile(parentTileX,
+					parentTileY, tmpZ, tile.s);
+			
+			if(bitmap==null){
+				bitmap =  BitmapCacheWrapper.getInstance().getTile(tmpTile);	
+			}
+			if(bitmap==null){
+				bitmap = LocalStorageWrapper.get(tmpTile);
+			}
+			
 			if (bitmap == null) {
 			} else { // родительский тайл найден и загружен
 				// получение отступа в родительском тайле
