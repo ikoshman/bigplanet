@@ -1,11 +1,14 @@
 package com.nevilon.moow;
 
+import java.util.Stack;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -15,6 +18,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.ZoomControls;
 
+import com.nevilon.moow.core.InertionEngine;
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
 import com.nevilon.moow.core.ui.DoubleClickHelper;
@@ -44,6 +48,17 @@ public class MoowMap extends Activity {
 	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
 	private Bitmap mapBg = drawBackground();
+	
+	// нужно ли запускать инерцию
+	private boolean startInertion = false;
+	
+	// последнее время, когда происходило передвижение карты
+	private long lastMoveTime = -1;
+	
+	private Stack<Point> moveHistory = new Stack<Point>();
+	
+	private InertionEngine iengine;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -151,6 +166,7 @@ public class MoowMap extends Activity {
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
 		canvas.drawBitmap(mapBg, 0, 0, paint);
+
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
@@ -187,10 +203,18 @@ public class MoowMap extends Activity {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
 				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
+				Point pxx = new Point();
+				pxx.set((int)event.getX(), (int)event.getY());
+				
+				moveHistory.push(pxx);
 				break;
 			case MotionEvent.ACTION_MOVE:
+				lastMoveTime = System.currentTimeMillis();
 				inMove = true;
 				pmap.moveCoordinates(event.getX(), event.getY());
+				Point p = new Point();
+				p.set((int)event.getX(), (int)event.getY());
+				moveHistory.push(p);
 				break;
 			case MotionEvent.ACTION_UP:
 				if (inMove) {
@@ -202,6 +226,13 @@ public class MoowMap extends Activity {
 						updateZoomControls();
 					}
 				}
+				long interval = System.currentTimeMillis() - lastMoveTime;
+				if(interval <200){
+					iengine =  new InertionEngine(moveHistory, interval);
+					iengine.x = pmap.globalOffset.x;
+					iengine.y = pmap.globalOffset.y;
+					startInertion = true;
+				}
 				break;
 			}
 
@@ -209,19 +240,54 @@ public class MoowMap extends Activity {
 		}
 
 	}
+	
+		
+
 
 	class CanvasUpdater implements Runnable {
 
+		double stepX;
+		
+		double stepY;
+		
+		double counter  = 1;
+		
 		public void run() {
 			while (running) {
 				try {
 					Thread.sleep(10);
+					if(startInertion){
+						processInertion();
+					}
 				} catch (InterruptedException ex) {
 				}
 				main.postInvalidate();
 			}
 		}
 
+		private void processInertion(){
+		
+			if(counter <=0.2){
+				startInertion = false;
+				quickHack();
+				return;
+			}
+			
+			stepX += (iengine.dx/iengine.getInterval())*(iengine.getInterval()*counter);
+			iengine.x +=  stepX;
+			
+			stepY +=  (iengine.dy/iengine.getInterval())*(iengine.getInterval()*counter); 
+		    iengine.y+= stepY;
+			
+		    System.out.println(stepX + " * "  + stepY);
+		    
+			pmap.globalOffset.x = (int)iengine.x;
+			pmap.globalOffset.y = (int)iengine.y;
+			counter = counter - counter*0.1;
+			//System.out.println(counter);
+		}
+
+		
 	}
 
 	class ZoomPanel extends RelativeLayout {
@@ -268,6 +334,11 @@ public class MoowMap extends Activity {
 			zoomControls.setIsZoomOutEnabled(isEnabled);
 		}
 
+	}
+
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

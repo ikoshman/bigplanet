@@ -10,9 +10,9 @@ import android.graphics.Bitmap;
  */
 public class BitmapCacheProvider {
 
-	private BitmapCache cache = new BitmapCache(40);
+	private BitmapCache cache = new BitmapCache(20);
 
-	private BitmapCache scaledCache = new BitmapCache(40);
+	private BitmapCache scaledCache = new BitmapCache(20);
 
 	/**
 	 * Поиск в кеше скалированых тайлов
