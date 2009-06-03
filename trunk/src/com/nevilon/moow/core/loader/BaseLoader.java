@@ -33,17 +33,26 @@ public abstract class BaseLoader extends Thread {
 			if (stop) {
 				return;
 			}
-			try {
-				byte[] data = load(tile);
-				handle(tile, data);
-			} catch (Exception e) {
-				e.printStackTrace();
-				handle(tile, null);
+			if(checkTile(tile)){
+				try {
+					byte[] data = load(tile);
+					handle(tile, data,0);
+				} catch (Exception e) {
+					e.printStackTrace();
+					handle(tile, null,0);
+				}
+			}  else {
+				handle(tile,null,1);
 			}
 		}
 
 	}
 
+	
+	private boolean checkTile(RawTile tile){
+		return true;
+	}
+	
 	private byte[] load(RawTile tile) throws Exception {
 
 		try {
@@ -72,7 +81,7 @@ public abstract class BaseLoader extends Thread {
 
 	}
 
-	protected abstract void handle(RawTile tile, byte[] data);
+	protected abstract void handle(RawTile tile, byte[] data, int meta);
 
 	protected abstract MapStrategy getStrategy();
 

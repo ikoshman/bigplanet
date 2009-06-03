@@ -12,10 +12,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -23,11 +21,9 @@ import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.nevilon.moow.R;
-import com.nevilon.moow.core.Preferences;
 import com.nevilon.moow.core.RawTile;
 import com.nevilon.moow.core.geoutils.GoogleTileUtils;
 import com.nevilon.moow.core.providers.MapStrategyFactory;
-import com.nevilon.moow.core.storage.LocalStorageWrapper;
 
 public class MapSaverUI {
 
