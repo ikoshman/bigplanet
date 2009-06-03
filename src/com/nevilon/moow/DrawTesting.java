@@ -1,19 +1,29 @@
 package com.nevilon.moow;
 
+import android.util.AttributeSet;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.graphics.Paint.Style;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AbsoluteLayout;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ZoomControls;
 
 import com.nevilon.moow.core.PhysicMap;
 
@@ -47,13 +57,33 @@ public class DrawTesting extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
+		
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
 		(new Thread(new AnimationLoop())).start();
+		
+		class TransparentPanel extends RelativeLayout { 
+		    
+			
+			public TransparentPanel(Context context) {
+				super(context);
+				ZoomControls zc = new ZoomControls(getContext());
+				addView(zc);
+				setPadding(80, 368, 0, 0);
+			}
+
+		}
+		
+		TransparentPanel ts = new TransparentPanel(DrawTesting.this);
+	    addContentView(ts, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+		//ts.setPadding(80, 368, 0, 0);
+		
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			
+		
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
 			break;
 		case MotionEvent.ACTION_MOVE:
