@@ -131,6 +131,7 @@ public class BigPlanet extends Activity {
 			int mapSourceId = Preferences.getSourceId();
 			mapControl.getPhysicalMap().getTileResolver().setMapSource(
 					mapSourceId);
+			mapControl.getPhysicalMap().getDefaultTile().s = mapSourceId;
 			// величина отступа
 			Point globalOffset = Preferences.getOffset();
 			mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
