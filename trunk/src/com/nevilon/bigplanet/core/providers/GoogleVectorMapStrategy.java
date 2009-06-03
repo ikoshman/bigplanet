@@ -22,36 +22,16 @@ public class GoogleVectorMapStrategy extends MapStrategy {
 			public int getId() {
 				return 0;
 			}
-
+			
 			@Override
 			public String getURLPattern() {
-				return SERVER+ "mt?x={0}&y={1}&zoom={2}";
+				return SERVER+ "mt/v=w2.92&hl=en&x={0}&y={1}&zoom={2}&s=Galil";
 			}
 
 
 		});
 		
-		layers.add(new Layer() {
-
-			private  String SERVER = "http://mt0.google.com/"; 
-			
-			@Override
-			public String getDescription() {
-				return "Traffic";
-			}
-
-			@Override
-			public int getId() {
-				return 1;
-			}
-
-			@Override
-			public String getURLPattern() {
-				return SERVER+ "mapstt?x={0}&y={1}&zoom={2}";
-			}
-
-
-		});
+		
 
 
 	}
@@ -59,9 +39,10 @@ public class GoogleVectorMapStrategy extends MapStrategy {
 	@Override
 	public String getURL(int x, int y, int z,int layout) {
 		Layer layer = layers.get(layout);
-		return MessageFormat.format(layer.getURLPattern(),
+		String tmp = MessageFormat.format(layer.getURLPattern(),
 				String.valueOf(x), String.valueOf(y), String.valueOf(z));
-
+ 
+		return tmp;
 	}
 
 	@Override
