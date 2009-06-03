@@ -24,6 +24,10 @@ public class BitmapCache {
 		cacheMap = new ExpiredHashMap(size);
 	}
 
+	public void gc(){
+		cacheMap.clear();
+	}
+	
 	/**
 	 * Добавление битмапа в кеш
 	 * 

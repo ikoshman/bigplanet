@@ -309,4 +309,15 @@ public class PhysicMap {
 		
 	}
 
+	public void setDefTile(RawTile defTile) {
+		this.defTile = defTile;
+	}
+
+	public void clear() {
+		cells = null;
+		tileProvider.clear();
+		tileProvider = null;
+		
+	}
+
 }

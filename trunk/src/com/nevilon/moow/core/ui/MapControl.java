@@ -97,7 +97,7 @@ public class MapControl extends RelativeLayout {
 	
 	public MapControl(Context context, int width, int height) {
 		super(context);
-
+		setId(1);
 		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
 	
 		// панель с картой
@@ -107,6 +107,7 @@ public class MapControl extends RelativeLayout {
 		//(new Thread(new CanvasUpdater())).start();
 
 		zoomPanel = new ZoomPanel(context);
+		zoomPanel.setPadding((width-160)/2, height-112, 0, 0);
 		zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				pmap.zoomOut();
@@ -131,10 +132,7 @@ public class MapControl extends RelativeLayout {
 						@Override
 						public synchronized void execute() {
 							if(main!=null){
-								System.out.println("call");
 								main.postInvalidate();
-							} else {
-								System.out.println("FFFF");
 							}
 						}
 			 
@@ -156,7 +154,7 @@ public class MapControl extends RelativeLayout {
 		return pmap;
 	}
 	
-	
+		
 	private void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
@@ -222,7 +220,7 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private void doDraw(Canvas canvas, Paint paint) {
-	
+	/*
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
@@ -233,7 +231,7 @@ public class MapControl extends RelativeLayout {
 			canvas = cv;
 			canvas.setBitmap(cvBitmap);
 		}
-
+*/
 			Bitmap tmpBitmap;
 			canvas.drawBitmap(mapBg, 0, 0, paint);
 
@@ -334,6 +332,14 @@ public class MapControl extends RelativeLayout {
 
 	private void stopInertion() {
 		startInertion = false;
+	}
+
+	public void clear() {
+		mapBg = null;
+		dcDispatcher = null;
+		moveHistory = null;
+		pmap.clear();
+		
 	}
 
 }
