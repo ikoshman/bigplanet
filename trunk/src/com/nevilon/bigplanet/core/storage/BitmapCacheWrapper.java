@@ -70,7 +70,6 @@ public class BitmapCacheWrapper {
 	public void gc(){
 		scaledCache.gc();
 		cache.gc();
-		System.gc();
 	}
 
 	public void clear() {
