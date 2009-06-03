@@ -68,6 +68,7 @@ public abstract class BaseLoader extends Thread {
 			connection.connect();
 			int responseCode = connection.getResponseCode();
 			if (responseCode!= HttpURLConnection.HTTP_OK) {
+				System.out.println(connection.getResponseMessage());
 				return null;
 			}
 			int contentLength = connection.getContentLength();

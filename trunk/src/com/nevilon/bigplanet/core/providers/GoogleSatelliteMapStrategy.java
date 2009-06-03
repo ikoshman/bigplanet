@@ -10,7 +10,7 @@ public class GoogleSatelliteMapStrategy extends MapStrategy {
 	public GoogleSatelliteMapStrategy() {
 		layers.add(new Layer() {
 
-			private String SERVER = "http://khm3.google.com/"; 
+			private String SERVER = "http://khm0.google.com/"; 
 			
 			@Override
 			public String getDescription() {
@@ -24,7 +24,7 @@ public class GoogleSatelliteMapStrategy extends MapStrategy {
 
 			@Override
 			public String getURLPattern() {
-				return SERVER+"kh/v=36&hl=en&x={0}&y={1}&z={2}&s=Galile";
+				return SERVER+"kh/v=36&hl=en&x={0}&y={1}&zoom={2}&s=Galile";
 			}
 
 			
@@ -38,7 +38,7 @@ public class GoogleSatelliteMapStrategy extends MapStrategy {
 	public String getURL(int x, int y, int z, int layout) {
 		Layer layer = layers.get(layout);
 		return MessageFormat.format(layer.getURLPattern(),
-				String.valueOf(x), String.valueOf(y), String.valueOf(17 - z));
+				String.valueOf(x), String.valueOf(y), String.valueOf(z));
 	}
 
 	@Override
