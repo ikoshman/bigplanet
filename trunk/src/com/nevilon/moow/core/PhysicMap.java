@@ -232,6 +232,7 @@ public class PhysicMap {
 	 */
 	private void loadCells(RawTile tile) {
 		canDraw = false;
+		tileProvider.count = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
@@ -242,7 +243,8 @@ public class PhysicMap {
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
 				if (!checkTileXY(x, y, tile.z)) {
-					// cells[i][j] = null;
+					
+					cells[i][j] = null;
 				} else {
 					// cells[i][j] = null;
 					cells[i][j] = tileProvider.getTile(
