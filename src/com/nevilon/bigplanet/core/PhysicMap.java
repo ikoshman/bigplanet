@@ -120,7 +120,7 @@ public class PhysicMap {
 	}
 	
 	public void zoom(int x, int y, int z) {
-	
+	tileResolver.clearCache();
 		reload(x, y, z);
 	}
 
