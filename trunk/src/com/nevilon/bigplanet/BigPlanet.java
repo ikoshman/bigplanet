@@ -1,5 +1,10 @@
 package com.nevilon.bigplanet;
 
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,6 +20,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.util.Linkify;
 import android.view.Display;
 import android.view.Gravity;
@@ -22,9 +29,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -33,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.nevilon.bigplanet.core.BigPlanetApp;
 import com.nevilon.bigplanet.core.MarkerManager;
 import com.nevilon.bigplanet.core.Place;
 import com.nevilon.bigplanet.core.Preferences;
@@ -78,10 +89,11 @@ public class BigPlanet extends Activity {
 		super.onCreate(savedInstanceState);
 		MyIntentReceiver intentReceiver = new MyIntentReceiver();
 
-		IntentFilter intentFilter = new IntentFilter("com.nevilon.bigplanet.INTENTS.GOTO");
+		IntentFilter intentFilter = new IntentFilter(
+				"com.nevilon.bigplanet.INTENTS.GOTO");
 
-		registerReceiver(intentReceiver, intentFilter); 
-		
+		registerReceiver(intentReceiver, intentFilter);
+
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
 		mm = new MarkerManager(getResources());
@@ -97,19 +109,20 @@ public class BigPlanet extends Activity {
 		Point globalOffset = Preferences.getOffset();
 		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
 		mapControl.getPhysicalMap().reloadTiles();
+		if(BigPlanetApp.isDemo){
+			showTrialDialog(R.string.this_is_demo_title, R.string.this_is_demo_message);
+		}
 	}
 
-	
 	public class MyIntentReceiver extends BroadcastReceiver {
 
 		/**
-
-		* @see adroid.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
-
-		*/
+		 * 
+		 * @see adroid.content.BroadcastReceiver#onReceive(android.content.Context,
+		 *      android.content.Intent)
+		 */
 
 		@Override
-
 		public void onReceive(Context context, Intent intent) {
 			int z = SEARCH_ZOOM;
 			Place place = (Place) intent.getSerializableExtra("place");
@@ -121,17 +134,15 @@ public class BigPlanet extends Activity {
 			mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
 			System.out.println("receive");
 		}
-	
-		
-	}
-	@Override
-	 public boolean onSearchRequested() {
-	        startSearch("", false, null, false); 
-	        return true;
-	 }
 
-	
-	
+	}
+
+	@Override
+	public boolean onSearchRequested() {
+		startSearch("", false, null, false);
+		return true;
+	}
+
 	/**
 	 * Обрабатывает поворот телефона
 	 */
@@ -212,7 +223,7 @@ public class BigPlanet extends Activity {
 		sub.add(2, 15, 0, R.string.NETWORK_MODE_MENU);
 
 		menu.add(3, 3, 0, R.string.SEARCH_MENU).setIcon(R.drawable.search);
-		
+
 		return true;
 	}
 
@@ -309,7 +320,12 @@ public class BigPlanet extends Activity {
 			showMyLocation();
 			break;
 		case 11:
-			showMapSaver();
+			if (BigPlanetApp.isDemo
+					&& mapControl.getPhysicalMap().getZoomLevel() <= 6) {
+				showTrialDialog(R.string.try_demo_title, R.string.try_demo_message);
+			} else {
+				showMapSaver();
+			}
 			break;
 		case 14:
 			selectMapSource();
@@ -317,8 +333,8 @@ public class BigPlanet extends Activity {
 		case 15:
 			selectNetworkMode();
 			break;
-	    case 12:
-			//showSearch();
+		case 12:
+			// showSearch();
 			break;
 		case 13:
 			showAbout();
@@ -334,6 +350,75 @@ public class BigPlanet extends Activity {
 
 	}
 
+	private void showTrialDialog(int title, int message) {
+		final Dialog paramsDialog = new Dialog(this);
+
+		final View v = View.inflate(this, R.layout.demodialog, null);
+		
+		final TextView messageValue = (TextView) v.findViewById(R.id.message);
+		messageValue.setText(message);
+		final Button okBtn = (Button) v.findViewById(R.id.okBtn);
+		okBtn.setEnabled(false);
+		okBtn.setClickable(false);
+		okBtn.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				paramsDialog.dismiss();
+			}
+
+		});
+		paramsDialog.setTitle(title);
+		paramsDialog.setCanceledOnTouchOutside(false);
+		paramsDialog.setCancelable(false);
+		paramsDialog.setContentView(v);
+
+		paramsDialog.show();
+
+		final Handler handler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+				int okValue = (Integer) msg.what;
+
+				if (okValue == 0) {
+					okBtn.setText(R.string.OK_LABEL);
+					okBtn.setEnabled(true);
+				} else {
+					okBtn.setText(String.valueOf(okValue));
+				}
+
+			}
+		};
+
+		new Thread() {
+
+			int count = 5;
+
+			boolean exec = true;
+
+			@Override
+			public void run() {
+				while (exec) {
+					try {
+						Thread.sleep(1000);
+						count--;
+						if (count == 0) {
+							exec = false;
+						}
+						Message message = handler.obtainMessage(count);
+						handler.sendMessage(message);
+
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			}
+
+		}.start();
+	}
+
 	private void showMyLocation() {
 		inHome = false;
 		Criteria criteria = new Criteria();
@@ -341,7 +426,7 @@ public class BigPlanet extends Activity {
 		criteria.setAltitudeRequired(false);
 		criteria.setSpeedRequired(false);
 		String provider = locationManager.getBestProvider(criteria, true);
-		if (provider !=null) {
+		if (provider != null) {
 			locationManager.requestLocationUpdates(provider, 1, 1,
 					new LocationListener() {
 
@@ -398,9 +483,9 @@ public class BigPlanet extends Activity {
 
 	private void showSearch() {
 		onSearchRequested();
-		//Intent i = new Intent();
-		//i.setClass(this, FindPlace.class);
-		//startActivityForResult(i,0);
+		// Intent i = new Intent();
+		// i.setClass(this, FindPlace.class);
+		// startActivityForResult(i,0);
 	}
 
 	private void showAbout() {
@@ -411,7 +496,8 @@ public class BigPlanet extends Activity {
 		tv.setText(R.string.ABOUT_MESSAGE);
 		tv.setTextSize(12f);
 		new AlertDialog.Builder(this).setTitle(R.string.ABOUT_TITLE)
-				.setView(tv).setIcon(R.drawable.globe).setPositiveButton(R.string.OK_LABEL,
+				.setView(tv).setIcon(R.drawable.globe).setPositiveButton(
+						R.string.OK_LABEL,
 						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,

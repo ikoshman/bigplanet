@@ -129,11 +129,15 @@ public class TileResolver {
 	}
 
 	public synchronized void setMapSource(int sourceId) {
-		cacheProvider.clear();
+		clearCache();
 		MapStrategy mapStrategy = MapStrategyFactory.getStrategy(sourceId);
 		this.strategyId = sourceId;
 		tileLoader.setMapStrategy(mapStrategy);
 		System.gc();
+	}
+	
+	public void clearCache(){
+		cacheProvider.clear();
 	}
 
 	public int getMapSourceId() {
