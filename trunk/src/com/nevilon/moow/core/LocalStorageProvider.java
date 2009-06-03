@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcel;
 
 /**
  * Обертка над LocalStorage Производит декодирование тайла в синхронном и в
@@ -29,6 +30,7 @@ public class LocalStorageProvider {
 		if (outStream != null) {
 			bmp = BitmapFactory.decodeStream(outStream);
 		}
+		
 		System.out.println("tile loaded in "+  (System.currentTimeMillis() - start));
 		return bmp;
 	}
