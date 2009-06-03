@@ -16,7 +16,7 @@ public class PhysicMap {
 	private RawTile defTile;
 
 	private int zoom;
-	
+
 	public boolean canDraw = true;
 
 	public Point globalOffset = new Point();
@@ -70,15 +70,33 @@ public class PhysicMap {
 		reload(x, y, z);
 	}
 
+
 	/**
 	 * Уменьшение уровня детализации
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x + 160;
-			int currentZoomY = getDefaultTile().y * 256 - globalOffset.y + 240;
-			int tileX = (currentZoomX / 2) / 256;
-			int tileY = (currentZoomY / 2) / 256;
+			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x + 320/2;
+			int currentZoomY = getDefaultTile().y * 256 - globalOffset.y + 480/2;
+
+			// получение координат точки предудущем уровне
+			int nextZoomX = currentZoomX / 2;
+			int nextZoomY = currentZoomY / 2;
+
+			// получение координат угла экрана на новом уровне
+			nextZoomX = nextZoomX - 320 / 2;
+			nextZoomY = nextZoomY - 480 / 2;
+
+			// получение углового тайла
+			int tileX = (nextZoomX / 256);
+			int tileY = nextZoomY / 256;
+
+			// отступ всегда один - точка должна находится в центре экрана
+			int correctionX = nextZoomX - tileX * 256;
+			int correctionY = nextZoomY - tileY * 256;
+
+			globalOffset.x = -(correctionX);
+			globalOffset.y = -(correctionY);
 			zoom++;
 			zoom(tileX, tileY, zoom);
 
@@ -124,7 +142,7 @@ public class PhysicMap {
 			int correctionY = nextZoomY - tileY * 256;
 
 			globalOffset.x = -(correctionX);
-			globalOffset.y =  -(correctionY);
+			globalOffset.y = -(correctionY);
 			zoom--;
 			zoom(tileX, tileY, zoom);
 		}
@@ -139,6 +157,7 @@ public class PhysicMap {
 
 	/**
 	 * Проверяет на допустимость параметры тайла
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -155,11 +174,11 @@ public class PhysicMap {
 		return true;
 
 	}
-	
+
 	/**
 	 * Очистка in-memory кеша
 	 */
-	public void gc(){
+	public void gc() {
 		tileProvider.inMemoryCache.gc();
 	}
 
@@ -180,11 +199,12 @@ public class PhysicMap {
 				if (!checkTileXY(x, y, tile.z)) {
 					cells[i][j] = null;
 				} else {
-					tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,y,tile.z));
-					if(tmpBitmap!=null){
+					tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,
+							y, tile.z));
+					if (tmpBitmap != null) {
 						cells[i][j] = tmpBitmap;
 					} else {
-						//cells[i][j] = null;
+						 cells[i][j] = null;
 						tileProvider.getTile(new RawTile(x, y, tile.z));
 					}
 				}
