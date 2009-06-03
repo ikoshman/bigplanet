@@ -288,6 +288,7 @@ public class PhysicMap {
 
 	public void setDefTile(RawTile defTile) {
 		this.defTile = defTile;
+		this.zoom = defTile.z;
 	}
 
 }

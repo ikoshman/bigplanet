@@ -3,6 +3,8 @@ package com.nevilon.bigplanet.core.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nevilon.bigplanet.core.RawTile;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,11 +20,13 @@ public class DAO {
 
 	private static final String COLUMN_OFFSETX = "offsetx";
 
+	private static final String COLUMN_X = "x";
+	
+	private static final String COLUMN_Y = "y";
+	
 	private static final String COLUMN_Z = "z";
 
-	private static final String COLUMN_SOURCE = "source";
-
-	private static final String COLUMN_TAGS = "tags";
+	private static final String COLUMN_S = "s";
 
 	private static final String COLUMN_DESCRIPTION = "description";
 
@@ -35,10 +39,11 @@ public class DAO {
 	"("+COLUMN_ID+" integer primary key autoincrement," +
 	""  +COLUMN_NAME+ " text,"+
 	"" +COLUMN_DESCRIPTION+ " text,"+
-	"" + COLUMN_TAGS+ " text,"+
-	"" +COLUMN_SOURCE+ " integer,"+
 	"" +COLUMN_OFFSETX+ " integer,"+
 	"" +COLUMN_OFFSETY+ " integer,"+
+	"" +COLUMN_S+ " integer,"+
+	"" +COLUMN_X+ " integer,"+
+	"" +COLUMN_Y+ " integer,"+
 	"" +COLUMN_Z+ " integer"+
 	");";
 
@@ -61,9 +66,11 @@ public class DAO {
 	      //  initialValues.put(DAO.COLUMN_ID, bookmark.getId());
 	        initialValues.put(DAO.COLUMN_NAME, bookmark.getName());
 	        initialValues.put(DAO.COLUMN_DESCRIPTION, bookmark.getDescription());
-	        initialValues.put(DAO.COLUMN_TAGS, bookmark.getTags());
-	        initialValues.put(DAO.COLUMN_SOURCE, bookmark.getSource());
-	        initialValues.put(DAO.COLUMN_Z, bookmark.getZ());
+	        initialValues.put(DAO.COLUMN_S, bookmark.getTile().s);
+	        initialValues.put(DAO.COLUMN_Z, bookmark.getTile().z);
+	        initialValues.put(DAO.COLUMN_X, bookmark.getTile().x);
+	        initialValues.put(DAO.COLUMN_Y, bookmark.getTile().y);
+	        
 	        initialValues.put(DAO.COLUMN_OFFSETX, bookmark.getOffsetX());
 	        initialValues.put(DAO.COLUMN_OFFSETY, bookmark.getOffsetY());
 	        // save to database
@@ -100,9 +107,14 @@ public class DAO {
                 bookmark.setDescription(c.getString(c.getColumnIndex(COLUMN_DESCRIPTION)));
                 bookmark.setOffsetX(c.getInt(c.getColumnIndex(COLUMN_OFFSETX)));
                 bookmark.setOffsetY(c.getInt(c.getColumnIndex(COLUMN_OFFSETY)));
-                bookmark.setSource(c.getInt(c.getColumnIndex(COLUMN_SOURCE)));
-                bookmark.setTags(c.getString(c.getColumnIndex(COLUMN_TAGS)));
-                bookmark.setZ(c.getInt(c.getColumnIndex(COLUMN_Z)));
+                
+                RawTile tile = new RawTile(c.getInt(c.getColumnIndex(COLUMN_X)),
+                		c.getInt(c.getColumnIndex(COLUMN_Y)),
+                		c.getInt(c.getColumnIndex(COLUMN_Z)),
+                		c.getInt(c.getColumnIndex(COLUMN_S))
+                );
+                
+                bookmark.setTile(tile);
                 bookmarks.add(bookmark);
                 c.moveToNext();
             }

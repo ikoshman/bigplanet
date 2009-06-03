@@ -2,6 +2,8 @@ package com.nevilon.bigplanet.core.db;
 
 import java.io.Serializable;
 
+import com.nevilon.bigplanet.core.RawTile;
+
 public class GeoBookmark implements Serializable {
 	
 	private int id = -1;
@@ -10,11 +12,7 @@ public class GeoBookmark implements Serializable {
 	
 	private String description;
 	
-	private String tags;
-	
-	private int source;
-	
-	private int z;
+	private RawTile tile;
 	
 	private int offsetX;
 	
@@ -44,30 +42,15 @@ public class GeoBookmark implements Serializable {
 		this.description = description;
 	}
 
-	public String getTags() {
-		return tags;
+	
+	public RawTile getTile(){
+		return this.tile;
 	}
 
-	public void setTags(String tags) {
-		this.tags = tags;
+	public void setTile(RawTile tile){
+		this.tile = tile;
 	}
-
-	public int getSource() {
-		return source;
-	}
-
-	public void setSource(int source) {
-		this.source = source;
-	}
-
-	public int getZ() {
-		return z;
-	}
-
-	public void setZ(int z) {
-		this.z = z;
-	}
-
+	
 	public int getOffsetX() {
 		return offsetX;
 	}
