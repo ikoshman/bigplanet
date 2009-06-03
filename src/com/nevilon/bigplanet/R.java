@@ -41,6 +41,8 @@ public final class R {
         public static final int nameValue=0x7f050001;
         public static final int radiusLabel=0x7f050008;
         public static final int radiusSeekbar=0x7f050007;
+        public static final int searcText=0x7f05000c;
+        public static final int searchBtn=0x7f05000d;
         public static final int startButton=0x7f05000a;
         public static final int validationError=0x7f050004;
     }
