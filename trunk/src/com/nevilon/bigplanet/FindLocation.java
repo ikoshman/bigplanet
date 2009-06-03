@@ -1,6 +1,7 @@
 package com.nevilon.bigplanet;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -13,32 +14,44 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import com.nevilon.bigplanet.core.Place;
+import com.nevilon.bigplanet.core.db.GeoBookmark;
 import com.nevilon.bigplanet.core.loader.BaseLoader;
 import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-public class FindLocation extends Activity implements Runnable {
+public class FindLocation extends ListActivity implements Runnable {
 
 	private ProgressDialog waitDialog = null;
 
 	private EditText searhText;
 
 	private Handler handler;
+	
+	private List<Place> places = new ArrayList<Place>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setListAdapter(new SpeechListAdapter(FindLocation.this));
+		getListView().setPadding(2, 50, 0, 0);
+		
 		LayoutParams p = new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT);
 		View v = View.inflate(this, R.layout.searchpanel, null);
@@ -53,6 +66,7 @@ public class FindLocation extends Activity implements Runnable {
 			public void onClick(View arg0) {
 				Thread t = new Thread(FindLocation.this);
 				t.start();
+				setListAdapter(null);
 				waitDialog = ProgressDialog.show(FindLocation.this,
 						"Please wait...", "Connecting to server", true);
 			}
@@ -64,6 +78,8 @@ public class FindLocation extends Activity implements Runnable {
 			@Override
 			public void handleMessage(Message msg) {
 				waitDialog.dismiss();
+				waitDialog = null;
+				setListAdapter(new SpeechListAdapter(FindLocation.this));
 			}
 
 		};
@@ -85,7 +101,6 @@ public class FindLocation extends Activity implements Runnable {
 			int statusCode = client.executeMethod(method);
 			if (statusCode != -1 && method.getStatusCode() == HttpStatus.SC_OK) {
 				String response = method.getResponseBodyAsString();
-				//System.out.println(response);
 				
 				SAXParserFactory spf = SAXParserFactory.newInstance();
 				SAXParser sp = spf.newSAXParser();
@@ -93,9 +108,7 @@ public class FindLocation extends Activity implements Runnable {
 				GeoLocationHandler h = new GeoLocationHandler(); 
 				xr.setContentHandler(h);
 				xr.parse(new InputSource(new StringReader(response)));
-				
-				List<Place> p = h.places;
-				System.out.println(p);
+				places = h.getPlaces();
 				method.releaseConnection();
 			} else {
 
@@ -107,5 +120,71 @@ public class FindLocation extends Activity implements Runnable {
 		}
 
 	}
+	
+	private class SpeechListAdapter extends BaseAdapter {
+
+		public SpeechListAdapter(Context context) {
+			mContext = context;
+		}
+
+		public int getCount() {
+			return places.size();
+		}
+
+		public Object getItem(int position) {
+			return position;
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			SpeechView sv;
+			Place place = places.get(position);
+			if (convertView == null) {
+
+				sv = new SpeechView(mContext, place.getAddress(), place.getName());
+			} else {
+				sv = (SpeechView) convertView;
+				sv.setName(place.getAddress());
+				sv.setDescription(place.getName());
+				sv.id = 0;
+			}
+
+			return sv;
+		}
+
+		private Context mContext;
+
+	}
+
+	private class SpeechView extends LinearLayout {
+		public SpeechView(Context context, String name, String description) {
+			super(context);
+			View v = View.inflate(FindLocation.this, R.layout.geobookmark,
+					null);
+			nameLabel = (TextView) v.findViewById(android.R.id.text1);
+			nameLabel.setText(name);
+
+			descriptionLabel = (TextView) v.findViewById(android.R.id.text2);
+			descriptionLabel.setText(description);
+			addView(v);
+		}
+
+		public void setName(String name) {
+			descriptionLabel.setText(name);
+		}
+
+		public void setDescription(String description) {
+			descriptionLabel.setText(description);
+		}
+
+		protected long id;
+
+		private TextView nameLabel;
+		private TextView descriptionLabel;
+	}
+
 
 }
