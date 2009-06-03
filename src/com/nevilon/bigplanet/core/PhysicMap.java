@@ -22,7 +22,7 @@ public class PhysicMap {
 
 	public RawTile defTile;
 
-	public double scaleFactor = 1.00d;
+	public float scaleFactor = 1.00f;
 
 	public static int zoom;
 
