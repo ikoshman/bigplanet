@@ -17,8 +17,12 @@ import android.util.Log;
  */
 public class TileLoader implements Runnable {
 
-	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?v=w2.99&x={0}&y={1}&zoom={2}";
+	//private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?v=w2.99&x={0}&y={1}&zoom={2}";
 
+
+	private static final String REQUEST_PATTERN = "http://mt1.google.com/mt?x={0}&y={1}&zoom={2}";
+
+	
 	private Handler handler;
 
 	private int counter = 0;
@@ -65,7 +69,6 @@ public class TileLoader implements Runnable {
 				Thread.sleep(200);
 				if (counter <= 6 && loadQueue.size() > 0) {
 					RawTile rt = getFromQueue();
-					Log.i("LOADER", "Tile " + rt + " start loading");
 					if (null != rt) {
 						new ThreadLoader(rt).start();
 						counter++;
@@ -102,7 +105,7 @@ public class TileLoader implements Runnable {
 				return null;
 			}
 			InputStream raw = uc.getInputStream();
-			InputStream in = new BufferedInputStream(raw, 65536);
+			InputStream in = new BufferedInputStream(raw, 4096);
 			byte[] data = new byte[contentLength];
 			int bytesRead = 0;
 			int offset = 0;
@@ -112,6 +115,7 @@ public class TileLoader implements Runnable {
 					break;
 				offset += bytesRead;
 			}
+			
 			in.close();
 			if (offset != contentLength) {
 				return null;
@@ -123,7 +127,6 @@ public class TileLoader implements Runnable {
 		public void run() {
 			try {
 				TileLoader.this.tileLoaded(tile, load());
-				// TileLoader.this.tileLoaded(tile, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

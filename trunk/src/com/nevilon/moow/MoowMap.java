@@ -7,6 +7,7 @@ import java.util.Stack;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -180,24 +181,30 @@ public class MoowMap extends Activity {
 		return bitmap;
 	}
 
-	private  void doDraw(Canvas canvas, Paint paint) {
-		if(canDraw){
-			Bitmap tmpBitmap;
-			canvas.drawBitmap(mapBg, 0, 0, paint);
+	private synchronized void doDraw(Canvas canvas, Paint paint) {
 
+        //Bitmap bmp = Bitmap.createBitmap(1024, 1024, Config.RGB_565); 
+		//canvas.setBitmap(bmp);
+        
+        canvas.drawBitmap(mapBg, 0, 0, paint);
+			Bitmap tmpBitmap;
+			int ox = pmap.globalOffset.x;
+			int oy = pmap.globalOffset.y;
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					tmpBitmap = pmap.getCells()[i][j];
 					if (tmpBitmap != null) {
 						canvas.drawBitmap(tmpBitmap, (i) * 256
-								+ pmap.globalOffset.x, (j) * 256
-								+ pmap.globalOffset.y, paint);
+								+ ox, (j) * 256
+								+ oy, paint);
 					}
 				}
 			}
-		}
 	}
 
+	private void scale(){
+		
+	}
 	
 	private void addPointToHistory(float x, float y){
 		Point tmpPoint = new Point();
@@ -235,8 +242,8 @@ public class MoowMap extends Activity {
 			case MotionEvent.ACTION_MOVE:
 				lastMoveTime = System.currentTimeMillis();
 				inMove = true;
-				pmap.moveCoordinates(event.getX(), event.getY());
 				addPointToHistory(event.getX(), event.getY());
+				pmap.moveCoordinates(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
 				if(startInertion){
@@ -278,21 +285,17 @@ public class MoowMap extends Activity {
 
 	class CanvasUpdater implements Runnable {
 
-		private static final int UPDATE_INTERVAL = 35;
+		private static final int UPDATE_INTERVAL = 28;
 
 		int step = 0;
-
-		int d = 3;
 
 		public void run() {
 			while (running) {
 				try {
 					Thread.sleep(CanvasUpdater.UPDATE_INTERVAL);
-					canDraw = false;
 					if (startInertion) {
 						processInertion();
 					}
-					canDraw = true;
 					main.postInvalidate();
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
@@ -305,7 +308,7 @@ public class MoowMap extends Activity {
 				iengine.reduceSpeed();
 			}
 
-			if (step > iengine.step/7 || d < 0) {
+			if (step > iengine.getStepCount()) {
 				startInertion = false;
 				quickHack();
 				step = 0;
