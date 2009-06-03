@@ -7,6 +7,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
 
+import android.util.Log;
+
 public class TileLoader implements Runnable{
 	
 	private TileProvider tileProvider;
@@ -21,23 +23,32 @@ public class TileLoader implements Runnable{
 	}
 	
 	public void load(RawTile tile){
-		loadQueue.add(tile);
-		//new ThreadLoader(tile).start();
+		addToQueue(tile);
 	}
 
+	public synchronized void addToQueue(RawTile tile){
+		loadQueue.add(tile);
+	}
+	
+	public synchronized RawTile getFromQueue(){
+		return loadQueue.poll();
+	}
+	
 	public synchronized void tileLoaded(RawTile tile, byte[] data){
-		this.tileProvider.putToStorage(tile,data);
-		this.tileProvider.getTile(tile);
+		if (data!=null){
+			this.tileProvider.putToStorage(tile,data);
+			this.tileProvider.getTile(tile);	
+		}
 		counter--;
 	}
 	
 	public void run() {
 		while(true){
 			try {
-				Thread.sleep(100);
-				if (counter<=5 && loadQueue.size()>0){
-					System.out.println("blya");
-					RawTile rt = loadQueue.poll();
+				Thread.sleep(200);
+				if (counter<=6 && loadQueue.size()>0){
+					RawTile rt = getFromQueue();
+					Log.i("LOADER", "Tile " +rt +" start loading");
 					if (null!=rt){
 						new ThreadLoader(rt).start();
 						counter++;
@@ -60,13 +71,14 @@ public class TileLoader implements Runnable{
 		}
 		
 		private  byte[] load() throws Exception {
-	        URL u = new URL("http://mt1.google.com/mt?x="+tile.getX()+
+	        URL u = new URL("http://mt1.google.com/mt?v=w2.99&x="+tile.getX()+
 	        		"&y="+tile.getY()+"&zoom="+tile.getZ());
 	        URLConnection uc = u.openConnection();
 	        String contentType = uc.getContentType();
 	        int contentLength = uc.getContentLength();
 	        if (contentType.startsWith("text/") || contentLength == -1) {
-	            throw new IOException("This is not a binary file. "+tile.getX()+" "+ tile.getY()+" "+ tile.getZ());
+	        	Log.e("LOADER","Can't load tile "+ tile.getX()+" "+ tile.getY()+" "+ tile.getZ());
+	        	return null;
 	        }
 	        InputStream raw = uc.getInputStream();
 	        InputStream in = new BufferedInputStream(raw,65536);
@@ -82,9 +94,9 @@ public class TileLoader implements Runnable{
 	        in.close();
 
 	        if (offset != contentLength) {
-	            throw new IOException("Only read " + offset + " bytes; Expected " + contentLength + " bytes");
+	        	return null;
 	        }
-
+	        Log.i("LOADER", "Receive tile " + tile);
 	        return data;
 	        
 	    }

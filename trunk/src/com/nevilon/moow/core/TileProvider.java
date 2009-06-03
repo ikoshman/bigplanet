@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 public class TileProvider implements Runnable {
 
@@ -38,6 +39,7 @@ public class TileProvider implements Runnable {
 		Bitmap tmpBitmap;
 		while (true) {
 			if (queue.size() > 0) {
+				Log.i("LOADER", "try to load in any way");
 				RawTile tile = queue.pop();
 				BufferedInputStream outStream = localStorage.get(tile);
 				if (outStream != null) {
