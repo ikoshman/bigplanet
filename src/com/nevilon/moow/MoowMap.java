@@ -26,6 +26,8 @@ public class MoowMap extends Activity {
 	private final static int BCG_CELL_SIZE = 16; 
 	
 	private Panel main;
+	
+	private ZoomPanel zoomPanel;
 
 	private volatile boolean running = true;
 
@@ -48,55 +50,32 @@ public class MoowMap extends Activity {
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
 		(new Thread(new CanvasUpdater())).start();
-
-		class ZoomPanel extends RelativeLayout {
-
-			public ZoomPanel(Context context) {
-				super(context);
-				ZoomControls zc = new ZoomControls(getContext());
-				zc.setOnZoomOutClickListener(new OnClickListener(){
-					public void onClick(View v) {
-						pmap.zoomOut();
-					}
-				});
-				zc.setOnZoomInClickListener(new OnClickListener() {
-					public void onClick(View v) {
-						pmap.zoomInCenter();
-					}
-				});
-				addView(zc);
-				setPadding(80, 368, 0, 0);
-			}
-
-		}
-		addContentView(new ZoomPanel(MoowMap.this), new LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		zoomPanel = new ZoomPanel(this);
+		addContentView(zoomPanel, new LayoutParams(
+		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
 	
 	
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
-		// опускание клавиши
 		case MotionEvent.ACTION_DOWN:
 			inMove = false;
 			nextMovePoint.set((int) event.getX(), (int) event.getY());	
 			break;	
-		// движение
 		case MotionEvent.ACTION_MOVE:
 			inMove = true;
 			moveCoordinates(event.getX(), event.getY());
 			break;
-		// поднятие клавиши
 		case MotionEvent.ACTION_UP:
-			System.out.println("UP");
 			if(inMove){
 				moveCoordinates(event.getX(), event.getY());
 			    quickHack();
 			    quickHack();
 			} else {
 			   if(dcDispatcher.process(event)){
-					pmap.zoomIn((int)event.getX(), (int)event.getY());				
+					pmap.zoomIn((int)event.getX(), (int)event.getY());	
+					updateZoomControls();
 				}
 			}
 			break;
@@ -105,6 +84,20 @@ public class MoowMap extends Activity {
 		return super.onTouchEvent(event);
 	}
 
+	
+	private void updateZoomControls(){
+		int zoomLevel = pmap.getZoomLevel();
+		if(zoomLevel ==16){
+			zoomPanel.setIsZoomOutEnabled(false);
+			zoomPanel.setIsZoomInEnabled(true);
+		} else if (zoomLevel == 0){
+			zoomPanel.setIsZoomOutEnabled(true);
+			zoomPanel.setIsZoomInEnabled(false);
+		} else {
+			zoomPanel.setIsZoomOutEnabled(true);
+			zoomPanel.setIsZoomInEnabled(true);
+		}
+	}
 	
 	private  void  quickHack(){
 		int dx = 0,dy = 0;
@@ -219,4 +212,51 @@ public class MoowMap extends Activity {
 		}
 
 	}
+	
+	class ZoomPanel extends RelativeLayout {
+
+		private ZoomControls zoomControls;
+		
+		public ZoomPanel(Context context) {
+			super(context);
+			zoomControls = new ZoomControls(getContext());
+			zoomControls.setOnZoomOutClickListener(new OnClickListener(){
+				public void onClick(View v) {
+					pmap.zoomOut();
+					updateZoomControls();
+				}
+			});
+			zoomControls.setOnZoomInClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					pmap.zoomInCenter();
+					updateZoomControls();
+				}
+			});
+			addView(zoomControls);
+			setPadding(80, 368, 0, 0);
+		}
+		
+		/**
+		 * Устанавливает кнопку увеличения детализации
+		 * в активное/неактивное состояние
+		 * @param isEnabled
+		 */
+		public void setIsZoomInEnabled(boolean isEnabled){
+			zoomControls.setIsZoomInEnabled(isEnabled);
+			
+		}
+		
+		/**
+		 * Устанавливает кнопку уменьшения детализации
+		 * в активное/неактивное состояние
+		 * @param isEnabled
+		 */
+        public void setIsZoomOutEnabled(boolean isEnabled){
+        	zoomControls.setIsZoomOutEnabled(isEnabled);
+		}
+		
+		
+
+	}
+
 }
