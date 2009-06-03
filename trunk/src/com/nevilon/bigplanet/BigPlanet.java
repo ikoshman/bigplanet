@@ -142,14 +142,6 @@ public class BigPlanet extends Activity {
 		return true;
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
-			mapControl.setMapMode(MapControl.ZOOM_MODE);
-		}
-	}
-
 	/**
 	 * Устанавливает размеры карты и др. свойства
 	 */
