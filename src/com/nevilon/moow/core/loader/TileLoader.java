@@ -24,8 +24,8 @@ public class TileLoader implements Runnable {
 
 	private int counter = 0;
 
-	private boolean useNet =  true;
-	
+	private boolean useNet = true;
+
 	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
 
 	/**
@@ -37,12 +37,12 @@ public class TileLoader implements Runnable {
 	public TileLoader(Handler handler) {
 		this.handler = handler;
 	}
-	
-	public void setMapStrategy(MapStrategy mapStrategy){
+
+	public void setMapStrategy(MapStrategy mapStrategy) {
 		this.mapStrategy = mapStrategy;
 	}
-	
-	public synchronized void setUseNet(boolean useNet){
+
+	public synchronized void setUseNet(boolean useNet) {
 		this.useNet = useNet;
 	}
 
@@ -56,7 +56,7 @@ public class TileLoader implements Runnable {
 	}
 
 	public synchronized void addToQueue(RawTile tile) {
-		if(useNet){
+		if (useNet) {
 			loadQueue.add(tile);
 		}
 	}
@@ -74,36 +74,32 @@ public class TileLoader implements Runnable {
 
 	public void run() {
 		while (true) {
-				try {
-					Thread.sleep(200);
-					if (useNet && counter < MAX_THREADS && loadQueue.size() > 0) {
-						RawTile rt = getFromQueue();
-						Log.i("LOADER", "Tile " + rt + " start loading");
-						if (null != rt) {
-							new ThreadLoader(rt).start();
-							counter++;
-						}
+			try {
+				Thread.sleep(200);
+				if (useNet && counter < MAX_THREADS && loadQueue.size() > 0) {
+					RawTile rt = getFromQueue();
+					Log.i("LOADER", "Tile " + rt + " start loading");
+					if (null != rt) {
+						new ThreadLoader(rt).start();
+						counter++;
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private class ThreadLoader extends BaseLoader {
 
-	
 		public ThreadLoader(RawTile tile) {
 			super(tile);
 		}
 
-		
 		@Override
 		protected MapStrategy getStrategy() {
 			return TileLoader.this.mapStrategy;
 		}
-
-
 
 		@Override
 		protected void handle(RawTile tile, byte[] data, int meta) {

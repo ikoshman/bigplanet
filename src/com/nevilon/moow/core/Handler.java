@@ -18,6 +18,5 @@ public abstract class Handler {
 
 	public void handle(RawTile tile, Bitmap bmp4scale, boolean isScaled) {
 	};
-	
 
 }

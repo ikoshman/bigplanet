@@ -24,7 +24,8 @@ public class BitmapCache {
 		cacheMap = new ExpiredHashMap(size);
 	}
 
-	public void gc(){
+
+	public void clear(){
 		cacheMap.clear();
 	}
 	
@@ -60,7 +61,7 @@ public class BitmapCache {
 	 * @return битмап (или null если не найден)
 	 */
 	public Bitmap get(int x, int y, int z, int s) {
-		return cacheMap.get(new RawTile(x, y, z,s));
+		return cacheMap.get(new RawTile(x, y, z, s));
 	}
 
 }

@@ -17,7 +17,6 @@ public class TileScaler implements Runnable {
 
 	private Handler handler;
 
-
 	public TileScaler(RawTile tile, Handler handler) {
 		this.tile = tile;
 		this.handler = handler;
@@ -25,9 +24,9 @@ public class TileScaler implements Runnable {
 
 	public void run() {
 		Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
-		//if (bmp4scale != null) {
-			handler.handle(tile, bmp4scale, true);
-		//}
+		// if (bmp4scale != null) {
+		handler.handle(tile, bmp4scale, true);
+		// }
 	}
 
 	/**

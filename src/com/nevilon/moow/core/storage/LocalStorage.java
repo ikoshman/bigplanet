@@ -56,8 +56,8 @@ public class LocalStorage {
 			dir.mkdirs();
 		}
 	}
-	
-	public boolean isExists(RawTile tile){
+
+	public boolean isExists(RawTile tile) {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File tileFile = new File(path + "/tile." + tile.s + ".tl");
 		return tileFile.exists();

@@ -3,10 +3,9 @@ package com.nevilon.moow.core.providers;
 import java.text.MessageFormat;
 
 public class GoogleLandscapeMapStrategy extends MapStrategy {
-	
-private static final String REQUEST_PATTERN = "mt?v=w2p.87&hl=ru&x={0}&y={1}&z={2}&s=Galil";
 
-	
+	private static final String REQUEST_PATTERN = "mt?v=w2p.87&hl=ru&x={0}&y={1}&z={2}&s=Galil";
+
 	@Override
 	public String getServer() {
 		return "http://mt1.google.com/";
