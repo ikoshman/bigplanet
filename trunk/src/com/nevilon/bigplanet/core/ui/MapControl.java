@@ -192,9 +192,13 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private synchronized void updateScreen() {
+		zoomPanel.postInvalidate();
 		if (main != null) {
+			zoomPanel.postInvalidate();
 			main.postInvalidate();
+			zoomPanel.postInvalidate();
 		}
+		zoomPanel.postInvalidate();
 	}
 
 	private void quickHack() {
