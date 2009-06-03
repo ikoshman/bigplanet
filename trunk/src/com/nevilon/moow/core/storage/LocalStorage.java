@@ -104,11 +104,11 @@ public class LocalStorage {
 	 * @param data
 	 *            параметры тайла
 	 */
-	public void put(RawTile tile, byte[] data) {
+	public void put(RawTile tile, byte[] data, int providerId) {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File fullPath = new File(path);
 		fullPath.mkdirs();
-		fullPath = new File(path + "tile.tl");
+		fullPath = new File(path + "tile."+providerId+".tl");
 		try {
 			BufferedOutputStream outStream = new BufferedOutputStream(
 					new FileOutputStream(fullPath), BUFFER_SIZE);
@@ -128,9 +128,9 @@ public class LocalStorage {
 	 *            параметры тайла
 	 * @return тайл
 	 */
-	public BufferedInputStream get(RawTile tile) {
+	public BufferedInputStream get(RawTile tile, int providerId) {
 		String path = buildPath(tile.x, tile.y, tile.z);
-		File tileFile = new File(path + "/tile.tl");
+		File tileFile = new File(path + "/tile."+providerId+".tl");
 		if (tileFile.exists()) {
 			try {
 				BufferedInputStream io = new BufferedInputStream(new FileInputStream(tileFile),
