@@ -329,19 +329,7 @@ public class MapControl extends RelativeLayout {
 
 		public Panel(Context context) {
 			super(context);
-			setOnLongClickListener(new OnLongClickListener() {
-
-				public boolean onLongClick(View v) {
-					if (MapControl.this.onMapLongClickListener != null) {
-						MapControl.this.onMapLongClickListener
-								.onMapLongClick(0,0);
-					}
-					return true;
-				}
-
-			});
-
-			paint = new Paint();
+	    	paint = new Paint();
 
 		}
 
@@ -392,7 +380,7 @@ public class MapControl extends RelativeLayout {
 				break;
 			}
 
-			return super.onTouchEvent(event);
+			return true;
 		}
 
 	}
