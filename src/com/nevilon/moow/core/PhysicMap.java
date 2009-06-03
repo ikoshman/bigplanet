@@ -8,7 +8,7 @@ public class PhysicMap {
 
 	private Bitmap[][] cells = new Bitmap[3][3];
 	
-	private RawTile defTile = new RawTile(29,59,9);
+	private RawTile defTile = new RawTile(0,0,15);
 	
 	public PhysicMap(){
 		tileProvider = new TileProvider(this);
