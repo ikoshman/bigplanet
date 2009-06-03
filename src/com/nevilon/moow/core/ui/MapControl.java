@@ -42,11 +42,7 @@ public class MapControl extends RelativeLayout {
 	 */
 	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
-	/*
-	 * Начальное значение зума
-	 */
-	private final static int START_ZOOM = 16;
-
+	
 	/*
 	 * Перерисовка панели с картой
 	 */
@@ -95,7 +91,7 @@ public class MapControl extends RelativeLayout {
 	 */
 	private final static int BCG_CELL_SIZE = 16;
 	
-	public MapControl(Context context, int width, int height) {
+	public MapControl(Context context, int width, int height, RawTile startTile) {
 		super(context);
 		setId(1);
 		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
@@ -126,8 +122,7 @@ public class MapControl extends RelativeLayout {
 
 		addView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
-		 pmap = new PhysicMap(new RawTile(0, 0,
-					MapControl.START_ZOOM), new AbstractCommand(){
+		 pmap = new PhysicMap(startTile, new AbstractCommand(){
 
 						@Override
 						public synchronized void execute() {
