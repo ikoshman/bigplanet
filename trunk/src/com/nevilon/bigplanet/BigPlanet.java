@@ -35,6 +35,7 @@ import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
 import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
 import com.nevilon.bigplanet.core.ui.MapControl;
+import com.nevilon.bigplanet.core.ui.OnDialogClickListener;
 import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 
 public class BigPlanet extends Activity {
@@ -173,7 +174,27 @@ public class BigPlanet extends Activity {
 					newGeoBookmark.setZ(mapControl.getPhysicalMap()
 							.getZoomLevel());
 
-					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark);
+					
+					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark, new OnDialogClickListener(){
+
+						@Override
+						public void onCancelClick() {
+							// TODO Auto-generated method stub
+							
+						}
+
+						@Override
+						public void onOkClick(Object obj) {
+							GeoBookmark geoBookmark = (GeoBookmark)obj;
+							DAO d = new DAO(BigPlanet.this);
+							d.saveGeoBookmark(geoBookmark);
+							mapControl.setMapMode(MapControl.ZOOM_MODE);
+							
+						}
+						
+						
+						
+					});
 				}
 
 			});
