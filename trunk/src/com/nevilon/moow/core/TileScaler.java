@@ -1,10 +1,9 @@
 package com.nevilon.moow.core;
 
-import com.nevilon.moow.core.storage.LocalStorageWrapper;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
+import com.nevilon.moow.core.storage.LocalStorageWrapper;
 
 /**
  * Предназначен для выполнения скалирования
@@ -17,15 +16,14 @@ public class TileScaler implements Runnable {
 	private RawTile tile;
 
 	private Handler handler;
-	
+
 	private int providerId;
-	
-	public TileScaler(RawTile tile, Handler handler,int providerId) {
+
+	public TileScaler(RawTile tile, Handler handler, int providerId) {
 		this.tile = tile;
 		this.handler = handler;
 		this.providerId = providerId;
 	}
-
 
 	public void run() {
 		Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
@@ -86,11 +84,10 @@ public class TileScaler implements Runnable {
 				if (offsetParentY >= 0 && offsetParentX >= 0) {
 					bitmap.getPixels(pixels, 0, tileSize, offsetParentX,
 							offsetParentY, tileSize, tileSize);
-					bitmap = Bitmap.createBitmap(pixels, tileSize,
-							tileSize, Config.RGB_565);
+					bitmap = Bitmap.createBitmap(pixels, tileSize, tileSize,
+							Config.RGB_565);
 					pixels = null;
-					return Bitmap.createScaledBitmap(bitmap, 256, 256,
-							false);
+					return Bitmap.createScaledBitmap(bitmap, 256, 256, false);
 				}
 			}
 		}
@@ -98,4 +95,3 @@ public class TileScaler implements Runnable {
 	}
 
 }
-

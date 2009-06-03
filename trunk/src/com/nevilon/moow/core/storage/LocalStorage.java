@@ -108,7 +108,7 @@ public class LocalStorage {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File fullPath = new File(path);
 		fullPath.mkdirs();
-		fullPath = new File(path + "tile."+providerId+".tl");
+		fullPath = new File(path + "tile." + providerId + ".tl");
 		try {
 			BufferedOutputStream outStream = new BufferedOutputStream(
 					new FileOutputStream(fullPath), BUFFER_SIZE);
@@ -130,12 +130,12 @@ public class LocalStorage {
 	 */
 	public BufferedInputStream get(RawTile tile, int providerId) {
 		String path = buildPath(tile.x, tile.y, tile.z);
-		File tileFile = new File(path + "/tile."+providerId+".tl");
+		File tileFile = new File(path + "/tile." + providerId + ".tl");
 		if (tileFile.exists()) {
 			try {
-				BufferedInputStream io = new BufferedInputStream(new FileInputStream(tileFile),
-						BUFFER_SIZE);
-				return io ;
+				BufferedInputStream io = new BufferedInputStream(
+						new FileInputStream(tileFile), BUFFER_SIZE);
+				return io;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}

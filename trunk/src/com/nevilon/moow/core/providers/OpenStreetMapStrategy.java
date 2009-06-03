@@ -5,8 +5,7 @@ import java.text.MessageFormat;
 public class OpenStreetMapStrategy extends MapStrategy {
 
 	private static final String REQUEST_PATTERN = "{2}/{0}/{1}.png";
-	
-	
+
 	@Override
 	public int getId() {
 		return 5;
@@ -20,8 +19,7 @@ public class OpenStreetMapStrategy extends MapStrategy {
 	@Override
 	public String getURL(int x, int y, int z) {
 		return MessageFormat.format(OpenStreetMapStrategy.REQUEST_PATTERN,
-				String.valueOf(x), String.valueOf(y), String
-						.valueOf(17-z));
+				String.valueOf(x), String.valueOf(y), String.valueOf(17 - z));
 	}
 
 }

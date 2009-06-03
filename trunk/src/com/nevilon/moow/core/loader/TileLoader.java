@@ -4,14 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.MessageFormat;
 import java.util.LinkedList;
+
+import android.util.Log;
 
 import com.nevilon.moow.core.Handler;
 import com.nevilon.moow.core.RawTile;
 import com.nevilon.moow.core.providers.MapStrategy;
-
-import android.util.Log;
 
 /**
  * Загрузчик тайлов с сервера
@@ -22,16 +21,14 @@ import android.util.Log;
 public class TileLoader implements Runnable {
 
 	private static final int MAX_THREADS = 5;
-	
+
 	private MapStrategy mapStrategy;
-	
+
 	private Handler handler;
 
 	private int counter = 0;
 
 	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
-	
-
 
 	/**
 	 * Конструктор
@@ -57,7 +54,7 @@ public class TileLoader implements Runnable {
 		loadQueue.add(tile);
 	}
 
-	public  synchronized RawTile getFromQueue() {
+	public synchronized RawTile getFromQueue() {
 		return loadQueue.poll();
 	}
 
@@ -97,7 +94,8 @@ public class TileLoader implements Runnable {
 		}
 
 		private byte[] load() throws Exception {
-			URL u = new URL(mapStrategy.getServer() + mapStrategy.getURL(tile.x, tile.y, tile.z));
+			URL u = new URL(mapStrategy.getServer()
+					+ mapStrategy.getURL(tile.x, tile.y, tile.z));
 			URLConnection uc = u.openConnection();
 			String contentType = uc.getContentType();
 			int contentLength = uc.getContentLength();

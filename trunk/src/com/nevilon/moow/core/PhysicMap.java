@@ -163,10 +163,10 @@ public class PhysicMap {
 	}
 
 	private void reload(int x, int y, int z) {
-			defTile.x = x;
-			defTile.y = y;
-			defTile.z = z;
-			loadCells(defTile);
+		defTile.x = x;
+		defTile.y = y;
+		defTile.z = z;
+		loadCells(defTile);
 	}
 
 	/**
@@ -182,62 +182,61 @@ public class PhysicMap {
 			return false;
 		}
 		int maxTile = (int) Math.pow(2, 17 - z) - 1;
-		if (x > maxTile || y > maxTile || y<0) {
+		if (x > maxTile || y > maxTile || y < 0) {
 			return false;
 		}
 		return true;
 
 	}
 
-	private RawTile normalize(RawTile tile){
+	private RawTile normalize(RawTile tile) {
 		tile.x = normalizeX(tile.x, tile.z);
 		tile.y = normalizeY(tile.y, tile.z);
 		return tile;
 	}
-	
-	private int normalizeX(int x,int z){
+
+	private int normalizeX(int x, int z) {
 		int tileCount = (int) Math.pow(2, 17 - z);
-		while(x<0){
-			x = tileCount+x;		
+		while (x < 0) {
+			x = tileCount + x;
 		}
-		while(x>tileCount-1){
+		while (x > tileCount - 1) {
 			x = x - tileCount;
 		}
 		return x;
 	}
-	
-	private int normalizeY(int y,int z){
+
+	private int normalizeY(int y, int z) {
 		int tileCount = (int) Math.pow(2, 17 - z);
-		while(y<0){
-			y = tileCount+y;		
+		while (y < 0) {
+			y = tileCount + y;
 		}
-		while(y>tileCount-1){
+		while (y > tileCount - 1) {
 			y = y - tileCount;
 		}
 		return y;
 	}
-	
+
 	/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
 	 * крайней левой верхней)
 	 * 
 	 * @param tile
 	 */
-	private  void loadCells(RawTile tile) {
+	private void loadCells(RawTile tile) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
-				
-				
+
 				x = (tile.x + i);
 				x = normalizeX(x, tile.z);
-				
+
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
 				if (!checkTileXY(x, y, tile.z)) {
-					//cells[i][j] = null;
+					// cells[i][j] = null;
 				} else {
-					//cells[i][j] = null;
+					// cells[i][j] = null;
 					cells[i][j] = tileProvider.getTile(
 							new RawTile(x, y, tile.z), true);
 				}

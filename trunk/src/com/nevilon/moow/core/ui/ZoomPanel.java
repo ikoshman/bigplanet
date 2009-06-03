@@ -7,7 +7,7 @@ import android.widget.ZoomControls;
 /**
  * 
  * @author hudvin
- *
+ * 
  */
 public class ZoomPanel extends RelativeLayout {
 
@@ -40,23 +40,21 @@ public class ZoomPanel extends RelativeLayout {
 	public void setIsZoomOutEnabled(boolean isEnabled) {
 		zoomControls.setIsZoomOutEnabled(isEnabled);
 	}
-	
+
 	/**
 	 * 
 	 * @param onClickListener
 	 */
-	public void setOnZoomInClickListener(OnClickListener onClickListener ){
+	public void setOnZoomInClickListener(OnClickListener onClickListener) {
 		zoomControls.setOnZoomInClickListener(onClickListener);
 	}
-	
+
 	/**
 	 * 
 	 * @param onClickListener
 	 */
-	public void setOnZoomOutClickListener(OnClickListener onClickListener ){
+	public void setOnZoomOutClickListener(OnClickListener onClickListener) {
 		zoomControls.setOnZoomOutClickListener(onClickListener);
 	}
 
 }
-
-

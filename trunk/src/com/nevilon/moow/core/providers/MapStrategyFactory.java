@@ -21,7 +21,7 @@ public class MapStrategyFactory {
 
 	public MapStrategy getStrategy(MapSource source) {
 		switch (source) {
-		
+
 		case GOOGLE_VECTOR:
 			return new GoogleVectorMapStrategy();
 
@@ -33,10 +33,10 @@ public class MapStrategyFactory {
 
 		case YANDEX_VECTOR:
 			return new YandexVectorMapStrategy();
-		
+
 		case OPENSTREET_VECTOR:
 			return new OpenStreetMapStrategy();
-		
+
 		default:
 			return new GoogleVectorMapStrategy();
 		}

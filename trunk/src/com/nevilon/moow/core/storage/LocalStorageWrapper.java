@@ -2,12 +2,11 @@ package com.nevilon.moow.core.storage;
 
 import java.io.BufferedInputStream;
 
-import com.nevilon.moow.core.Handler;
-import com.nevilon.moow.core.RawTile;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.nevilon.moow.core.Handler;
+import com.nevilon.moow.core.RawTile;
 
 /**
  * Обертка над LocalStorage Производит декодирование тайла в синхронном и в
@@ -32,7 +31,7 @@ public class LocalStorageWrapper {
 		if (outStream != null) {
 			bmp = BitmapFactory.decodeStream(outStream);
 		}
-		
+
 		return bmp;
 	}
 
@@ -40,12 +39,13 @@ public class LocalStorageWrapper {
 		localStorage.put(tile, data, providerId);
 	}
 
-	public static void get(final RawTile tile, final Handler handler, final int providerId) {
+	public static void get(final RawTile tile, final Handler handler,
+			final int providerId) {
 		new Thread() {
 
 			public void run() {
-				
-				handler.handle(tile,get(tile, providerId),false);
+
+				handler.handle(tile, get(tile, providerId), false);
 			}
 
 		}.start();

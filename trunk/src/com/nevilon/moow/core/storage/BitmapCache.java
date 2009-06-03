@@ -1,8 +1,8 @@
 package com.nevilon.moow.core.storage;
 
-import com.nevilon.moow.core.RawTile;
-
 import android.graphics.Bitmap;
+
+import com.nevilon.moow.core.RawTile;
 
 /**
  * Кеш битмапов
@@ -16,7 +16,9 @@ public class BitmapCache {
 
 	/**
 	 * Конструктор
-	 * @param size размер кеша
+	 * 
+	 * @param size
+	 *            размер кеша
 	 */
 	public BitmapCache(int size) {
 		cacheMap = new ExpiredHashMap(size);
@@ -24,8 +26,11 @@ public class BitmapCache {
 
 	/**
 	 * Добавление битмапа в кеш
-	 * @param tile тайл
-	 * @param bitmap битмап
+	 * 
+	 * @param tile
+	 *            тайл
+	 * @param bitmap
+	 *            битмап
 	 */
 	public void put(RawTile tile, Bitmap bitmap) {
 		cacheMap.put(tile, bitmap);
@@ -33,7 +38,9 @@ public class BitmapCache {
 
 	/**
 	 * Получение битмапа из кеша
-	 * @param tile тайл
+	 * 
+	 * @param tile
+	 *            тайл
 	 * @return битмап (или null если не найден)
 	 */
 	public Bitmap get(RawTile tile) {
@@ -42,6 +49,7 @@ public class BitmapCache {
 
 	/**
 	 * Получение битмапа из кеша
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z

@@ -8,13 +8,15 @@ import android.graphics.Bitmap.Config;
 
 /**
  * Утилиты для работы с битмапами
+ * 
  * @author hudvin
- *
+ * 
  */
 public class BitmapUtils {
 
 	/**
 	 * Рисует фон для карты( в клетку )
+	 * 
 	 * @param cellSize
 	 * @param height
 	 * @param widht
@@ -33,15 +35,13 @@ public class BitmapUtils {
 		background.setColor(Color.WHITE);
 		// продольные линии
 		for (int i = 0; i < 320 / cellSize; i++) {
-			cv.drawLine(cellSize * i, 0,
-					cellSize * i, height, background);
+			cv.drawLine(cellSize * i, 0, cellSize * i, height, background);
 		}
 		// поперечные линии
 		for (int i = 0; i < height / cellSize; i++) {
-			cv.drawLine(0, cellSize * i, 320,
-					cellSize * i, background);
+			cv.drawLine(0, cellSize * i, 320, cellSize * i, background);
 		}
 		return bitmap;
 	}
-	
+
 }
