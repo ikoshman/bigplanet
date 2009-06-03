@@ -7,6 +7,7 @@ import android.graphics.Point;
 
 import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
 import com.nevilon.bigplanet.core.ui.MapControl;
+import com.nevilon.bigplanet.core.ui.SmoothZoomEngine;
 
 public class PhysicMap {
 
@@ -195,7 +196,7 @@ public class PhysicMap {
 	/**
 	 * Уменьшение уровня детализации
 	 */
-	public void zoomOut() {
+	public void zoomOut(int n) {
 		if ((zoom) < 16) {
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
 					- globalOffset.x + getWidth() / 2);
@@ -218,8 +219,6 @@ public class PhysicMap {
 			correctionX = -(nextZoomX - tileX * TILE_SIZE);
 			correctionY = -(nextZoomY - tileY * TILE_SIZE);
 
-			// globalOffset.x = correctionX;
-			// globalOffset.y = correctionY;
 			inZoom = -1;
 			zoom++;
 			zoom(tileX, tileY, zoom);
@@ -228,6 +227,52 @@ public class PhysicMap {
 
 	}
 
+	
+	private int getN(double x){
+		int counter = 1;
+		while(x>2){
+			counter++;
+			x=x/2;
+		}
+		return counter;
+	}
+	
+	public void zoomS(double dz){
+		if(zoom>0 && zoom <16){
+			int zoomTo = getN(dz);
+			int offsetX = getWidth() / 2;
+			int offsetY = getHeight() / 2;
+			
+			
+			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
+					- globalOffset.x + offsetX);
+			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
+					- globalOffset.y + offsetY);
+
+			// получение координат точки на новом уровне
+			int nextZoomX = (int)(currentZoomX * dz);
+			int nextZoomY = (int)(currentZoomY * dz);
+
+			// получение координат угла экрана на новом уровне
+			nextZoomX = nextZoomX - offsetX;
+			nextZoomY = nextZoomY - offsetY;
+
+			// получение углового тайла
+			int tileX = nextZoomX / TILE_SIZE;
+			int tileY = nextZoomY / TILE_SIZE;
+
+			// отступ всегда один - точка должна находится в центре экрана
+			correctionX = nextZoomX - tileX * TILE_SIZE;
+			correctionY = nextZoomY - tileY * TILE_SIZE;
+
+			inZoom = 1;
+			zoom=zoom-zoomTo;
+			System.out.println("z "+zoom);
+			zoom(tileX, tileY, zoom);
+			
+		}
+	}
+	
 	/**
 	 * Увеличение уровня детализации с центрированием
 	 */
@@ -267,9 +312,8 @@ public class PhysicMap {
 			correctionY = nextZoomY - tileY * TILE_SIZE;
 
 			inZoom = 1;
-			// globalOffset.x = -(correctionX);
-			// globalOffset.y = -(correctionY);
 			zoom--;
+			
 
 			zoom(tileX, tileY, zoom);
 		}
@@ -384,6 +428,7 @@ public class PhysicMap {
 			if (r > 7) {
 				BitmapCacheWrapper.getInstance().gc();
 			}
+			SmoothZoomEngine.getInstance().nullScaleFactor();
 		}
 	}
 

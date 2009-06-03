@@ -2,6 +2,8 @@ package com.nevilon.bigplanet.core;
 
 public abstract class AbstractCommand {
 
-	public abstract void execute();
+	public void execute(){};
+	
+	public void execute(Object obj){};
 
 }
