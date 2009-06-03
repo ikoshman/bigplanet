@@ -148,18 +148,13 @@ public class BigPlanet extends Activity {
 		case RESULT_OK:
 			GeoBookmark bookmark = (GeoBookmark) data
 					.getSerializableExtra(BOOKMARK_DATA);
-			//mapControl.getPhysicalMap().setDefTile(bookmark.getTile());
+			mapControl.getPhysicalMap().setDefTile(bookmark.getTile());
 
-			//Point offset = new Point();
-			//offset.set(bookmark.getOffsetX(), bookmark.getOffsetY());
-			//mapControl.getPhysicalMap().setGlobalOffset(offset);
-			//mapControl.getPhysicalMap().reloadTiles();
-			//mapControl.setMapSource(bookmark.getTile().s);
-			mm.addMarker(bookmark,MarkerManager.BOOKMARK_MARKER, mapControl.getPhysicalMap().getZoomLevel());
-			
-			mapControl.goTo(bookmark.getTile().x, bookmark.getTile().y, bookmark.getTile().z, bookmark.getOffsetX(), bookmark.getOffsetY());
-		    
-			
+			Point offset = new Point();
+			offset.set(bookmark.getOffsetX(), bookmark.getOffsetY());
+			mapControl.getPhysicalMap().setGlobalOffset(offset);
+			mapControl.getPhysicalMap().reloadTiles();
+			mapControl.setMapSource(bookmark.getTile().s);
 		default:
 			break;
 		}
@@ -232,22 +227,16 @@ public class BigPlanet extends Activity {
 				@Override
 				public void onMapLongClick(int x, int y) {
 					hideMessage();
-					
-					
-					int currentZoomX = (int) (mapControl.getPhysicalMap().getDefaultTile().x * 256 - mapControl.getPhysicalMap().getGlobalOffset().x
-							+ x);
-					int currentZoomY = (int) (mapControl.getPhysicalMap().getDefaultTile().y * 256 - mapControl.getPhysicalMap().getGlobalOffset().y
-							+ y);
-					
-					
 					final GeoBookmark newGeoBookmark = new GeoBookmark();
-					newGeoBookmark.setOffsetX(currentZoomX);
-					newGeoBookmark.setOffsetY(currentZoomY);
-					newGeoBookmark.setTile(new RawTile(-1,-1,mapControl.getPhysicalMap().getZoomLevel(),mapControl.getPhysicalMap().getTileResolver().getMapSourceId()));
-					//newGeoBookmark.setTile(mapControl.getPhysicalMap()
-					//		.getDefaultTile());
-					//newGeoBookmark.getTile().s = mapControl.getPhysicalMap()
-					//		.getTileResolver().getMapSourceId();
+					newGeoBookmark.setOffsetX(mapControl.getPhysicalMap()
+							.getGlobalOffset().x);
+					newGeoBookmark.setOffsetY(mapControl.getPhysicalMap()
+							.getGlobalOffset().y);
+
+					newGeoBookmark.setTile(mapControl.getPhysicalMap()
+							.getDefaultTile());
+					newGeoBookmark.getTile().s = mapControl.getPhysicalMap()
+							.getTileResolver().getMapSourceId();
 
 					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark,
 							new OnDialogClickListener() {
