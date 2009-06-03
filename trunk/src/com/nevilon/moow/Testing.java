@@ -1,13 +1,15 @@
 package com.nevilon.moow;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.*;
-import android.graphics.*;
-import android.content.*;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class Testing extends Activity
 {   

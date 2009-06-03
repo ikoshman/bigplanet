@@ -1,25 +1,22 @@
 package com.nevilon.moow;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.nevilon.moow.core.LocalStorage;
-import com.nevilon.moow.core.PhysicMap;
-import com.nevilon.moow.core.TileLoader;
-import com.nevilon.moow.core.TileProvider;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.*;
-import android.view.View.OnLongClickListener;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.graphics.*;
-import android.content.*;
+
+import com.nevilon.moow.core.PhysicMap;
 
 public class DrawTesting extends Activity {
 	public static final int DIRECTION_RIGHT = 0, DIRECTION_LEFT = 1;
@@ -30,22 +27,13 @@ public class DrawTesting extends Activity {
 
 	private boolean isLoaded = false;
 	
-	private float dx = 0;
-
-	private float dy = 0;
-
-	private float startX = 0;
-
-	private float startY = 0;
-
-	private float curerntX = 0;
-
-	private float currentY = 0;
+	
 	
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
 	private Point globalOffset = new Point();
 	
+	PhysicMap pmap = new PhysicMap();
 
 	boolean moving = false;
 
@@ -53,67 +41,29 @@ public class DrawTesting extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
-		(new Thread(new AnimationLoop())).start();
-		
-		
-	//	TileProvider tileProvider = new TileProvider();
-	//	for(int i=10;i<100;i++){
-	//		tileProvider.getTile(i,172, 8);
-			
-//		}
-		
-		
+		(new Thread(new AnimationLoop())).start();		
 	}
 
 	
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
-		
-		
-		
+	
 		case MotionEvent.ACTION_DOWN:
-			System.out.println("DOWN");
+			nextMovePoint.set((int)event.getX(), (int)event.getY());
+			//System.out.println("DOWN");
 			break;
 		case MotionEvent.ACTION_MOVE:
+			previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
+			nextMovePoint.set((int)event.getX(),(int)event.getY());
+			
 
-			if (!moving) {
-				// начато движение
-				startX = event.getX();
-				startY = event.getY();				
-			} else {
-				globalOffset.x = globalOffset.x + (nextMovePoint.x-previousMovePoint.x) ; // сохранение сдвига
-				globalOffset.y = globalOffset.y + (nextMovePoint.y-previousMovePoint.y) ; // сохранение сдвига
-
-			}
-			
-			
-			previousMovePoint.x = nextMovePoint.x;
-			previousMovePoint.y = nextMovePoint.y;
-			nextMovePoint.x = (int)event.getX();
-			nextMovePoint.y = (int)event.getY();
-			
-			System.out.println(globalOffset.x);
-			System.out.println("startX " + startX + " startX " + startY);
-			dx = event.getX(); // 
-			dy = event.getY();
-			moving = true;
-			System.out.println("ACTION_MOVE");
-			break;
+			globalOffset.set(globalOffset.x+(nextMovePoint.x-previousMovePoint.x),
+					globalOffset.y+(nextMovePoint.y-previousMovePoint.y));
+				break;
 		case MotionEvent.ACTION_UP:
-			System.out.println("ACTION_UP");
-			if (moving) {
-				currentY = dy - startY;
-				curerntX = dx - startX;
-				startX = 0;
-				startY = 0;
-				dx = 0;
-				dy = 0;
-			}
-			moving = false;
 			break;
 		}
 
@@ -142,24 +92,14 @@ public class DrawTesting extends Activity {
 			loadTiles();
 		}
 		
-		PhysicMap pmap = new PhysicMap();
-		for(int i=0;i<3;i++){
-			canvas.drawBitmap(pmap.getCells()[i][0], (i - 1) * 256,0 * 256, paint);
-		}
-
 		
-//		for (int i = 0; i < 4; i++) {
-//			for (int j = 0; j < 4; j++) {
-				//if (moving) {
-//					canvas.drawBitmap(tiles[i][j], (i - 1) * 256 + globalOffset.x,
-//							(j - 1) * 256 + globalOffset.y, paint);
-			//	} else {
-			//		canvas.drawBitmap(tiles[i][j], (i - 1) * 256 + curerntX,
-			//				(j - 1) * 256 + currentY, paint);
-			//	}
-	//		}
-
-//		}
+		for(int i=0;i<3;i++){
+			for(int j=0;j<3;j++){
+				canvas.drawBitmap(pmap.getCells()[i][j],
+						(i - 1) * 256+globalOffset.x,
+						(j-1) * 256+globalOffset.y, paint);
+			}
+		}
 
 	}
 
