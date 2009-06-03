@@ -155,41 +155,42 @@ public class MapControl extends RelativeLayout {
 	private void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
-		if (pmap.globalOffset.x > 0) {
-			dx = Math.round((pmap.globalOffset.x + pmap.getWidth()) / 256);
+		Point globalOffset = pmap.getGlobalOffset();
+		if (globalOffset.x > 0) {
+			dx = Math.round((globalOffset.x + pmap.getWidth()) / 256);
 		} else {
-			dx = Math.round((pmap.globalOffset.x) / 256);
+			dx = Math.round((globalOffset.x) / 256);
 		}
 
-		if (pmap.globalOffset.y > 0) {
-			dy = Math.round((pmap.globalOffset.y + pmap.getHeight()) / 256);
+		if (globalOffset.y > 0) {
+			dy = Math.round((globalOffset.y + pmap.getHeight()) / 256);
 		} else {
-			dy = Math.round(pmap.globalOffset.y / 256);
+			dy = Math.round(globalOffset.y / 256);
 
 		}
 
-		pmap.globalOffset.x = pmap.globalOffset.x - dx * 256;
-		pmap.globalOffset.y = pmap.globalOffset.y - dy * 256;
+		globalOffset.x = globalOffset.x - dx * 256;
+		globalOffset.y = globalOffset.y - dy * 256;
 
 		tdx = dx;
 		tdy = dy;
 
-		if (pmap.globalOffset.x > 0) {
-			dx = Math.round((pmap.globalOffset.x + pmap.getWidth()) / 256);
+		if (globalOffset.x > 0) {
+			dx = Math.round((globalOffset.x + pmap.getWidth()) / 256);
 		} else {
-			dx = Math.round((pmap.globalOffset.x) / 256);
+			dx = Math.round((globalOffset.x) / 256);
 		}
 
-		if (pmap.globalOffset.y > 0) {
+		if (globalOffset.y > 0) {
 			dy = (int) Math
-					.round((pmap.globalOffset.y + pmap.getHeight()) / 256);
+					.round((globalOffset.y + pmap.getHeight()) / 256);
 		} else {
-			dy = (int) Math.round(pmap.globalOffset.y / 256);
+			dy = (int) Math.round(globalOffset.y / 256);
 
 		}
 
-		pmap.globalOffset.x = pmap.globalOffset.x - dx * 256;
-		pmap.globalOffset.y = pmap.globalOffset.y - dy * 256;
+		globalOffset.x = globalOffset.x - dx * 256;
+		globalOffset.y = globalOffset.y - dy * 256;
 
 		tdx += dx;
 		tdy += dy;
@@ -237,8 +238,8 @@ public class MapControl extends RelativeLayout {
 				tmpBitmap = pmap.getCells()[i][j];
 				if (tmpBitmap != null) {
 					canvas.drawBitmap(tmpBitmap, (i) * 256
-							+ pmap.globalOffset.x, (j) * 256
-							+ pmap.globalOffset.y, paint);
+							+ pmap.getGlobalOffset().x, (j) * 256
+							+ pmap.getGlobalOffset().y, paint);
 				}
 			}
 		}
@@ -281,7 +282,7 @@ public class MapControl extends RelativeLayout {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
 				// moveHistory.clear();
-				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
+				pmap.getNextMovePoint().set((int) event.getX(), (int) event.getY());
 				lastMoveTime = 0;
 				// addPointToHistory(event.getX(), event.getY());
 				break;

@@ -32,7 +32,7 @@ public class MoowMap extends Activity {
 		configMapControl();
 		int mapSourceId = Preferences.getSourceId();
 		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
-		mapControl.getPhysicalMap().globalOffset = Preferences.getOffset();
+		mapControl.getPhysicalMap().setGlobalOffset(Preferences.getOffset());
 		mapControl.getPhysicalMap().getTileResolver().setUseNet(
 				Preferences.getUseNet());
 	}
@@ -61,7 +61,7 @@ public class MoowMap extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
-		Preferences.putOffset(mapControl.getPhysicalMap().globalOffset);
+		Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
 	}
 
 	@Override
