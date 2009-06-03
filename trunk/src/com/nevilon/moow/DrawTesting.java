@@ -86,19 +86,19 @@ public class DrawTesting extends Activity {
 			}
 		}
 		 else
-		/*if (isMovedLeft()) {
+		if (isMovedLeft()) {
 			if (previousMovePoint.x < nextMovePoint.x) {
 				globalOffset.x -= 256;
 				pmap.moveLeft();
 				moved = true;
 			}
 		}
-		*/
-		//if(!moved){
-		    nx = (int) Math.ceil(globalOffset.x / 256);
-		//} else {
-		//	nx = -1;
-		//}
+		
+		if(!moved){
+		    nx = (int) Math.ceil((globalOffset.x-70) / 256);
+		} else {
+			nx = 0;
+		}
 		
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
