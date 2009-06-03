@@ -122,7 +122,7 @@ public class MapControl extends RelativeLayout {
 	 */
 	private void buildView(int width, int height, RawTile startTile) {
 		// создание фона
-		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
+		// mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
 		// создание панели с картой
 		main = new Panel(this.getContext());
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
@@ -248,33 +248,45 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private void doDraw(Canvas canvas, Paint paint) {
-		// paint.setAntiAlias(true);
+		 paint.setAntiAlias(true);
 
 		if (cvBitmap == null) {
-			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
+			cvBitmap = Bitmap.createBitmap(1500, 1500, Bitmap.Config.RGB_565);
 		}
 		if (cv == null) {
 			cv = new Canvas();
 			canvas = cv;
 			canvas.setBitmap(cvBitmap);
 		}
+		Bitmap bp = BitmapUtils.drawBackground(16, 256, 256);
 		Bitmap tmpBitmap;
-		canvas.drawBitmap(mapBg, 0, 0, paint);
+		// canvas.drawBitmap(mapBg, 0, 0, paint);
 		// отрисовка тайлов
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-
-				tmpBitmap = pmap.getCells()[i][j];
-				if (tmpBitmap != null) {
-
-					canvas.drawBitmap(photoBitmap, 120, 120, paint);
-
-					canvas.drawBitmap(tmpBitmap, (i) * 256
-							+ pmap.getGlobalOffset().x, (j) * 256
-							+ pmap.getGlobalOffset().y, paint);
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 7; j++) {
+				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
+					tmpBitmap = pmap.getCells()[i-2][j-2];
+					if (tmpBitmap != null) {
+						canvas.drawBitmap(tmpBitmap, (i-2) * 256
+								+ pmap.getGlobalOffset().x, (j-2) * 256
+								+ pmap.getGlobalOffset().y, paint);
+					}
+				} else {
+					canvas.drawBitmap(bp, (i-2) * 256 + pmap.getGlobalOffset().x,
+							(j-2) * 256 + pmap.getGlobalOffset().y, paint);
 				}
 			}
 		}
+		/*
+		 * for (int i = 0; i < 3; i++) { for (int j = 0; j < 3; j++) {
+		 * 
+		 * tmpBitmap = pmap.getCells()[i][j]; if (tmpBitmap != null) {
+		 * 
+		 * //canvas.drawBitmap(photoBitmap, 120, 120, paint);
+		 * 
+		 * canvas.drawBitmap(tmpBitmap, (i) 256 + pmap.getGlobalOffset().x, (j)
+		 * 256 + pmap.getGlobalOffset().y, paint); } } }
+		 */
 
 	}
 
@@ -297,8 +309,8 @@ public class MapControl extends RelativeLayout {
 
 				public boolean onLongClick(View v) {
 					if (MapControl.this.onMapLongClickListener != null) {
-						MapControl.this.onMapLongClickListener
-								.onMapLongClick(lastMoveEvent);
+						// MapControl.this.onMapLongClickListener
+						// .onMapLongClick(lastMoveEvent);
 					}
 					return true;
 				}
