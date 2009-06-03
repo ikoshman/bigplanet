@@ -17,9 +17,6 @@
 		</activity>
 
 
-		<activity android:configChanges="keyboardHidden|orientation"
-			android:name=".AddGeoBookmark">
-		</activity>
 
 
 		<activity android:configChanges="keyboardHidden|orientation"

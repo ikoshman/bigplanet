@@ -1,7 +1,9 @@
 package com.nevilon.bigplanet;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -12,30 +14,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SubMenu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.nevilon.bigplanet.core.Preferences;
 import com.nevilon.bigplanet.core.RawTile;
+import com.nevilon.bigplanet.core.db.DAO;
 import com.nevilon.bigplanet.core.db.GeoBookmark;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
+import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
 import com.nevilon.bigplanet.core.ui.MapControl;
 import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 
 public class BigPlanet extends Activity {
 
-	
-	
 	private Toast textMessage;
-	
+
 	/*
 	 * Графический движок, реализующий карту
 	 */
@@ -78,7 +83,7 @@ public class BigPlanet extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(textMessage!=null){
+		if (textMessage != null) {
 			textMessage.cancel();
 		}
 		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
@@ -90,20 +95,17 @@ public class BigPlanet extends Activity {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			/**
-			 * если текущий режим SELECT_MODE  - изменить на ZOOM_MODE
-			 * если текущий режим ZOOM_MODE - делегировать обработку
+			 * если текущий режим SELECT_MODE - изменить на ZOOM_MODE если
+			 * текущий режим ZOOM_MODE - делегировать обработку
 			 */
-			if(mapControl.getMapMode() ==MapControl.SELECT_MODE){
+			if (mapControl.getMapMode() == MapControl.SELECT_MODE) {
 				mapControl.setMapMode(MapControl.ZOOM_MODE);
 				return true;
-			} 
+			}
 		default:
 			return super.onKeyDown(keyCode, ev);
 		}
 	}
-	
-	
-	
 
 	/**
 	 * Создает элементы меню
@@ -121,11 +123,11 @@ public class BigPlanet extends Activity {
 		// add settings menu
 		// menu.add(0, 4,0, "Settings");
 		// add bookmark menu
-		
+
 		sub = menu.addSubMenu(0, 6, 0, "Bookmarks");
 		sub.add(0, 61, 1, "View");
-		sub.add(0,62,0,"Add");
-		
+		sub.add(0, 62, 0, "Add");
+
 		return true;
 	}
 
@@ -139,7 +141,6 @@ public class BigPlanet extends Activity {
 		return true;
 	}
 
-	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -147,7 +148,7 @@ public class BigPlanet extends Activity {
 			mapControl.setMapMode(MapControl.ZOOM_MODE);
 		}
 	}
-	
+
 	/**
 	 * Устанавливает размеры карты и др. свойства
 	 */
@@ -162,16 +163,17 @@ public class BigPlanet extends Activity {
 
 				@Override
 				public void onMapLongClick(int x, int y) {
-					Intent intent = new Intent();
-					GeoBookmark newGeoBookmark = new GeoBookmark();
-					newGeoBookmark.setOffsetX(mapControl.getPhysicalMap().getGlobalOffset().x);
-					newGeoBookmark.setOffsetY(mapControl.getPhysicalMap().getGlobalOffset().y);
-					newGeoBookmark.setSource(mapControl.getPhysicalMap().getTileResolver().getMapSourceId());
-					newGeoBookmark.setZ(mapControl.getPhysicalMap().getZoomLevel());
-					intent.putExtra("bookmark", newGeoBookmark);
-					intent.setClass(BigPlanet.this, AddGeoBookmark.class);
-					startActivityForResult(intent,0);
+					final GeoBookmark newGeoBookmark = new GeoBookmark();
+					newGeoBookmark.setOffsetX(mapControl.getPhysicalMap()
+							.getGlobalOffset().x);
+					newGeoBookmark.setOffsetY(mapControl.getPhysicalMap()
+							.getGlobalOffset().y);
+					newGeoBookmark.setSource(mapControl.getPhysicalMap()
+							.getTileResolver().getMapSourceId());
+					newGeoBookmark.setZ(mapControl.getPhysicalMap()
+							.getZoomLevel());
 
+					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark);
 				}
 
 			});
@@ -213,7 +215,7 @@ public class BigPlanet extends Activity {
 		case 4:
 			// showSettingsMenu();
 			break;
-			
+
 		case 62:
 			switchToBookmarkMode();
 			break;
@@ -225,23 +227,21 @@ public class BigPlanet extends Activity {
 
 	}
 
-	private void showAllGeoBookmarks(){
+	private void showAllGeoBookmarks() {
 		Intent intent = new Intent();
 		intent.setClass(this, AllGeoBookmarks.class);
 		startActivity(intent);
 	}
-	
-	
-	private void switchToBookmarkMode(){
-		if(mapControl.getMapMode()!=MapControl.SELECT_MODE){
+
+	private void switchToBookmarkMode() {
+		if (mapControl.getMapMode() != MapControl.SELECT_MODE) {
 			mapControl.setMapMode(MapControl.SELECT_MODE);
 			textMessage = Toast.makeText(this, "Select object",
-	                    Toast.LENGTH_LONG);
-	        textMessage.show();
+					Toast.LENGTH_LONG);
+			textMessage.show();
 		}
 	}
-	
-	
+
 	/**
 	 * Отображает диалоги для кеширования карты в заданном радиусе
 	 */
