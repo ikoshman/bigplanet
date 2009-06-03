@@ -55,5 +55,10 @@ public class BitmapCacheWrapper {
 	public void putToCache(RawTile tile, Bitmap bitmap) {
 		cache.put(tile, bitmap);
 	}
+	
+	public void gc(){
+		scaledCache.gc();
+		cache.gc();
+	}
 
 }

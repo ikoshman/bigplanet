@@ -104,7 +104,7 @@ public class TileResolver {
 	public Bitmap getTile(final RawTile tile, boolean useCache) {
 		Bitmap bitmap = null;
 		if (useCache) {
-			//bitmap = cacheProvider.getTile(tile);
+			bitmap = cacheProvider.getTile(tile);
 		}
 		if (bitmap == null) {
 			// асинхронная загрузка
@@ -129,6 +129,14 @@ public class TileResolver {
 		if(useNet){
 			physicMap.reloadTiles();
 		}
+	}
+
+	public synchronized void  clear() {
+		cacheProvider.gc();
+		tileLoader = null;
+		cacheProvider = null;
+		System.gc();
+	
 	}
 
 }
