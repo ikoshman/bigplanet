@@ -17,12 +17,13 @@ public class BitmapUtils {
 	/**
 	 * Цвет фона
 	 */
-	public static int BACKGROUND_COLOR = Color.argb(255, 240, 248, 255);
+	public static int BACKGROUND_COLOR = Color.argb(255, 128, 128, 128);
 
 	/**
 	 * Цвет линий
 	 */
-	private static int LINE_COLOR = Color.argb(255, 122, 139, 139);
+	private static int LINE_COLOR = Color.argb(255, 154,154,154);
+
 
 	/**
 	 * Рисует фон для карты( в клетку )
@@ -34,7 +35,7 @@ public class BitmapUtils {
 	 */
 	public static Bitmap drawBackground(int cellSize, int height, int widht) {
 		// создание битмапа по размеру экрана
-		Bitmap bitmap = Bitmap.createBitmap(widht, height, Config.RGB_565);
+		Bitmap bitmap = Bitmap.createBitmap(widht, height, Config.ARGB_8888);
 		Canvas cv = new Canvas(bitmap);
 		// прорисовка фона
 		Paint background = new Paint();

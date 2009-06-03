@@ -2,8 +2,6 @@ package com.nevilon.bigplanet.core;
 
 import java.util.Random;
 
-import org.apache.http.params.CoreConnectionPNames;
-
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -41,6 +39,11 @@ public class PhysicMap {
 	private int correctionY;
 
 	public int inZoom = 0;
+	
+	/*
+	 * Передвигается ли карта
+	 */
+	public boolean inMove = false;
 
 	private AbstractCommand updateScreenCommand;
 
@@ -73,7 +76,7 @@ public class PhysicMap {
 	}
 
 	public RawTile getDefaultTile() {
-		return normalize(this.defTile);
+		return this.defTile;
 	}
 
 	public int getZoomLevel() {
@@ -87,6 +90,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
+		if(!inMove){
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
 		if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
@@ -104,9 +108,66 @@ public class PhysicMap {
 				}
 			}
 		}
-
+	  }
 	}
 
+	
+	public void loadFromCache(){
+		Bitmap tmpBitmap;
+		
+		//int x = defTile.x;
+		//int y = defTile.y;
+		for(int i=2;i<5;i++){
+			for(int j=2;j<5;j++){
+				int tx = i-2;
+				int ty = j-2;
+				RawTile tile = new RawTile(defTile.x+tx,defTile.y+ty, defTile.z, defTile.s);
+				
+				tmpBitmap = tileResolver.loadTile(tile);
+				if(tmpBitmap!=null){
+					//System.out.println(tile);
+					cells[tx][ty] = tmpBitmap;	
+				}
+				
+			}
+		}
+		
+		/*
+		 * 
+		 * 
+		 * int x, y;
+				x = (tile.x + i);
+				y = (tile.y + j);
+				if (scaleFactor == 1) {
+					setBitmap(MapControl.CELL_BACKGROUND, i, j);
+				}
+				// setBitmap(null, i, j);
+				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
+						.getMapSourceId()));
+		 * 
+		 */
+		/*
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 7; j++) {
+				y = defTile.y;
+				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
+					RawTile tile = new RawTile(defTile.x,defTile.y, defTile.z, defTile.s);
+					tile.x = x;
+					tile.y = y;
+					tmpBitmap = tileResolver.loadTile(tile);
+					if(tmpBitmap!=null){
+						System.out.println((x-defTile.x) + " " + (y-defTile.y));
+						cells[x-defTile.x][y-defTile.y] = tmpBitmap;	
+					}
+					
+				}
+				x++;
+			}
+			y++;
+		}
+		*/
+	}
+	
 	public void move(int dx, int dy) {
 		System.gc();
 		reload(defTile.x - dx, defTile.y - dy, defTile.z);
@@ -311,7 +372,7 @@ public class PhysicMap {
 	}
 
 	private void updateMap() {
-		if (tileResolver.loaded == 9) {
+	  if (tileResolver.loaded == 9) {
 			if (inZoom != 0) {
 				globalOffset.x = (-1) * inZoom * (correctionX);
 				globalOffset.y = (-1) * inZoom * (correctionY);
@@ -337,27 +398,7 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	public static RawTile normalize(RawTile tile) {
-		// int x = normalize(tile.x, tile.z);
-		// int y = normalize(tile.y, tile.z);
-		// int z = tile.z;
-		// RawTile newTile = new RawTile(x, y, z, tile.s);
-		// return newTile;
-		return tile;
-	}
-
-	public static int normalize(int y, int z) {
-		int tileCount = (int) Math.pow(2, 17 - z);
-		while (y < 0) {
-			y = tileCount + y;
-		}
-		while (y >= tileCount) {
-			y = y - tileCount;
-		}
-		return y;
-	}
-
-	/**
+		/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
 	 * крайней левой верхней)
 	 * 
@@ -369,10 +410,7 @@ public class PhysicMap {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
 				x = (tile.x + i);
-				x = normalize(x, tile.z);
-
 				y = (tile.y + j);
-				y = normalize(y, tile.z);
 				if (scaleFactor == 1) {
 					setBitmap(MapControl.CELL_BACKGROUND, i, j);
 				}

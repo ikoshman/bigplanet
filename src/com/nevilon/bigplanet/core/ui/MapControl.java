@@ -52,10 +52,7 @@ public class MapControl extends RelativeLayout {
 	
 	Canvas cs;
 
-	/*
-	 * Передвигается ли карта
-	 */
-	private boolean inMove = false;
+	
 
 	/*
 	 * Детектор двойного тача
@@ -347,8 +344,8 @@ public class MapControl extends RelativeLayout {
 					if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 						RawTile tile = pmap.getDefaultTile();
 						int z = getPhysicalMap().getZoomLevel();
-						int tileX = PhysicMap.normalize(tile.x + (i - 2), z);
-						int tileY = PhysicMap.normalize(tile.y + (j - 2), z);
+						int tileX = tile.x + (i - 2);
+						int tileY = tile.y + (j - 2);
 						List<Marker> markers = markerManager.getMarkers(tileX,
 								tileY, z);
 						for (Marker marker : markers) {
@@ -427,12 +424,12 @@ public class MapControl extends RelativeLayout {
 		public  boolean onTouchEvent(final MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				inMove = false;
+				pmap.inMove = false;
 				pmap.getNextMovePoint().set((int) event.getX(),
 						(int) event.getY());
 				break;
 			case MotionEvent.ACTION_MOVE:
-				inMove = true;
+				pmap.inMove = true;
 				pmap.moveCoordinates(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
@@ -497,9 +494,13 @@ public class MapControl extends RelativeLayout {
 						}
 					}
 				} else {
-					if (inMove) {
+					if (pmap.inMove) {
+						pmap.inMove = false;
 						pmap.moveCoordinates(event.getX(), event.getY());
 						pmap.quickHack();
+						pmap.loadFromCache();
+						updateScreen();
+						//pmap.reloadTiles();
 					}
 				}
 				break;
