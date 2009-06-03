@@ -15,6 +15,10 @@ import android.widget.RelativeLayout;
 import android.widget.ZoomControls;
 
 import com.nevilon.moow.core.PhysicMap;
+import com.nevilon.moow.core.RawTile;
+import com.nevilon.moow.core.utils.TileUtils;
+import com.nevilon.moow.core.utils.TileUtils.GeoLocation;
+import com.nevilon.moow.core.utils.TileUtils.GeoPoint;
 
 public class MoowMap extends Activity {
 	public static final int DIRECTION_RIGHT = 0, DIRECTION_LEFT = 1;
@@ -36,7 +40,9 @@ public class MoowMap extends Activity {
 
 	private long lastMove = -1;
 
-	PhysicMap pmap = new PhysicMap();
+	int zoom = 16; // whole world
+
+	PhysicMap pmap = new PhysicMap(new RawTile(0, 0, zoom));
 
 	boolean moving = false;
 
@@ -52,9 +58,77 @@ public class MoowMap extends Activity {
 
 		class ZoomPanel extends RelativeLayout {
 
+			
+			private void zoom(int direction){
+				double x = 320 / 2 + Math.abs(globalOffset.x);
+				double y = 480 / 2 + Math.abs(globalOffset.y);
+				// получение сдвига в полных тайлах
+				int tx = (int) Math.floor(x / 256);
+				int ty = (int) Math.floor(y / 256);
+
+				// получение отступа в для последнего тайла
+				int otx = (int) (x - 256 * tx);
+				int oty = (int) (y - 256 * ty);
+				//otx = 0;
+			//oty =0;
+				GeoLocation cpoint = TileUtils.getBoundingBox(tx
+						+ pmap.getDefaultTile().getX(), ty
+						+ pmap.getDefaultTile().getY(), otx, oty, zoom);
+
+				/*
+				cpoint = TileUtils.getLatLong(tx+pmap.getDefaultTile().getX(),
+						                      ty+pmap.getDefaultTile().getY(),
+						                      otx,
+						                      oty,
+						                      zoom);
+				*/
+				// увеличение
+				if (direction == 1){
+					zoom--;
+	
+					// уменьшение
+				} else {
+					if (zoom!=16){
+						zoom++;	
+					} else {
+						return;
+					}
+				}
+				  
+				
+				GeoPoint xy = TileUtils.getTileXY(cpoint.lat,
+						cpoint.lon, zoom);
+				GeoPoint offset =TileUtils.getPixelXY(cpoint.lon, cpoint.lat, zoom);
+				MoowMap.this.pmap.zoom((int) xy.x, (int) xy.y, zoom);
+
+				previousMovePoint = new Point();
+				nextMovePoint = new Point();
+				globalOffset = new Point();
+				globalOffset.x = (int) (-160+offset.x);
+				globalOffset.y =  (int) (240-offset.y);
+				
+				
+				//moveCoordinates(globalOffset.x, globalOffset.y);
+		
+
+			}
+			
 			public ZoomPanel(Context context) {
 				super(context);
 				ZoomControls zc = new ZoomControls(getContext());
+				zc.setOnZoomOutClickListener(new OnClickListener(){
+					public void onClick(View v) {
+						zoom(-1);
+					}
+					
+				});
+				zc.setOnZoomInClickListener(new OnClickListener() {
+
+					public void onClick(View v) {
+						zoom(1);
+					}
+
+				});
 				addView(zc);
 				setPadding(80, 368, 0, 0);
 			}
@@ -69,11 +143,12 @@ public class MoowMap extends Activity {
 		case MotionEvent.ACTION_DOWN:
 
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
+		
 			break;
 		case MotionEvent.ACTION_MOVE:
 			moveCoordinates(event.getX(), event.getY());
-			// System.out.println("move");
 			lastMove = System.currentTimeMillis();
+		
 			break;
 		case MotionEvent.ACTION_UP:
 			// inMove = false;
@@ -82,6 +157,7 @@ public class MoowMap extends Activity {
 				// (new Thread(new InertionMoover())).start();
 			}
 			lastMove = -1;
+		
 			break;
 		}
 
@@ -95,9 +171,28 @@ public class MoowMap extends Activity {
 		globalOffset.set(globalOffset.x
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
+
 	}
 
+	
+	
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
+		System.out.println(globalOffset.x);
+		updatePhysicMap();
+		Bitmap tmpBitmap;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				tmpBitmap = pmap.getCells()[i][j];
+				if (tmpBitmap != null) {
+					canvas.drawBitmap(tmpBitmap, (i) * 256 + globalOffset.x,
+							(j) * 256 + globalOffset.y, paint);
+				}
+			}
+		}
+
+	}
+
+	private void updatePhysicMap() {
 		boolean movedR = false;
 		boolean movedL = false;
 		boolean movedB = false;
@@ -161,18 +256,6 @@ public class MoowMap extends Activity {
 		} else {
 			nT = 0;
 		}
-
-		Bitmap tmpBitmap;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				tmpBitmap = pmap.getCells()[i][j];
-				if (tmpBitmap != null) {
-					canvas.drawBitmap(tmpBitmap, (i) * 256 + globalOffset.x,
-							(j) * 256 + globalOffset.y, paint);
-				}
-			}
-		}
-
 	}
 
 	// проверка, передвинуто ли вправо
@@ -259,7 +342,7 @@ public class MoowMap extends Activity {
 					Thread.sleep(10);
 				} catch (InterruptedException ex) {
 				}
-				processInertion();
+				// processInertion();
 				main.postInvalidate();
 			}
 			// }
