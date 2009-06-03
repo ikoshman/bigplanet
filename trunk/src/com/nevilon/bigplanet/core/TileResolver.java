@@ -106,6 +106,11 @@ public class TileResolver {
 		}
 	}
 
+	
+	public Bitmap loadTile(final RawTile tile){
+		return cacheProvider.getTile(tile);
+	}
+	
 	/**
 	 * Загружает заданный тайл
 	 * 
