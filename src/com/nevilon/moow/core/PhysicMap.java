@@ -227,7 +227,7 @@ public class PhysicMap {
 				if (!checkTileXY(x, y, tile.z)) {
 					cells[i][j] = null;
 				} else {
-					//cells[i][j] = null;
+					cells[i][j] = null;
 					cells[i][j] = tileProvider.getTile(
 							new RawTile(x, y, tile.z), true);
 				}

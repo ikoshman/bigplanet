@@ -26,7 +26,7 @@ public class InertionEngine {
 	
 	public double ay;
 	
-	private int step;
+	public int step;
 	
 	private List<Point> moveHistory;
 	
@@ -53,10 +53,6 @@ public class InertionEngine {
 			dy = dy/2;
 		}
 		
-	}
-	
-	public int getStepCount(){
-		return this.step/5;
 	}
 	
 	public void reduceSpeed(){

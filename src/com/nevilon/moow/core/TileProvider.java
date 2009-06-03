@@ -3,7 +3,8 @@ package com.nevilon.moow.core;
 import java.util.Stack;
 
 import android.graphics.Bitmap;
-
+import android.graphics.Bitmap.Config;
+import android.util.Log;
 
 public class TileProvider implements Runnable {
 	private TileLoader tileLoader;
@@ -25,7 +26,7 @@ public class TileProvider implements Runnable {
 			@Override
 			public void handle(RawTile tile, byte[] data) {
 				localProvider.put(tile, data);
-				Bitmap bmp = LocalStorageProvider.get(tile);
+				Bitmap bmp = localProvider.get(tile);
 				cacheProvider.putToCache(tile, bmp);
 				physicMap.update(bmp, tile);
 			}
@@ -51,38 +52,31 @@ public class TileProvider implements Runnable {
 		}
 		if (bitmap == null) {
 			// асинхронная загрузка
-			//bitmap = localProvider.get(tile);
+			bitmap = localProvider.get(tile);
 			localProvider.get(tile, new Handler() {
 
 				@Override
 				public void handle(Object object) {
-					if (object!=null){
-						physicMap.update((Bitmap) object, tile);
-					} else {
-						addToQueue(tile);
-						new Thread(new TileScaler(tile, new Handler(){
-							
-							@Override
-							public void handle(RawTile tile, Bitmap bitmap){
-								returnTile(bitmap, tile, true);
-							};
-							
-						})).start();
-					}
-					
+					physicMap.update((Bitmap) object, tile);
+
 				}
 
 			});
 		}
-		
+		if (bitmap == null) {
+			new Thread(new TileScaler(tile)).start();
+			addToQueue(tile);
+		}
 		return bitmap;
 	}
 
 	public void run() {
 		while (true) {
-				if (queue.size() > 0) {
-					tileLoader.load(queue.pop());
-				}
+			if (queue.size() > 0) {
+				Log.i("LOADER", "try to load in any way");
+				tileLoader.load(queue.pop());
+
+			}
 		}
 	}
 
@@ -103,6 +97,90 @@ public class TileProvider implements Runnable {
 		queue.push(tile);
 	}
 
-	
+	/**
+	 * Предназначен для выполнения скалирования
+	 * 
+	 * @author hudvin
+	 * 
+	 */
+	private class TileScaler implements Runnable {
+
+		private RawTile tile;
+
+		public TileScaler(RawTile tile) {
+			this.tile = tile;
+		}
+
+		public void run() {
+			Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
+			if (bmp4scale != null) {
+				returnTile(bmp4scale, tile, true);
+			}
+		}
+
+		/**
+		 * Возвращает размеры тайла при зуммировании
+		 * 
+		 * @param zoom
+		 * @return
+		 */
+		private int getTileSize(int zoom) {
+			return (int) (256 / Math.pow(2, zoom));
+		}
+
+		private Bitmap findTile(int x, int y, int z) {
+			Bitmap bitmap = null;
+			int offsetX;
+			int offsetY;
+			int offsetParentX;
+			int offsetParentY;
+			int parentTileX;
+			int parentTileY;
+			// получение отступа от начала координат на текущев уровне
+			offsetX = x * 256; // отступ от начала координат по ox
+			offsetY = y * 256; // отступ от начала координат по oy
+			int tmpZ = z;
+			while (bitmap == null && tmpZ <= 17) {
+				tmpZ++;
+
+				// получение отступа от начала координат на предыдущем уровне
+				offsetParentX = (int) (offsetX / Math.pow(2, tmpZ - z));
+				offsetParentY = (int) (offsetY / Math.pow(2, tmpZ - z));
+
+				// получение координат тайла на предыдущем уровне
+				parentTileX = offsetParentX / 256;
+				parentTileY = offsetParentY / 256;
+
+				// необходимо возвращать, во сколько раз увеличить!!!
+				bitmap = localProvider.get(new RawTile(parentTileX,
+						parentTileY, tmpZ));
+				if (bitmap == null) {
+				} else { // родительский тайл найден и загружен
+					// получение отступа в родительском тайле
+					offsetParentX = offsetParentX - parentTileX * 256;
+					offsetParentY = offsetParentY - parentTileY * 256;
+
+					// получение уровня скалирования
+					int scale = tmpZ - z;
+					// получение размера тайла в родительском тайле
+					int tileSize = getTileSize(scale);
+
+					// копирование области и скалирование
+					int[] pixels = new int[tileSize * tileSize];
+					if (offsetParentY >= 0 && offsetParentX >= 0) {
+						bitmap.getPixels(pixels, 0, tileSize, offsetParentX,
+								offsetParentY, tileSize, tileSize);
+						bitmap = Bitmap.createBitmap(pixels, tileSize,
+								tileSize, Config.RGB_565);
+						pixels = null;
+						return Bitmap.createScaledBitmap(bitmap, 256, 256,
+								false);
+					}
+				}
+			}
+			return bitmap;
+		}
+
+	}
 
 }

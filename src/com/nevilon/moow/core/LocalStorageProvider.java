@@ -23,11 +23,14 @@ public class LocalStorageProvider {
 	 * @return
 	 */
 	public static Bitmap get(final RawTile tile) {
+		long start = System.currentTimeMillis();
 		BufferedInputStream outStream = localStorage.get(tile);
 		Bitmap bmp = null;
 		if (outStream != null) {
 			bmp = BitmapFactory.decodeStream(outStream);
-		}		
+		}
+		
+		//System.out.println("tile loaded in "+  (System.currentTimeMillis() - start));
 		return bmp;
 	}
 
