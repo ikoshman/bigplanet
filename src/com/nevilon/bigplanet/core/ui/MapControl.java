@@ -43,14 +43,14 @@ public class MapControl extends RelativeLayout {
 
 	private int mapMode = ZOOM_MODE;
 	
-	private int SMOOT_ZOOM_INTERVAL = 30;
+	private int SMOOT_ZOOM_INTERVAL = 20;
 	
-	private boolean inZoom =false;
-
 	/*
 	 * Панель с картой
 	 */
 	private Panel main;
+	
+	Canvas cs;
 
 	/*
 	 * Передвигается ли карта
@@ -97,8 +97,6 @@ public class MapControl extends RelativeLayout {
 	private Point scalePoint = new Point();
 
 	public Handler h;
-
-	private Bitmap[][] scaleMap;
 
 	/**
 	 * Конструктор
@@ -186,15 +184,14 @@ public class MapControl extends RelativeLayout {
 			// обработчик уменьшения
 			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					inZoom = true;
 					scalePoint.set(getWidth() / 2, getHeight() / 2);
-					RawTile tile = new RawTile(pmap.getDefaultTile().x-2,pmap.getDefaultTile().y-2,
-							pmap.getDefaultTile().z,
-							pmap.getTileResolver().getMapSourceId()
-					);
-					scaleMap = pmap.getTileResolver().fillMap(
-							tile,5);
-					scalePoint.set(getWidth() / 2, getHeight() / 2);
+					//RawTile tile = new RawTile(pmap.getDefaultTile().x-2,pmap.getDefaultTile().y-2,
+					//		pmap.getDefaultTile().z,
+					//		pmap.getTileResolver().getMapSourceId()
+					//);
+					//scaleMap = pmap.getTileResolver().fillMap(
+					//		tile,5);
+					//scalePoint.set(getWidth() / 2, getHeight() / 2);
 					new Thread() {
 
 						@Override
@@ -212,7 +209,6 @@ public class MapControl extends RelativeLayout {
 							}
 							pmap.zoomOut();
 							h.sendEmptyMessage(0);
-							inZoom = false;
 						}
 
 					}.start();
@@ -222,15 +218,7 @@ public class MapControl extends RelativeLayout {
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					scaleMap = null;
 					scalePoint.set(getWidth() / 2, getHeight() / 2);
-					RawTile tile = new RawTile(pmap.getDefaultTile().x-2,pmap.getDefaultTile().y-2,
-							pmap.getDefaultTile().z,
-							pmap.getTileResolver().getMapSourceId()
-					);
-					scaleMap = pmap.getTileResolver().fillMap(
-							tile,4);
-					
 					new Thread() {
 
 						@Override
@@ -348,14 +336,14 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private synchronized void doDraw(Canvas c, Paint paint) {
-		Canvas canvas = new Canvas();
 		if(cb==null){
-		 	cb = Bitmap.createBitmap(320,
+			cs = new Canvas();
+			
+			cb = Bitmap.createBitmap(320,
 					480, Bitmap.Config.ARGB_8888);
 		 	
-		 	canvas.setBitmap(cb); 
+		 	cs.setBitmap(cb); 
 		}
-		System.out.println(cb.getHeight());
 		//canvas.freeGlCaches();
 		Bitmap tmpBitmap;
 		// if(pmap.scaleFactor!=1){
@@ -364,26 +352,25 @@ public class MapControl extends RelativeLayout {
 		//		scalePoint.x, scalePoint.y);
 		//canvas.setMatrix(matr);
 		// }
-		if (pmap.scaleFactor == 1) {
 			for (int i = 0; i < 7; i++) {
 				for (int j = 0; j < 7; j++) {
 					if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 						tmpBitmap = pmap.getCell(i - 2, j - 2);
 						if (tmpBitmap != null) {
 							isNew = false;
-							canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
+							cs.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
 									+ pmap.getGlobalOffset().x, (j - 2)
 									* TILE_SIZE + pmap.getGlobalOffset().y,
 									paint);
 						}
 					} else {
 						if (pmap.scaleFactor == 1) {
-							canvas.drawBitmap(CELL_BACKGROUND, (i - 2)
+							cs.drawBitmap(CELL_BACKGROUND, (i - 2)
 									* TILE_SIZE + pmap.getGlobalOffset().x,
 									(j - 2) * TILE_SIZE
 											+ pmap.getGlobalOffset().y, paint);
 						} else {
-							canvas.drawBitmap(EMPTY_BACKGROUND, (i - 2)
+							cs.drawBitmap(EMPTY_BACKGROUND, (i - 2)
 									* TILE_SIZE + pmap.getGlobalOffset().x,
 									(j - 2) * TILE_SIZE
 											+ pmap.getGlobalOffset().y, paint);
@@ -392,22 +379,8 @@ public class MapControl extends RelativeLayout {
 					}
 				}
 			}
-		} else {
-			
-			
-				for(int i=0;i<scaleMap.length;i++){
-					for(int j=0;j<scaleMap.length;j++){
-						tmpBitmap = scaleMap[i][j];
-						if(tmpBitmap!=null){
-							canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
-									+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
-									+ pmap.getGlobalOffset().y, paint);
-						}
-					
-			}
-			
-		}
-		}
+		
+		
 
 		if (pmap.scaleFactor == 1) {
 			// отрисовка маркеров
@@ -421,7 +394,7 @@ public class MapControl extends RelativeLayout {
 						List<Marker> markers = markerManager.getMarkers(tileX,
 								tileY, z);
 						for (Marker marker : markers) {
-							canvas.drawBitmap(marker.getMarkerImage()
+							cs.drawBitmap(marker.getMarkerImage()
 									.getImage(), (i - 2) * TILE_SIZE
 									+ pmap.getGlobalOffset().x
 									+ (int) marker.getOffset().x
@@ -438,8 +411,14 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-		c.drawBitmap(cb, new Matrix(), paint);
+		Matrix matr = new Matrix();
+		matr.postScale((float) pmap.scaleFactor, (float) pmap.scaleFactor,
+				scalePoint.x, scalePoint.y);
+		c.drawColor(BitmapUtils.BACKGROUND_COLOR);
+		c.drawBitmap(cb, matr, paint);
 		
+	   
+	    
 		//canvas.restore();
 	}
 
@@ -483,7 +462,7 @@ public class MapControl extends RelativeLayout {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			
-		//	super.onDraw(canvas);
+			super.onDraw(canvas);
 	
 			doDraw(canvas, paint);
 			
@@ -507,19 +486,12 @@ public class MapControl extends RelativeLayout {
 			case MotionEvent.ACTION_UP:
 				if (dcDetector.process(event)) {
 					if (mapMode == MapControl.ZOOM_MODE) {
-						scaleMap = null;
-						RawTile tile = new RawTile(pmap.getDefaultTile().x-2,pmap.getDefaultTile().y-2,
-								pmap.getDefaultTile().z,
-								pmap.getTileResolver().getMapSourceId()
-						);
-						scaleMap = pmap.getTileResolver().fillMap(
-								tile,5);
 						scalePoint.set((int) event.getX(), (int) event.getY());
 						float sx = (getWidth() / 2 - event.getX());
 						float sy = (getHeight() / 2 - event.getY());
 						final float dx = (sx / (1f / 0.1f));
 						final float dy = (sy / (1f / 0.1f));
-						/*
+						
 						new Thread() {
 
 							@Override
@@ -530,14 +502,11 @@ public class MapControl extends RelativeLayout {
 								int scaleY = scalePoint.y;
 								float ox = pmap.getGlobalOffset().x;
 								float oy = pmap.getGlobalOffset().y;
-							
-								quickHack();
-
+							    
 								while (pmap.scaleFactor <= 2) {
 									try {
 										Thread.sleep(SMOOT_ZOOM_INTERVAL);
-										postInvalidate();
-
+										
 										pmap.scaleFactor += 0.1f;
 
 										tx += dx;
@@ -546,8 +515,13 @@ public class MapControl extends RelativeLayout {
 												(int) (scaleY + ty));
 										ox += dx;
 										oy += dy;
+										
 										pmap.getGlobalOffset().x = (int) ox;
 										pmap.getGlobalOffset().y = (int) oy;
+										
+										postInvalidate();
+
+										
 									} catch (InterruptedException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -555,16 +529,12 @@ public class MapControl extends RelativeLayout {
 								}
 
 								
-								pmap.zoomInCenter();
-								
+								 pmap.zoomInCenter();
 									h.sendEmptyMessage(0);
-									
-									System.gc();	
 								
 							}
 
-						}.start();*/
-						pmap.zoomInCenter();
+						}.start();
 					} else {
 						if (onMapLongClickListener != null) {
 							onMapLongClickListener.onMapLongClick(0, 0);

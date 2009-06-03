@@ -17,7 +17,7 @@ public class BitmapUtils {
 	/**
 	 * Цвет фона
 	 */
-	private static int BACKGROUND_COLOR = Color.argb(255, 240, 248, 255);
+	public static int BACKGROUND_COLOR = Color.argb(255, 240, 248, 255);
 
 	/**
 	 * Цвет линий
