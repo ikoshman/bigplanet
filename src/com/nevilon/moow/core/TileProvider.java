@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.Config;
 import android.util.Log;
 
 public class TileProvider implements Runnable {
@@ -48,9 +49,11 @@ public class TileProvider implements Runnable {
 					returnTile(tmpBitmap, tile);
 				} else {
 					
-					/*
-					double scaledX = tile.getX()/2.0;
-				 	double scaledY = tile.getY()/2.0;
+
+					tileLoader.load(tile);
+					
+					double scaledX = tile.x/2.0;
+				 	double scaledY = tile.y/2.0;
 				 	int tx = (int) Math.floor(scaledX);
 				 	int ty = (int) Math.floor(scaledY);
 				 	int ox, oy;
@@ -65,7 +68,7 @@ public class TileProvider implements Runnable {
 				 		oy = 0;
 				 	}
 				 	Bitmap bmp4scale;
-				 	RawTile tile4scale = new RawTile(tx, ty,tile.getZ()+1);
+				 	RawTile tile4scale = new RawTile(tx, ty,tile.z+1);
 				 	bmp4scale = inMemoryCache.get(tile);
 				 	if(bmp4scale == null){
 				 		outStream = localStorage.get(tile4scale); 
@@ -74,23 +77,23 @@ public class TileProvider implements Runnable {
 				 		}
 				 	}
 				 	if (bmp4scale!=null){
-				 		Bitmap scaledBitmap = Bitmap.createBitmap(128, 128, Config.ARGB_8888);
-				 		for(int i = 0;i<128;i++){
-				 			for(int j = 0; j<128; j++){
-				 				scaledBitmap.setPixel(i, j, bmp4scale.getPixel(i+ox, j+oy));
-				 			}
-				 		}
+				 		long start = System.currentTimeMillis();
+				 		 
+				 		System.out.println(bmp4scale.getWidth());
+				 		int[] pixels = new int[128*128];
 				 		
+				 		bmp4scale.getPixels(pixels, 0, 128, ox*128 ,oy*128, 128, 128);
+				 		bmp4scale = Bitmap.createBitmap(pixels, 128, 128, Config.RGB_565);
+				 	
 				 		
-				 		scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, 256, 256, false);
-				 		
+				 		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp4scale, 256, 256, false);
+				 		System.out.println(System.currentTimeMillis() - start);
 				 	 	returnTile(scaledBitmap, tile);
 				 	
 				 	}
-				 	*/
+				 	
 					
 					// return scaled tile
-					tileLoader.load(tile);
 				}
 
 			}
