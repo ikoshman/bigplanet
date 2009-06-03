@@ -290,11 +290,11 @@ public class MapControl extends RelativeLayout {
 					List<Marker> markers = markerManager.getMarkers(tileX,
 							tileY, z);
 					for (Marker marker : markers) {
-						canvas.drawBitmap(PLACE_MARKER, (i - 2) * TILE_SIZE
+						canvas.drawBitmap(marker.getMarkerImage().getImage(), (i - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().x
-								+ (int) marker.getOffset().x - 15, (j - 2)
+								+ (int) marker.getOffset().x - marker.getMarkerImage().getOffsetX(), (j - 2)
 								* TILE_SIZE + pmap.getGlobalOffset().y
-								+ (int) marker.getOffset().y - 32, paint);
+								+ (int) marker.getOffset().y - marker.getMarkerImage().getOffsetY(), paint);
 					}
 
 				}
