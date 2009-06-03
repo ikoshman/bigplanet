@@ -20,7 +20,7 @@ public class TileResolver {
 
 	private Handler localLoaderHandler;
 
-	private int strategyId = MapStrategyFactory.GOOGLE_VECTOR;
+	private int strategyId = -1;
 
 	public TileResolver(final PhysicMap physicMap) {
 		this.physicMap = physicMap;
@@ -109,11 +109,7 @@ public class TileResolver {
 				return;
 			}
 		}
-		// if (bitmap == null) {
-		// асинхронная загрузка
 		LocalStorageWrapper.get(tile, localLoaderHandler);
-		// }
-		// return bitmap;
 	}
 
 	public void setMapSource(int sourceId) {
