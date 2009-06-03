@@ -8,6 +8,9 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,8 +23,11 @@ public class DrawTesting extends Activity {
 	private Panel main;
 
 	private volatile boolean running = true;
-	
-	private boolean mooved = false;
+
+	private boolean inMove = false;
+	private boolean alreadyX = false;
+
+	private int nx = -1;
 	
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
@@ -37,7 +43,7 @@ public class DrawTesting extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
-		 setContentView(main, new ViewGroup.LayoutParams(320, 480));
+		setContentView(main, new ViewGroup.LayoutParams(320, 480));
 		(new Thread(new AnimationLoop())).start();
 	}
 
@@ -46,52 +52,64 @@ public class DrawTesting extends Activity {
 
 		case MotionEvent.ACTION_DOWN:
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
+			inMove = true;
+			alreadyX = false;
 			break;
 		case MotionEvent.ACTION_MOVE:
 			previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
-			if((float)globalOffset.x/256 ==0){
-				//pmap.moveRight();
-				//System.out.println("border");
-			}
-			//if(globalOffset.x<0){
-				//System.out.println(globalOffset.x);
-			//}
 			globalOffset.set(globalOffset.x
 					+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 					+ (nextMovePoint.y - previousMovePoint.y));
-			
+			if (globalOffset.x%256 == 0){
+				System.out.println("blyaaaaaaa");
+			}
 			break;
 		case MotionEvent.ACTION_UP:
-			//pmap.moveTop();
+			inMove = false;
 			break;
 		}
 
 		return super.onTouchEvent(event);
 	}
 
-	
-
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		//System.out.println(globalOffset.x);
 		Bitmap tmpBitmap;
-		//if(!mooved && globalOffset.x%256==0){
-			//pmap.moveRight();
-			//mooved = false;
-		//} else {
-		//	mooved = true;
-		//}
+		
+		/*
+		 * сравнение прошлого отступа и текущего
+		 * если отличаются на 1 - перемещение
+		 */
+		if (inMove &&
+				nx!=-1 && Math.abs(Math.ceil((globalOffset.x+256)/256)-nx)==1
+				){
+			globalOffset.x -= 256;
+			 
+			pmap.moveLeft();
+		 nx = -1;
+		} else {
+			nx= (int) Math.ceil(globalOffset.x/256);
 			
+		}
+		/*
+		System.out.println(Math.ceil(globalOffset.x/256));
+		if (inMove && !alreadyX && (float) globalOffset.x % 256 == 0) {
+			pmap.moveLeft();
+			alreadyX = true;
+			globalOffset.x -= 256;
+			System.out.println("border");
+		}
+		*/
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
 				if (tmpBitmap != null) {
-					//int direction = nextMovePoint.x-previousMovePoint.x;
-					//int ox = (pmap.getDefaultTile().getX()==0 && direction>0)?0:globalOffset.x;
-					//System.out.println(pmap.getDefaultTile().getX());
-					canvas.drawBitmap(tmpBitmap,
-							(i) * 256 + globalOffset.x, (j) * 256
-									+ globalOffset.y, paint);
+					// int direction = nextMovePoint.x-previousMovePoint.x;
+					// int ox = (pmap.getDefaultTile().getX()==0 &&
+					// direction>0)?0:globalOffset.x;
+					// System.out.println(pmap.getDefaultTile().getX());
+					canvas.drawBitmap(tmpBitmap, (i) * 256 + globalOffset.x,
+							(j) * 256 + globalOffset.y, paint);
 
 				}
 			}
@@ -113,7 +131,7 @@ public class DrawTesting extends Activity {
 		}
 
 		@Override
-		protected void onDraw(Canvas canvas) {
+		protected void  onDraw(Canvas canvas) {
 			super.onDraw(canvas);
 			doDraw(canvas, paint);
 		}

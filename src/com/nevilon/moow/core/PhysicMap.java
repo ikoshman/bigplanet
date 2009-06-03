@@ -8,7 +8,7 @@ public class PhysicMap {
 
 	private Bitmap[][] cells = new Bitmap[3][3];
 	
-	private RawTile defTile = new RawTile(2,2,14);
+	private RawTile defTile = new RawTile(1242,1520,5);
 	
 	public PhysicMap(){
 		tileProvider = new TileProvider(this);
@@ -27,8 +27,8 @@ public class PhysicMap {
 	public void update(Bitmap bitmap, RawTile tile){
 		if(tile.getX()-defTile.getX()<=3 &&
 				tile.getY()-defTile.getY()<=3){
-			cells[tile.getX()-defTile.getX()][tile.getY()-defTile.getY()] = bitmap;
-			
+			cells[tile.getX()-defTile.getX()][tile.getY()-defTile.getY()] = bitmap;		
+		//System.out.println(tile.getX()+"%" + tile.getY());
 		}
 		
 	}
@@ -55,7 +55,6 @@ public class PhysicMap {
 	public void moveRight(){
 		defTile = new RawTile(defTile.getX()+1, defTile.getY(),defTile.getZ());
 		loadCells(defTile);
-		//loadCells(new RawTile(defTile.getX(), defTile.getY(),defTile.getZ()));
 	}
 	
 	private void loadCells(RawTile tile){
