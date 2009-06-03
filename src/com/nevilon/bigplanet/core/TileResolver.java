@@ -7,7 +7,6 @@ import com.nevilon.bigplanet.core.providers.MapStrategy;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
 import com.nevilon.bigplanet.core.storage.LocalStorageWrapper;
-import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class TileResolver {
 
