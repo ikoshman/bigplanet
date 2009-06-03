@@ -69,11 +69,13 @@ public class MapControl extends RelativeLayout {
 	private OnMapLongClickListener onMapLongClickListener;
 
 	private MarkerManager markerManager;
-	
-	public static Bitmap CELL_BACKGROUND = BitmapUtils.drawBackground(BCG_CELL_SIZE, TILE_SIZE, TILE_SIZE);
-	
-	public Bitmap PLACE_MARKER =	 BitmapFactory.decodeResource(getResources(), R.drawable.marker);
-	
+
+	public static Bitmap CELL_BACKGROUND = BitmapUtils.drawBackground(
+			BCG_CELL_SIZE, TILE_SIZE, TILE_SIZE);
+
+	public Bitmap PLACE_MARKER = BitmapFactory.decodeResource(getResources(),
+			R.drawable.marker);
+
 	/**
 	 * Конструктор
 	 * 
@@ -82,7 +84,8 @@ public class MapControl extends RelativeLayout {
 	 * @param height
 	 * @param startTile
 	 */
-	public MapControl(Context context, int width, int height, RawTile startTile, MarkerManager markerManager) {
+	public MapControl(Context context, int width, int height,
+			RawTile startTile, MarkerManager markerManager) {
 		super(context);
 		this.markerManager = markerManager;
 		buildView(width, height, startTile);
@@ -95,6 +98,7 @@ public class MapControl extends RelativeLayout {
 	/**
 	 * Устанавливает режим карты и состояние зум-контролов(выбор объекта для
 	 * добавления в закладки либо навигация)
+	 * 
 	 * @param mapMode
 	 */
 	public void setMapMode(int mapMode) {
@@ -106,7 +110,7 @@ public class MapControl extends RelativeLayout {
 			OnMapLongClickListener onMapLongClickListener) {
 		this.onMapLongClickListener = onMapLongClickListener;
 	}
-	
+
 	/**
 	 * Устанавливает размеры карты и дочерних контролов
 	 * 
@@ -126,9 +130,8 @@ public class MapControl extends RelativeLayout {
 	public PhysicMap getPhysicalMap() {
 		return pmap;
 	}
-	
-	
-	public void goTo(int x, int y,int z, int offsetX, int offsetY){
+
+	public void goTo(int x, int y, int z, int offsetX, int offsetY) {
 		getPhysicalMap().goTo(x, y, z, offsetX, offsetY);
 		updateZoomControls();
 	}
@@ -158,6 +161,7 @@ public class MapControl extends RelativeLayout {
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
+					System.out.println("zoomin " + pmap.getZoomLevel());
 					pmap.zoomInCenter();
 					quickHack();
 					updateZoomControls();
@@ -191,7 +195,7 @@ public class MapControl extends RelativeLayout {
 	private synchronized void updateScreen() {
 		if (main != null) {
 			main.postInvalidate();
-		}	
+		}
 	}
 
 	private void quickHack() {
@@ -224,7 +228,8 @@ public class MapControl extends RelativeLayout {
 		}
 
 		if (globalOffset.y > 0) {
-			dy = (int) Math.round((globalOffset.y + pmap.getHeight()) / TILE_SIZE);
+			dy = (int) Math.round((globalOffset.y + pmap.getHeight())
+					/ TILE_SIZE);
 		} else {
 			dy = (int) Math.round(globalOffset.y / TILE_SIZE);
 
@@ -248,20 +253,20 @@ public class MapControl extends RelativeLayout {
 	private void updateZoomControls() {
 		markerManager.updateAll(pmap.getZoomLevel());
 		int zoomLevel = pmap.getZoomLevel();
-		if(getMapMode() == MapControl.SELECT_MODE){
+		if (getMapMode() == MapControl.SELECT_MODE) {
 			zoomPanel.setVisibility(View.INVISIBLE);
 		} else {
 			zoomPanel.setVisibility(View.VISIBLE);
-		if (zoomLevel == 16) {
-			zoomPanel.setIsZoomOutEnabled(false);
-			zoomPanel.setIsZoomInEnabled(true);
-		} else if (zoomLevel == 0) {
-			zoomPanel.setIsZoomOutEnabled(true);
-			zoomPanel.setIsZoomInEnabled(false);
-		} else {
-			zoomPanel.setIsZoomOutEnabled(true);
-			zoomPanel.setIsZoomInEnabled(true);
-		}
+			if (zoomLevel == 16) {
+				zoomPanel.setIsZoomOutEnabled(false);
+				zoomPanel.setIsZoomInEnabled(true);
+			} else if (zoomLevel == 0) {
+				zoomPanel.setIsZoomOutEnabled(true);
+				zoomPanel.setIsZoomInEnabled(false);
+			} else {
+				zoomPanel.setIsZoomOutEnabled(true);
+				zoomPanel.setIsZoomInEnabled(true);
+			}
 		}
 	}
 
@@ -273,13 +278,11 @@ public class MapControl extends RelativeLayout {
 	 */
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
-		
-		
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
-					tmpBitmap = pmap.getCell(i-2, j-2);
-					if (tmpBitmap != null) {	
+					tmpBitmap = pmap.getCell(i - 2, j - 2);
+					if (tmpBitmap != null) {
 						canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().y, paint);
@@ -291,30 +294,35 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-		
-		// отрисовка маркеров		
+
+		// отрисовка маркеров
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
-					RawTile tile = pmap. getDefaultTile();
-						int z = getPhysicalMap().getZoomLevel();
-						int tileX = PhysicMap.normalizeX(tile.x +(i-2),z);
-						int tileY = PhysicMap.normalizeY(tile.y +(j-2),z);
-						List<Marker> markers =  markerManager.getMarkers(tileX, tileY, z);					
-						for(Marker marker : markers){
-							canvas.drawBitmap(PLACE_MARKER, (i - 2) * TILE_SIZE+ pmap.getGlobalOffset().x +(int)marker.getOffset().x-15,
-									(j - 2) * TILE_SIZE+ pmap.getGlobalOffset().y+ (int)marker.getOffset().y-32,
-									paint);
-						}
-						
-					
-				} 
+					RawTile tile = pmap.getDefaultTile();
+					int z = getPhysicalMap().getZoomLevel();
+					int tileX = PhysicMap.normalizeX(tile.x + (i - 2), z);
+					int tileY = PhysicMap.normalizeY(tile.y + (j - 2), z);
+					List<Marker> markers = markerManager.getMarkers(tileX,
+							tileY, z);
+					for (Marker marker : markers) {
+						canvas.drawBitmap(PLACE_MARKER, (i - 2) * TILE_SIZE
+								+ pmap.getGlobalOffset().x
+								+ (int) marker.getOffset().x - 15, (j - 2)
+								* TILE_SIZE + pmap.getGlobalOffset().y
+								+ (int) marker.getOffset().y - 32, paint);
+					}
+
+				}
 			}
 		}
-		
-		
-		
-		
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		postInvalidateDelayed(500);
+
 	}
 
 	/**
@@ -328,10 +336,9 @@ public class MapControl extends RelativeLayout {
 
 		public Panel(Context context) {
 			super(context);
-	    	paint = new Paint();
+			paint = new Paint();
 
 		}
-
 
 		@Override
 		protected void onDraw(Canvas canvas) {
@@ -356,11 +363,11 @@ public class MapControl extends RelativeLayout {
 				break;
 			case MotionEvent.ACTION_UP:
 				if (dcDetector.process(event)) {
-					if(mapMode == MapControl.ZOOM_MODE){
+					if (mapMode == MapControl.ZOOM_MODE) {
 						pmap.zoomIn((int) event.getX(), (int) event.getY());
 						updateZoomControls();
 					} else {
-						if(onMapLongClickListener!=null){
+						if (onMapLongClickListener != null) {
 							onMapLongClickListener.onMapLongClick(0, 0);
 						}
 					}
