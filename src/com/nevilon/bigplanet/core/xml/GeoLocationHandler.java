@@ -9,6 +9,11 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.nevilon.bigplanet.core.Place;
 
+/**
+ * Парсер списка найденных мест
+ * @author hudvin
+ *
+ */
 public class GeoLocationHandler extends DefaultHandler {
 
 	private static String CODE_TAG = "code";
@@ -25,13 +30,11 @@ public class GeoLocationHandler extends DefaultHandler {
 	
 	private boolean isAddressTag = false;
 	
-	private boolean isPlaceMarkTag = false;
-	
 	private boolean isCoordinatesTag = false;
 	
 	private boolean isLocalityNameTag = false;
 	
-	private int responseCode = -1;
+	private int responseCode = 0;
 	
 	private List<Place> places = new ArrayList<Place>();
 	
@@ -47,7 +50,6 @@ public class GeoLocationHandler extends DefaultHandler {
 			elementName = name;
 		}
 		if(elementName.equals(PLACEMARK_TAG)){
-			isPlaceMarkTag = true;
 			currentPlace = new Place();
 		}
 		if(elementName.equals(CODE_TAG)){
@@ -70,7 +72,6 @@ public class GeoLocationHandler extends DefaultHandler {
 			throws SAXException {
 		if(name.equals(PLACEMARK_TAG)){
 			places.add(currentPlace);
-			isPlaceMarkTag = false;
 		}
 		if(name.equals(ADDRESS_TAG)){
 			isAddressTag = false;
@@ -110,6 +111,10 @@ public class GeoLocationHandler extends DefaultHandler {
 
 	public List<Place> getPlaces(){
 		return this.places;
+	}
+	
+	public int getResponseCode(){
+		return this.responseCode;
 	}
 	
 }

@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 public class Place implements Serializable{
 
+	
+	private static final long serialVersionUID = -6698333998587735262L;
+
 	private String address;
 	
 	private String name;

@@ -301,7 +301,7 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-				setBitmap(MapControl.bp, i, j);
+				setBitmap(MapControl.CELL_BACKGROUND, i, j);
 				//cells[i][j] = MapControl.bp;
 				tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
 						.getMapSourceId(),0));

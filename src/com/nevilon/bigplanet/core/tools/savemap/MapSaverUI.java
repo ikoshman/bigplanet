@@ -23,7 +23,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import com.nevilon.bigplanet.R;
 import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.geoutils.Geo;
-import com.nevilon.bigplanet.core.geoutils.GoogleTileUtils;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 
 public class MapSaverUI {
