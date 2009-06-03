@@ -29,13 +29,6 @@ public class MoowMap extends Activity {
 
 	private volatile boolean running = true;
 
-	private boolean inMove = false;
-
-	private int nL = -1;
-	private int nR = -1;
-	private int nB = -1;
-	private int nT = -1;
-
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
 	private Point globalOffset = new Point();
@@ -91,18 +84,39 @@ public class MoowMap extends Activity {
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
 			break;
 		case MotionEvent.ACTION_MOVE:
-			System.out.println("move");
 			moveCoordinates(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_UP:
-		    inMove = false;
-		    moveCoordinates(event.getX(), event.getY());
+			moveCoordinates(event.getX(), event.getY());
+		    quickHack();
+		    quickHack();
 		    break;
 		}
 
 		return super.onTouchEvent(event);
 	}
 
+	private void quickHack(){
+		int dx = 0,dy = 0;
+	    if(globalOffset.x>0){
+	    	dx = Math.round((globalOffset.x+320)/256);
+	    } else {
+	    	dx = Math.round((globalOffset.x)/256);
+	    }
+	    
+	    if(globalOffset.y>0){
+	    	dy = (int)Math.floor((globalOffset.y+480)/256);  
+	    } else {
+	    	dy = (int)Math.floor(globalOffset.y/256);
+		    
+	    }
+	    
+	    globalOffset.x = globalOffset.x - dx*256 ;
+	    globalOffset.y = globalOffset.y - dy*256;
+	    pmap.reload(dx, dy);
+	   
+	}
+	
 	private void zoomIn(){
 		int currentZoomX = pmap.getDefaultTile().getX()*256-globalOffset.x+160;
 		int currentZoomY = pmap.getDefaultTile().getY()*256-globalOffset.y+240;
@@ -128,7 +142,6 @@ public class MoowMap extends Activity {
 	
 	
 	private void moveCoordinates(float x, float y) {
-		inMove = true;
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 		nextMovePoint.set((int) x, (int) y);
 		globalOffset.set(globalOffset.x
@@ -140,7 +153,6 @@ public class MoowMap extends Activity {
 	
 	
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		updatePhysicMap();
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -154,96 +166,7 @@ public class MoowMap extends Activity {
 
 	}
 
-	private void updatePhysicMap() {
-		boolean movedR = false;
-		boolean movedL = false;
-		boolean movedB = false;
-		boolean movedT = false;
-
-		// обработка перемещения вправо
-		if (isMovedRight()) {
-			if (previousMovePoint.x < nextMovePoint.x) {
-				globalOffset.x -= 256;
-				pmap.moveLeft();
-				movedR = true;
-			}
-		}
-		if (!movedR) {
-			nR = (int) Math.ceil((globalOffset.x - 256) / 256);
-		} else {
-			nR = 0;
-		}
-
-		// обработка перемещения влево
-		if (isMovedLeft()) {
-			if (previousMovePoint.x > nextMovePoint.x) {
-				globalOffset.x += (256);
-				pmap.moveRight();
-				movedL = true;
-			}
-		}
-		if (!movedL) {
-			nL = (int) Math.ceil((globalOffset.x - 256 + 320) / 256);
-		} else {
-			nL = 0;
-		}
-
-		// обработка перемещения вниз
-		if (isMovedBottom()) {
-			if (previousMovePoint.y < nextMovePoint.y) {
-				System.out.println("move botton");
-				globalOffset.y -= (256);
-				pmap.moveBottom();
-				movedB = true;
-			}
-
-		}
-		if (!movedB) {
-			nB = (int) Math.ceil((globalOffset.y - (256)) / 256);
-		} else {
-			nB = 0;
-		}
-
-		// обработка перемещения вверх
-		if (isMovedTop()) {
-			if (previousMovePoint.y > nextMovePoint.y) {
-				globalOffset.y += (256);
-				pmap.moveTop();
-				movedT = true;
-			}
-
-		}
-		if (!movedT) {
-			nT = (int) Math.ceil((globalOffset.y + 256 + 480) / 256);
-		} else {
-			nT = 0;
-		}
-	}
-
-	// проверка, передвинуто ли вправо
-	private boolean isMovedRight() {
-		return inMove && nR != -1
-				&& Math.abs(Math.ceil((globalOffset.x + 256) / 256) - nR) == 1;
-	}
-
-	// проверка, передвинуто ли влево
-	private boolean isMovedLeft() {
-		return inMove && nL!=-1 && Math.abs(Math.ceil((globalOffset.x - 256 + 320) / 256) - nL) == 1;
-
-	}
-
-	// проверка, передвино ли вниз
-	private boolean isMovedBottom() {
-		return inMove && nB != -1
-				&& Math.abs(Math.ceil((globalOffset.y + 256) / 256) - nB) == 1;
-	}
-
-	// проверка, передвино ли вниз
-	private boolean isMovedTop() {
-		return inMove
-				&& nT != -1
-				&& Math.abs(Math.ceil((globalOffset.y - 256 + 480) / 256) - nT) == 1;
-	}
+	
 
 	class Panel extends View {
 		Paint paint;
