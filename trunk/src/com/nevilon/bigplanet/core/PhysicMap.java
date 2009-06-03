@@ -227,11 +227,10 @@ public class PhysicMap {
 	 * @param (int)y - координата y тача
 	 */
 	public void moveCoordinates(final float x, final float y) {
-		// System.out.println(defTile.x + " " + defTile.y);
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 		nextMovePoint.set((int) x, (int) y);
+		
 		int offsetX = globalOffset.x + (nextMovePoint.x - previousMovePoint.x);
-
 		int offsetY = globalOffset.y + (nextMovePoint.y - previousMovePoint.y);
 
 		if (nextMovePoint.x > previousMovePoint.x) {
@@ -244,26 +243,11 @@ public class PhysicMap {
 			}
 		// ограничение по правому краю	
 		}  else if(nextMovePoint.x < previousMovePoint.x) {
-			
-			
-			
 			int sing = defTile.x < 0 ? -1 : 1;
-			int tx =  (getMaxTile(defTile.z)-defTile.x) * 256  + sing * offsetX-320;;
-			System.out.println("ty " + tx);
-			//System.out.println((tileCount-defTile.y) * 256+ " " + globalOffset.y);
-			
-			//System.out.println("ty " + offsetY + " " + defTile);
+			int tx =  (getMaxTile(defTile.z)-defTile.x) * 256  + sing * offsetX-getWidth();;
 			if(tx<=0){
-				//System.out.println("stop " + offsetX);
-				offsetX = -192;
-			}
-
-			
-			//int sing = defTile.x < 0 ? -1 : 1;
-			//int tx = (defTile.x) * 256 + sing * offsetX;
-			
-			//System.out.println("tx " + tx);
-		
+				offsetX = getWidth()-512;
+			}		
 		}
 
 		if (nextMovePoint.y > previousMovePoint.y) {
@@ -276,32 +260,13 @@ public class PhysicMap {
 			}
 		} else if(nextMovePoint.y < previousMovePoint.y) {
 			int sing = defTile.y < 0 ? -1 : 1;
-			int ty =  (getMaxTile(defTile.z)-defTile.y) * 256  + sing * offsetY-430;;
-			System.out.println("ty " + ty);
-			//System.out.println((tileCount-defTile.y) * 256+ " " + globalOffset.y);
-			
-			//System.out.println("ty " + offsetY + " " + defTile);
+			int ty =  (getMaxTile(defTile.z)-defTile.y) * 256  + sing * offsetY-getHeight();;
 			if(ty<=0){
-				offsetY = -82;
+				offsetY = getHeight()-512;
 			}
 		}
 
-		/*
-		 * if (getDefaultTile().y == 0) {
-		 * 
-		 * int sing = defTile.y < 0 ? -1 : 1; int ty = defTile.y 256 + sing
-		 * offsetY;
-		 * 
-		 * if (nextMovePoint.y > previousMovePoint.y) { //
-		 * System.out.println("right"); } else if (nextMovePoint.y <
-		 * previousMovePoint.y) { // System.out.println("left"); if (ty <= 0) {
-		 * 
-		 * offsetY = 0;
-		 * 
-		 * System.out.println("ty"); } } }
-		 */
 		globalOffset.set(offsetX, offsetY);
-		//System.out.println(globalOffset.y);
 		updateMap();
 	}
 
