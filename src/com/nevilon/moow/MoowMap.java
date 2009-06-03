@@ -21,6 +21,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
+import com.nevilon.moow.core.ui.BitmapUtils;
 import com.nevilon.moow.core.ui.DoubleClickHelper;
 import com.nevilon.moow.core.ui.InertionEngine;
 import com.nevilon.moow.core.ui.ZoomPanel;
@@ -49,7 +50,7 @@ public class MoowMap extends Activity {
 
 	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
-	private Bitmap mapBg = drawBackground();
+	private Bitmap mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE,480, 320);
 
 	// нужно ли запускать инерцию
 	private boolean startInertion = false;
@@ -60,6 +61,10 @@ public class MoowMap extends Activity {
 	private List<Point> moveHistory = new ArrayList<Point>();
 
 	private InertionEngine iengine;
+	
+	private Bitmap tsBitmap;
+	
+	private Canvas tsCanvas;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -151,36 +156,23 @@ public class MoowMap extends Activity {
 
 	}
 
-	/**
-	 * Рисует фон для карты( в клетку )
-	 * 
-	 * @return
-	 */
-	private Bitmap drawBackground() {
-		// создание битмапа по размеру экрана
-		Bitmap bitmap = Bitmap.createBitmap(320, MAP_HEIGHT, Config.RGB_565);
-		Canvas cv = new Canvas(bitmap);
-		// прорисовка фона
-		Paint background = new Paint();
-		background.setARGB(255, 128, 128, 128);
-		cv.drawRect(0, 0, 320, MAP_HEIGHT, background);
-		background.setAntiAlias(true);
-		// установка цвета линий
-		background.setColor(Color.WHITE);
-		// продольные линии
-		for (int i = 0; i < 320 / MoowMap.BCG_CELL_SIZE; i++) {
-			cv.drawLine(MoowMap.BCG_CELL_SIZE * i, 0,
-					MoowMap.BCG_CELL_SIZE * i, MAP_HEIGHT, background);
-		}
-		// поперечные линии
-		for (int i = 0; i < MAP_HEIGHT / MoowMap.BCG_CELL_SIZE; i++) {
-			cv.drawLine(0, MoowMap.BCG_CELL_SIZE * i, 320,
-					MoowMap.BCG_CELL_SIZE * i, background);
-		}
-		return bitmap;
-	}
 
 	private  void doDraw(Canvas canvas, Paint paint) {
+		if(tsBitmap == null){
+			tsBitmap = Bitmap.createBitmap(768, 768,
+					  Bitmap.Config.RGB_565);
+			
+		}
+		if (tsCanvas == null){
+			
+			tsCanvas = new Canvas();
+			canvas = tsCanvas;
+			
+			canvas.setBitmap(tsBitmap); 	
+			
+		}
+		
+		synchronized (this) {
 			Bitmap tmpBitmap;
 			canvas.drawBitmap(mapBg, 0, 0, paint);
 
@@ -194,6 +186,9 @@ public class MoowMap extends Activity {
 					}
 				}
 			}
+		}
+		
+
 	}
 
 	
@@ -225,16 +220,16 @@ public class MoowMap extends Activity {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
-				moveHistory.clear();
+				//moveHistory.clear();
 				pmap.nextMovePoint.set((int) event.getX(), (int) event.getY());
 				lastMoveTime = 0;
-				addPointToHistory(event.getX(), event.getY());
+			    //addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_MOVE:
 				lastMoveTime = System.currentTimeMillis();
 				inMove = true;
 				pmap.moveCoordinates(event.getX(), event.getY());
-				addPointToHistory(event.getX(), event.getY());
+				//addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
 				//if(startInertion){
@@ -276,7 +271,7 @@ public class MoowMap extends Activity {
 
 	class CanvasUpdater implements Runnable {
 
-		private static final int UPDATE_INTERVAL = 35;
+		private static final int UPDATE_INTERVAL = 50;
 
 		int step = 0;
 
