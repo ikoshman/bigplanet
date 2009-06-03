@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Parcel;
 
 /**
  * Обертка над LocalStorage Производит декодирование тайла в синхронном и в

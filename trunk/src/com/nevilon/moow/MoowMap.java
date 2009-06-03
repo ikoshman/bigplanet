@@ -14,14 +14,14 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.RelativeLayout;
-import android.widget.ZoomControls;
 
 import com.nevilon.moow.core.InertionEngine;
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
 import com.nevilon.moow.core.ui.DoubleClickHelper;
+import com.nevilon.moow.core.ui.ZoomPanel;
 
 public class MoowMap extends Activity {
 
@@ -66,7 +66,22 @@ public class MoowMap extends Activity {
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, MAP_HEIGHT));
 		(new Thread(new CanvasUpdater())).start();
+		
 		zoomPanel = new ZoomPanel(this);
+		zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				pmap.zoomOut();
+				updateZoomControls();
+			}
+		});
+		
+		zoomPanel.setOnZoomInClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				pmap.zoomInCenter();
+				updateZoomControls();
+			}
+		});
+		
 		addContentView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
 	}
@@ -291,56 +306,5 @@ public class MoowMap extends Activity {
 
 	}
 
-	class ZoomPanel extends RelativeLayout {
-
-		private ZoomControls zoomControls;
-
-		public ZoomPanel(Context context) {
-			super(context);
-			zoomControls = new ZoomControls(getContext());
-			zoomControls.setOnZoomOutClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					pmap.zoomOut();
-					updateZoomControls();
-				}
-			});
-			zoomControls.setOnZoomInClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					pmap.zoomInCenter();
-					updateZoomControls();
-				}
-			});
-			BasicEvent ev = new BasicEvent();
-			addView(zoomControls);
-			setPadding(80, 368, 0, 0);
-		}
-
-		/**
-		 * Устанавливает кнопку увеличения детализации в активное/неактивное
-		 * состояние
-		 * 
-		 * @param isEnabled
-		 */
-		public void setIsZoomInEnabled(boolean isEnabled) {
-			zoomControls.setIsZoomInEnabled(isEnabled);
-
-		}
-
-		/**
-		 * Устанавливает кнопку уменьшения детализации в активное/неактивное
-		 * состояние
-		 * 
-		 * @param isEnabled
-		 */
-		public void setIsZoomOutEnabled(boolean isEnabled) {
-			zoomControls.setIsZoomOutEnabled(isEnabled);
-		}
-
-	}
-
-	public void run() {
-		// TODO Auto-generated method stub
-
-	}
-
+	
 }
