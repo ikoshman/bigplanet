@@ -98,9 +98,6 @@ public class TileResolver {
 	private void updateMap(RawTile tile, Bitmap bitmap) {
 		if (tile.s == strategyId) {
 			physicMap.update(bitmap, tile);
-			if(tile.l ==1){
-				System.out.println("traffic");
-			}
 		}
 	}
 
@@ -122,7 +119,7 @@ public class TileResolver {
 			updateMap(tile, bitmap);
 		} else {
 
-			updateMap(tile, MapControl.bp);
+			updateMap(tile, MapControl.CELL_BACKGROUND);
 			LocalStorageWrapper.get(tile,false ,localLoaderHandler);
 		}
 	}

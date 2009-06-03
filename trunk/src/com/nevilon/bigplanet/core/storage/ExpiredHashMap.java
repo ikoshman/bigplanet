@@ -68,10 +68,12 @@ public class ExpiredHashMap {
 
 	private class ExpRawTile extends RawTile implements Comparable<ExpRawTile> {
 
+		
+		private static final long serialVersionUID = -7039594975313513993L;
 		private long addedOn = -1;
 
 		public ExpRawTile(RawTile tile, long addedOn) {
-			super(tile.x, tile.y, tile.z, tile.s,tile.l);
+			super(tile.x, tile.y, tile.z, tile.s,0);
 			this.addedOn = addedOn;
 		}
 

@@ -11,7 +11,9 @@ import java.io.Serializable;
  */
 public class RawTile implements Serializable {
 
-	public int x, y, z, s,l;
+	
+	private static final long serialVersionUID = -3536701428388595925L;
+	public int x, y, z, s;
 
 
 	public RawTile(int x, int y, int z, int s, int l) {
@@ -19,7 +21,6 @@ public class RawTile implements Serializable {
 		this.y = y;
 		this.z = z;
 		this.s = s;
-		this.l = l;
 	}
 
 	@Override
@@ -30,7 +31,6 @@ public class RawTile implements Serializable {
 		result = prime * result + y;
 		result = prime * result + z;
 		result = prime * result + s;
-		result = prime * result + l;
 		return result;
 	}
 
@@ -51,9 +51,6 @@ public class RawTile implements Serializable {
 			return false;
 		if (s != other.s)
 			return false;
-		if (l != other.l)
-			return false;
-
 		return true;
 	}
 

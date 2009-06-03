@@ -37,7 +37,7 @@ public class AllGeoBookmarks extends ListActivity {
 	private void setData() {
 		DAO dao = new DAO(this);
 		geoBookmarks = dao.getBookmarks();
-		setListAdapter(new SpeechListAdapter(this));
+		setListAdapter(new GeoBookmarkListAdapter(this));
 		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
 
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -119,9 +119,9 @@ public class AllGeoBookmarks extends ListActivity {
 		return true;
 	}
 
-	private class SpeechListAdapter extends BaseAdapter {
+	private class GeoBookmarkListAdapter extends BaseAdapter {
 
-		public SpeechListAdapter(Context context) {
+		public GeoBookmarkListAdapter(Context context) {
 			mContext = context;
 		}
 
@@ -138,14 +138,14 @@ public class AllGeoBookmarks extends ListActivity {
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
-			SpeechView sv;
+			GeoBookmarkView sv;
 			GeoBookmark bookmark = geoBookmarks.get(position);
 			if (convertView == null) {
 
-				sv = new SpeechView(mContext, bookmark.getName(), bookmark
+				sv = new GeoBookmarkView(mContext, bookmark.getName(), bookmark
 						.getDescription());
 			} else {
-				sv = (SpeechView) convertView;
+				sv = (GeoBookmarkView) convertView;
 				sv.setName(bookmark.getName());
 				sv.setDescription(bookmark.getDescription());
 				sv.id = bookmark.getId();
@@ -158,8 +158,8 @@ public class AllGeoBookmarks extends ListActivity {
 
 	}
 
-	private class SpeechView extends LinearLayout {
-		public SpeechView(Context context, String name, String description) {
+	private class GeoBookmarkView extends LinearLayout {
+		public GeoBookmarkView(Context context, String name, String description) {
 			super(context);
 			View v = View.inflate(AllGeoBookmarks.this, R.layout.geobookmark,
 					null);

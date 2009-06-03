@@ -22,6 +22,8 @@ import com.nevilon.bigplanet.core.RawTile;
  */
 public class MapControl extends RelativeLayout {
 
+	private static final int TILE_SIZE = 256;
+
 	public static final int ZOOM_MODE = 0;
 
 	public static final int SELECT_MODE = 1;
@@ -54,21 +56,6 @@ public class MapControl extends RelativeLayout {
 	private ZoomPanel zoomPanel;
 
 	/*
-	 * Фон
-	 */
-	private Bitmap mapBg;
-
-	/*
-	 * Битмап для канввы
-	 */
-	private Bitmap cvBitmap;
-
-	/*
-	 * Канва для отображения карты
-	 */
-	private Canvas cv;
-
-	/*
 	 * Размер ячейки фона
 	 */
 	private final static int BCG_CELL_SIZE = 16;
@@ -76,7 +63,7 @@ public class MapControl extends RelativeLayout {
 	private OnMapLongClickListener onMapLongClickListener;
 
 	
-	public static Bitmap bp = BitmapUtils.drawBackground(16, 256, 256);
+	public static Bitmap CELL_BACKGROUND = BitmapUtils.drawBackground(BCG_CELL_SIZE, TILE_SIZE, TILE_SIZE);
 	
 	
 	/**
@@ -132,6 +119,11 @@ public class MapControl extends RelativeLayout {
 		return pmap;
 	}
 	
+	
+	public void goTo(int x, int y,int z, int offsetX, int offsetY){
+		getPhysicalMap().goTo(x, y, z, offsetX, offsetY);
+		updateZoomControls();
+	}
 
 	/**
 	 * Строит виджет, устанавливает обработчики, размеры и др.
@@ -141,8 +133,6 @@ public class MapControl extends RelativeLayout {
 	 * @param startTile
 	 */
 	private void buildView(int width, int height, RawTile startTile) {
-		// создание фона
-		// mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
 		// создание панели с картой
 		main = new Panel(this.getContext());
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
@@ -201,39 +191,39 @@ public class MapControl extends RelativeLayout {
 		int tdx, tdy;
 		Point globalOffset = pmap.getGlobalOffset();
 		if (globalOffset.x > 0) {
-			dx = Math.round((globalOffset.x + pmap.getWidth()) / 256);
+			dx = Math.round((globalOffset.x + pmap.getWidth()) / TILE_SIZE);
 		} else {
-			dx = Math.round((globalOffset.x) / 256);
+			dx = Math.round((globalOffset.x) / TILE_SIZE);
 		}
 
 		if (globalOffset.y > 0) {
-			dy = Math.round((globalOffset.y + pmap.getHeight()) / 256);
+			dy = Math.round((globalOffset.y + pmap.getHeight()) / TILE_SIZE);
 		} else {
-			dy = Math.round(globalOffset.y / 256);
+			dy = Math.round(globalOffset.y / TILE_SIZE);
 
 		}
 
-		globalOffset.x = globalOffset.x - dx * 256;
-		globalOffset.y = globalOffset.y - dy * 256;
+		globalOffset.x = globalOffset.x - dx * TILE_SIZE;
+		globalOffset.y = globalOffset.y - dy * TILE_SIZE;
 
 		tdx = dx;
 		tdy = dy;
 
 		if (globalOffset.x > 0) {
-			dx = Math.round((globalOffset.x + pmap.getWidth()) / 256);
+			dx = Math.round((globalOffset.x + pmap.getWidth()) / TILE_SIZE);
 		} else {
-			dx = Math.round((globalOffset.x) / 256);
+			dx = Math.round((globalOffset.x) / TILE_SIZE);
 		}
 
 		if (globalOffset.y > 0) {
-			dy = (int) Math.round((globalOffset.y + pmap.getHeight()) / 256);
+			dy = (int) Math.round((globalOffset.y + pmap.getHeight()) / TILE_SIZE);
 		} else {
-			dy = (int) Math.round(globalOffset.y / 256);
+			dy = (int) Math.round(globalOffset.y / TILE_SIZE);
 
 		}
 
-		globalOffset.x = globalOffset.x - dx * 256;
-		globalOffset.y = globalOffset.y - dy * 256;
+		globalOffset.x = globalOffset.x - dx * TILE_SIZE;
+		globalOffset.y = globalOffset.y - dy * TILE_SIZE;
 
 		tdx += dx;
 		tdy += dy;
@@ -279,13 +269,13 @@ public class MapControl extends RelativeLayout {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 					tmpBitmap = pmap.getCell(i-2, j-2);
 					if (tmpBitmap != null) {
-						canvas.drawBitmap(tmpBitmap, (i - 2) * 256
-								+ pmap.getGlobalOffset().x, (j - 2) * 256
+						canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
+								+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().y, paint);
 					}
 				} else {
-					canvas.drawBitmap(bp, (i - 2) * 256
-							+ pmap.getGlobalOffset().x, (j - 2) * 256
+					canvas.drawBitmap(CELL_BACKGROUND, (i - 2) * TILE_SIZE
+							+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 							+ pmap.getGlobalOffset().y, paint);
 				}
 			}

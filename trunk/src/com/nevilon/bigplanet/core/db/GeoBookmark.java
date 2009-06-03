@@ -6,6 +6,9 @@ import com.nevilon.bigplanet.core.RawTile;
 
 public class GeoBookmark implements Serializable {
 	
+	
+	private static final long serialVersionUID = -2198154484982426107L;
+
 	private int id = -1;
 	
     private String name;

@@ -100,12 +100,11 @@ public class BigPlanet extends Activity {
 		switch (resultCode) {
 		case GO_TO_LOCATION:
 			int z = 5;
-			
 			Place place = (Place)data.getSerializableExtra("place");
 			com.nevilon.bigplanet.core.geoutils.Point p = Geo.toTileXY(place.getLat(), place.getLon(), z);
 			com.nevilon.bigplanet.core.geoutils.Point off = Geo.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
-			mapControl.getPhysicalMap().goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
-		break;	
+			mapControl.goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
+			break;	
 		case RESULT_OK:
 			GeoBookmark bookmark = (GeoBookmark) data
 					.getSerializableExtra(BOOKMARK_DATA);
