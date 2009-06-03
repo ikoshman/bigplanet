@@ -56,8 +56,6 @@ public class MoowMap extends Activity {
 
 	// последнее время, когда происходило передвижение карты
 	private long lastMoveTime = -1;
-
-	private boolean canDraw = true;
 	
 	private List<Point> moveHistory = new ArrayList<Point>();
 
@@ -74,7 +72,7 @@ public class MoowMap extends Activity {
 		zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				pmap.zoomOut();
-		        //quickHack();
+				quickHack();	
 				updateZoomControls();
 			}
 		});
@@ -82,6 +80,7 @@ public class MoowMap extends Activity {
 		zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				pmap.zoomInCenter();
+				quickHack();
 				updateZoomControls();
 			}
 		});
@@ -182,7 +181,6 @@ public class MoowMap extends Activity {
 	}
 
 	private  void doDraw(Canvas canvas, Paint paint) {
-		if(canDraw){
 			Bitmap tmpBitmap;
 			canvas.drawBitmap(mapBg, 0, 0, paint);
 
@@ -196,7 +194,6 @@ public class MoowMap extends Activity {
 					}
 				}
 			}
-		}
 	}
 
 	
@@ -289,11 +286,9 @@ public class MoowMap extends Activity {
 			while (running) {
 				try {
 					Thread.sleep(CanvasUpdater.UPDATE_INTERVAL);
-					canDraw = false;
-					if (startInertion) {
+					//if (startInertion) {
 						//processInertion();
-					}
-					canDraw = true;
+					//}
 					main.postInvalidate();
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();

@@ -47,7 +47,7 @@ public class TileLoader implements Runnable {
 	 * 
 	 * @param tile
 	 */
-	public void load(RawTile tile) {
+	public synchronized void load(RawTile tile) {
 		addToQueue(tile);
 	}
 
@@ -55,7 +55,7 @@ public class TileLoader implements Runnable {
 		loadQueue.add(tile);
 	}
 
-	public  RawTile getFromQueue() {
+	public  synchronized RawTile getFromQueue() {
 		return loadQueue.poll();
 	}
 

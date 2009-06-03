@@ -190,11 +190,12 @@ public class PhysicMap {
 	}
 
 	private RawTile normalize(RawTile tile){
-		tile.x = normalize(tile.x, tile.z);
+		tile.x = normalizeX(tile.x, tile.z);
+		tile.y = normalizeY(tile.y, tile.z);
 		return tile;
 	}
 	
-	private int normalize(int x,int z){
+	private int normalizeX(int x,int z){
 		int tileCount = (int) Math.pow(2, 17 - z);
 		while(x<0){
 			x = tileCount+x;		
@@ -203,6 +204,17 @@ public class PhysicMap {
 			x = x - tileCount;
 		}
 		return x;
+	}
+	
+	private int normalizeY(int y,int z){
+		int tileCount = (int) Math.pow(2, 17 - z);
+		while(y<0){
+			y = tileCount+y;		
+		}
+		while(y>tileCount-1){
+			y = y - tileCount;
+		}
+		return y;
 	}
 	
 	/**
@@ -217,16 +229,20 @@ public class PhysicMap {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
+				
+				
 				x = (tile.x + i);
-				x = normalize(x, tile.z);
+				x = normalizeX(x, tile.z);
+				
 				y = (tile.y + j);
-				if (!checkTileXY(x, y, tile.z)) {
-					cells[i][j] = null;
-				} else {
+				y = normalizeY(y, tile.z);
+				//if (!checkTileXY(x, y, tile.z)) {
+				//	cells[i][j] = null;
+				//} else {
 					cells[i][j] = null;
 					cells[i][j] = tileProvider.getTile(
 							new RawTile(x, y, tile.z), true);
-				}
+			//	}
 
 			}
 		}
