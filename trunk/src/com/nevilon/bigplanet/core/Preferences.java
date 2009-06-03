@@ -85,6 +85,9 @@ public class Preferences {
 	}
 
 	public static void putSourceId(int sourceId) {
+		if(sourceId==-1){
+			throw new IllegalArgumentException();
+		}
 		put(SOURCE_ID, sourceId);
 	}
 
