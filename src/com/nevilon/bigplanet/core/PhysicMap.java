@@ -40,7 +40,7 @@ public class PhysicMap {
 	
 	private int correctionY;
 	
-	private int inZoom = 0;
+	public int inZoom = 0;
 
 	private AbstractCommand updateScreenCommand;
 
