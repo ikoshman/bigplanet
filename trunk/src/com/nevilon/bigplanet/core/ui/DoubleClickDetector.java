@@ -32,11 +32,22 @@ public class DoubleClickDetector {
 	 * Хранит время предыдущего события
 	 */
 	private long eventTime;
-
+	
+	public static void setInterval(int interval){
+		CLICK_INTERVAL = interval;
+	}
+	
+	
+	public static void setPrecise(int precise){
+		CLICK_PRECISE = precise;
+	}
+	
 	public boolean process(MotionEvent currentEvent) {
 		if (previousPoint != null
 				&& (System.currentTimeMillis() - eventTime) < DoubleClickDetector.CLICK_INTERVAL
 				&& isNear((int) currentEvent.getX(), (int) currentEvent.getY())) {
+			eventTime = System.currentTimeMillis();
+			previousPoint = null;
 			return true;
 		}
 		previousPoint = new Point();

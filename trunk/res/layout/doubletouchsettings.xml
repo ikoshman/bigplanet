@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:padding="5dip" android:layout_height="fill_parent">
+
+	<SeekBar android:id="@+id/interval" android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:max="50" android:progress="4" />
+
+	<TextView android:id="@+id/intervalLabel"
+		android:layout_height="wrap_content" android:layout_width="wrap_content" />
+
+
+	<SeekBar android:id="@+id/accuracy" android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:max="120" android:progress="4" />
+
+	<TextView android:id="@+id/accuracyLabel"
+		android:layout_height="wrap_content" android:layout_width="wrap_content" />
+
+
+
+
+
+
+
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:paddingTop="10dip" android:stretchColumns="0,1,2"
+		android:layout_height="wrap_content" android:layout_width="fill_parent">
+
+
+<com.nevilon.bigplanet.core.ui.TransparentPanel
+
+		android:id="@+id/transparent_panel" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+
+
+
+		<TextView android:padding="5dip" android:layout_height="140dip"
+			android:layout_width="wrap_content" android:singleLine="false"
+			android:text="Для тестирования, произведите двойное касание.
+		 Если настройки верны, вы увидите соответствующее сообщение" />
+
+
+
+
+	</com.nevilon.bigplanet.core.ui.TransparentPanel>
+
+
+		<TableRow>
+
+
+			<Button  android:text="Save"
+				android:layout_width="fill_parent" android:layout_height="fill_parent" />
+
+			<Button android:text="Cancel" android:layout_width="fill_parent"
+				android:layout_height="fill_parent" />
+
+
+		</TableRow>
+
+	</TableLayout>
+
+</LinearLayout>
