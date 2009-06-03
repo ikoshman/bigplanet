@@ -16,6 +16,7 @@ import org.xml.sax.XMLReader;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,11 +24,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.nevilon.bigplanet.core.Place;
 import com.nevilon.bigplanet.core.loader.BaseLoader;
@@ -80,6 +83,19 @@ public class FindLocation extends ListActivity implements Runnable {
 			}
 
 		};
+		
+		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
+
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent();
+				intent.putExtra("place", places.get(position));
+				setResult(BigPlanet.GO_TO_LOCATION,intent);
+				finish();
+				return false;
+			}
+			
+		});
 
 	}
 

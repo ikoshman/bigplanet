@@ -25,10 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.nevilon.bigplanet.core.Place;
 import com.nevilon.bigplanet.core.Preferences;
 import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.db.DAO;
 import com.nevilon.bigplanet.core.db.GeoBookmark;
+import com.nevilon.bigplanet.core.geoutils.Geo;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
 import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
@@ -38,6 +40,8 @@ import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 
 public class BigPlanet extends Activity {
 
+	public static final int GO_TO_LOCATION = 20;
+	
 	private static final String BOOKMARK_DATA = "bookmark";
 
 	private Toast textMessage;
@@ -94,6 +98,14 @@ public class BigPlanet extends Activity {
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
+		case GO_TO_LOCATION:
+			int z = 5;
+			
+			Place place = (Place)data.getSerializableExtra("place");
+			com.nevilon.bigplanet.core.geoutils.Point p = Geo.toTileXY(place.getLat(), place.getLon(), z);
+			com.nevilon.bigplanet.core.geoutils.Point off = Geo.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
+			mapControl.getPhysicalMap().goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
+		break;	
 		case RESULT_OK:
 			GeoBookmark bookmark = (GeoBookmark) data
 					.getSerializableExtra(BOOKMARK_DATA);
@@ -275,7 +287,7 @@ public class BigPlanet extends Activity {
 	private void showSearch(){
 		Intent intent = new Intent();
 		intent.setClass(this, FindLocation.class);
-		startActivity(intent);
+		startActivityForResult(intent, 0);
 	}
 	
 	private void showAbout() {

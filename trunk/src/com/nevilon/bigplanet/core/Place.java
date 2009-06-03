@@ -1,6 +1,8 @@
 package com.nevilon.bigplanet.core;
 
-public class Place {
+import java.io.Serializable;
+
+public class Place implements Serializable{
 
 	private String address;
 	

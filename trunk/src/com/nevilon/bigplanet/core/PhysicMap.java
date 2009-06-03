@@ -116,6 +116,22 @@ public class PhysicMap {
 		return cells;
 	}
 */
+
+	
+	public void goTo(int x,int y, int z, int offsetX, int offsetY){
+		int fullX = x*256+offsetX;
+		int fullY = y*256 +offsetY;
+		// коориданаты углового тайла
+		int tx = fullX - getWidth()/2;
+		int ty = fullY - getHeight()/2;
+		
+		this.zoom = z;
+		globalOffset.x = -(tx-Math.round(tx/256)*256);
+
+		globalOffset.y = -(ty-Math.round(ty/256)*256);
+		reload(tx/256, ty/256, z);
+	}
+	
 	public void zoom(int x, int y, int z) {
 		reload(x, y, z);
 	}
