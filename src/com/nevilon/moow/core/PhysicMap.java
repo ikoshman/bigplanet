@@ -41,32 +41,13 @@ public class PhysicMap {
 
 	}
 
+	public void reload(int dx, int dy){
+		defTile = new RawTile(defTile.getX()-dx, defTile.getY()-dy, defTile.getZ());
+		loadCells(defTile);
+	}
+	
 	public Bitmap[][] getCells() {
 		return cells;
-	}
-
-	public void moveTop() {
-		defTile = new RawTile(defTile.getX(), defTile.getY() + 1, defTile
-				.getZ());
-		loadCells(defTile);
-	}
-
-	public void moveBottom() {
-		defTile = new RawTile(defTile.getX(), defTile.getY() - 1, defTile
-				.getZ());
-		loadCells(defTile);
-	}
-
-	public void moveLeft() {
-		defTile = new RawTile(defTile.getX() - 1, defTile.getY(), defTile
-				.getZ());
-		loadCells(defTile);
-	}
-
-	public void moveRight() {
-		defTile = new RawTile(defTile.getX() + 1, defTile.getY(), defTile
-				.getZ());
-		loadCells(defTile);
 	}
 
 	public void zoom(int x, int y, int z) {
