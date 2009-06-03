@@ -1,12 +1,8 @@
 package com.nevilon.moow;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -24,15 +20,13 @@ public class DrawTesting extends Activity {
 	private Panel main;
 
 	private volatile boolean running = true;
-
-	private boolean isLoaded = false;
 	
-	
+	private boolean mooved = false;
 	
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
 	private Point globalOffset = new Point();
-	
+
 	PhysicMap pmap = new PhysicMap();
 
 	boolean moving = false;
@@ -43,61 +37,63 @@ public class DrawTesting extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
-		setContentView(main, new ViewGroup.LayoutParams(320, 480));
-		(new Thread(new AnimationLoop())).start();		
+		 setContentView(main, new ViewGroup.LayoutParams(320, 480));
+		(new Thread(new AnimationLoop())).start();
 	}
 
-	
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
-	
+
 		case MotionEvent.ACTION_DOWN:
-			nextMovePoint.set((int)event.getX(), (int)event.getY());
-			//System.out.println("DOWN");
+			nextMovePoint.set((int) event.getX(), (int) event.getY());
 			break;
 		case MotionEvent.ACTION_MOVE:
 			previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
-			nextMovePoint.set((int)event.getX(),(int)event.getY());
+			nextMovePoint.set((int) event.getX(), (int) event.getY());
+			if((float)globalOffset.x/256 ==0){
+				//pmap.moveRight();
+				//System.out.println("border");
+			}
+			//if(globalOffset.x<0){
+				//System.out.println(globalOffset.x);
+			//}
+			globalOffset.set(globalOffset.x
+					+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
+					+ (nextMovePoint.y - previousMovePoint.y));
 			
-
-			globalOffset.set(globalOffset.x+(nextMovePoint.x-previousMovePoint.x),
-					globalOffset.y+(nextMovePoint.y-previousMovePoint.y));
-				break;
+			break;
 		case MotionEvent.ACTION_UP:
+			//pmap.moveTop();
 			break;
 		}
 
 		return super.onTouchEvent(event);
 	}
 
-	private void loadTiles() {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				try {
-					FileInputStream fl = new FileInputStream("/sdcard/map/"
-							+ String.valueOf(i) + String.valueOf(j) + ".png");
-					tiles[i][j] = BitmapFactory.decodeStream(fl);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-
-		}
-
-	}
+	
 
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		if (!isLoaded) {
-			isLoaded = true;
-			loadTiles();
-		}
-		
-		
-		for(int i=0;i<3;i++){
-			for(int j=0;j<3;j++){
-				canvas.drawBitmap(pmap.getCells()[i][j],
-						(i - 1) * 256+globalOffset.x,
-						(j-1) * 256+globalOffset.y, paint);
+		//System.out.println(globalOffset.x);
+		Bitmap tmpBitmap;
+		//if(!mooved && globalOffset.x%256==0){
+			//pmap.moveRight();
+			//mooved = false;
+		//} else {
+		//	mooved = true;
+		//}
+			
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				tmpBitmap = pmap.getCells()[i][j];
+				if (tmpBitmap != null) {
+					//int direction = nextMovePoint.x-previousMovePoint.x;
+					//int ox = (pmap.getDefaultTile().getX()==0 && direction>0)?0:globalOffset.x;
+					//System.out.println(pmap.getDefaultTile().getX());
+					canvas.drawBitmap(tmpBitmap,
+							(i) * 256 + globalOffset.x, (j) * 256
+									+ globalOffset.y, paint);
+
+				}
 			}
 		}
 
