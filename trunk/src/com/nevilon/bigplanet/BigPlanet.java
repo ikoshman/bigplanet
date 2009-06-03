@@ -3,6 +3,7 @@ package com.nevilon.bigplanet;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
@@ -18,45 +19,53 @@ import android.widget.ScrollView;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.nevilon.bigplanet.core.Preferences;
+import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.tools.savemap.MapSaverUI;
 import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class BigPlanet extends Activity {
 
+	/*
+	 * Графический движок, реализующий карту
+	 */
 	private MapControl mapControl;
 
+	/**
+	 * Конструктор
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		configMapControl();
+		// создание карты
+		RawTile savedTile = Preferences.getTile();
+		configMapControl(savedTile);
+		// источник карты
 		int mapSourceId = Preferences.getSourceId();
 		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
-		mapControl.getPhysicalMap().setGlobalOffset(Preferences.getOffset());
-		mapControl.getPhysicalMap().getTileResolver().setUseNet(
-				Preferences.getUseNet());
+		// величина отступа
+		Point globalOffset = Preferences.getOffset(); 
+		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
+		// использовать ли сеть
+		boolean useNet = Preferences.getUseNet();
+		mapControl.getPhysicalMap().getTileResolver().setUseNet(useNet);
 	}
 
-	private void configMapControl() {
-		WindowManager wm = this.getWindowManager();
-		Display display = wm.getDefaultDisplay();
-		int height = display.getHeight();
-		int width = display.getWidth();
-		if (mapControl == null) {
-			mapControl = new MapControl(this, width, height, Preferences
-					.getTile());
-		} else {
-			mapControl.setSize(width, height);
-		}
-		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
-	}
+	
 
+	/**
+	 * Обрабатывает поворот телефона
+	 */
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		configMapControl();
+		configMapControl(mapControl.getPhysicalMap().getDefaultTile());
 	}
 
+	/**
+	 * Запоминает текущий тайл и отступ при выгрузке
+	 * приложения
+	 */
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -64,6 +73,9 @@ public class BigPlanet extends Activity {
 		Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
 	}
 
+	/**
+	 * Создает элементы меню
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -77,6 +89,10 @@ public class BigPlanet extends Activity {
 		return true;
 	}
 
+	/**
+	 * Устанавливает статус(активен/неактивен)
+	 * пунктов меню
+	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean useNet = Preferences.getUseNet();
@@ -84,6 +100,23 @@ public class BigPlanet extends Activity {
 		return true;
 	}
 
+
+	/**
+	 * Устанавливает размеры карты и др. свойства
+	 */
+	private void configMapControl(RawTile tile) {
+		WindowManager wm = this.getWindowManager();
+		Display display = wm.getDefaultDisplay();
+		int height = display.getHeight();
+		int width = display.getWidth();
+		if (mapControl == null) {
+			mapControl = new MapControl(this, width, height, tile);
+		} else {
+			mapControl.setSize(width, height);
+		}
+		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
+	}
+	
 	private RadioButton buildRadioButton(String label, int id) {
 		RadioButton btn = new RadioButton(this);
 		btn.setText(label);
