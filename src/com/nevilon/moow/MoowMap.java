@@ -24,6 +24,11 @@ import com.nevilon.moow.core.ui.DoubleClickHelper;
 public class MoowMap extends Activity {
 
 	private final static int BCG_CELL_SIZE = 16; 
+
+	/**
+	 * Начальное значение зума
+	 */
+	private final static int START_ZOOM = 12; // whole world
 	
 	private Panel main;
 	
@@ -34,9 +39,8 @@ public class MoowMap extends Activity {
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
 	
-	private  int zoom = 12; // whole world
-
-	private PhysicMap pmap = new PhysicMap(new RawTile(9, 7, zoom));
+	
+	private PhysicMap pmap = new PhysicMap(new RawTile(9, 7, MoowMap.START_ZOOM));
 	
 	boolean inMove = false;
 	
@@ -56,7 +60,9 @@ public class MoowMap extends Activity {
 	}
 
 	
-	
+	/**
+	 * Обработка касаний
+	 */
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
@@ -71,7 +77,7 @@ public class MoowMap extends Activity {
 			if(inMove){
 				moveCoordinates(event.getX(), event.getY());
 			    quickHack();
-			    quickHack();
+			   // quickHack();
 			} else {
 			   if(dcDispatcher.process(event)){
 					pmap.zoomIn((int)event.getX(), (int)event.getY());	
@@ -84,7 +90,10 @@ public class MoowMap extends Activity {
 		return super.onTouchEvent(event);
 	}
 
-	
+	/**
+	 * Устанавливает состояние zoomIn/zoomOut контролов 
+	 * в зависимости от уровня зума
+	 */
 	private void updateZoomControls(){
 		int zoomLevel = pmap.getZoomLevel();
 		if(zoomLevel ==16){
@@ -101,21 +110,19 @@ public class MoowMap extends Activity {
 	
 	private  void  quickHack(){
 		int dx = 0,dy = 0;
-	    if(pmap.globalOffset.x>0){
+	    
+		if(pmap.globalOffset.x>0){
 	    	dx = Math.round((pmap.globalOffset.x+320)/256);
 	    } else {
 	    	dx = Math.round((pmap.globalOffset.x)/256);
 	    }
 	    
 	    
-	    
-	    
-	    if(pmap.globalOffset.y>0){
-	    	dy = (int)Math.floor((pmap.globalOffset.y+480)/256);  
-	    } else {
-	    	dy = (int)Math.floor(pmap.globalOffset.y/256);
-		    
-	    }
+		//if(pmap.globalOffset.y>0){
+	    	dy = Math.round(pmap.globalOffset.y/256)+1;
+	   // }else {
+	     //  dy = Math.round((pmap.globalOffset.y+480)/256)-1;
+	   // }
 	    
 	    pmap.globalOffset.x = pmap.globalOffset.x - dx*256 ;
 	    pmap.globalOffset.y = pmap.globalOffset.y - dy*256;
@@ -126,10 +133,6 @@ public class MoowMap extends Activity {
 	  
 	    
 	}
-	
-	
-	
-		
 	
 	
 	private void moveCoordinates(float x, float y) {

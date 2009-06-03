@@ -112,7 +112,6 @@ public class PhysicMap {
 
 	
 	private void reload(int x, int y, int z){
-		System.out.println(y);
 		int tileCount = (int) Math.pow(2, 17-defTile.z);
 		/*if(y<0){return;}
 		if(x<0){
@@ -138,6 +137,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void loadCells(RawTile tile) {
+		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
@@ -152,7 +152,7 @@ public class PhysicMap {
 					x = Math.abs(tileCount-x);
 				}
 				*/
-				Bitmap tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,y,tile.z));
+				tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,y,tile.z));
 				if(tmpBitmap!=null){
 					cells[i][j] = tmpBitmap;
 				} else {
