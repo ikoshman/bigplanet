@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+      
+   
+    
+    <string name="search_label">Place Name</string>
+    <string name="search_hint">Enter Place Name</string>
+    
+    
     <string name="app_name">Big Planet</string>
 
     <string name="EDIT_MENU">Edit</string>

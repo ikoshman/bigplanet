@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
@@ -114,6 +115,7 @@ public class BigPlanet extends Activity {
 		Point globalOffset = Preferences.getOffset();
 		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
 		mapControl.getPhysicalMap().reloadTiles();
+		onSearchRequested();
 	}
 
 	/**
@@ -273,6 +275,25 @@ public class BigPlanet extends Activity {
 		mapControl.updateZoomControls();
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
+	
+	
+	 @Override
+	    public boolean onSearchRequested() {
+	     
+	        final String queryPrefill = "fa";
+
+	        Bundle appDataBundle = null;
+	        final String queryAppDataString = "fdasfas";
+	        if (queryAppDataString != null) {
+	            appDataBundle = new Bundle();
+	            appDataBundle.putString("demo_key", queryAppDataString);
+	        }
+
+	        // Now call the Activity member function that invokes the Search Manager UI.
+	        startSearch(queryPrefill, false, appDataBundle, false); 
+	        // Returning true indicates that we did launch the search, instead of blocking it.
+	        return false;
+	    }
 
 	/**
 	 * Создает радиокнопку с заданными параметрами
