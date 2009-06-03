@@ -99,9 +99,6 @@ public class PhysicMap {
 	 */
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
-
-			// выравнивание ДОЛЖНО быть ПО ЦЕНТРУ
-
 			// получение отступа он начала координат
 			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x
 					+ offsetX;
@@ -114,37 +111,37 @@ public class PhysicMap {
 
 			// получение координат угла экрана на новом уровне
 			nextZoomX = nextZoomX - 320 / 2;
-			nextZoomY = nextZoomY - 480 / 2;
+			nextZoomY = nextZoomY - 480 / 2 -80;
 
 			// получение углового тайла
-			int tileX = nextZoomX / 256;
+			int tileX = (nextZoomX / 256);
 			int tileY = nextZoomY / 256;
 
 			// отступ всегда один - точка должна находится в центре экрана
 			int correctionX = nextZoomX - tileX * 256;
 			int correctionY = nextZoomY - tileY * 256;
 
-			globalOffset.x = 320 / 2 - (correctionX);
-			globalOffset.y = 480 / 2 - (correctionY);
+			globalOffset.x = -(correctionX);
+			globalOffset.y =  -(correctionY);
 			zoom--;
 			zoom(tileX, tileY, zoom);
 		}
 	}
 
 	private void reload(int x, int y, int z) {
-		int tileCount = (int) Math.pow(2, 17 - defTile.z);
-		/*
-		 * if(y<0){return;} if(x<0){ x = tileCount+x;
-		 * System.out.println("offsetX " +globalOffset.x); globalOffset.x =
-		 * 320+globalOffset.x-256; } else if(x>tileCount-1){ x =
-		 * Math.abs(x-tileCount); globalOffset.x = globalOffset.x -256; }
-		 */
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
 		loadCells(defTile);
 	}
 
+	/**
+	 * Проверяет на допустимость параметры тайла
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
 	private boolean checkTileXY(int x, int y, int z) {
 		if (x < 0 || y < 0 || z < 0) {
 			return false;
@@ -170,13 +167,6 @@ public class PhysicMap {
 				int x, y;
 				x = (tile.x + i);
 				y = (tile.y + j);
-
-				/*
-				 * int tileCount = (int) Math.pow(2, 17-defTile.z);
-				 * 
-				 * if(x<0){ x = tileCount+x; } else if(x>tileCount-1){ x =
-				 * Math.abs(tileCount-x); }
-				 */
 				if (!checkTileXY(x, y, tile.z)) {
 					cells[i][j] = null;
 				} else {

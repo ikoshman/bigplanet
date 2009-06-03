@@ -27,7 +27,7 @@ public class MoowMap extends Activity {
 	/**
 	 * Начальное значение зума
 	 */
-	private final static int START_ZOOM = 12; // whole world
+	private final static int START_ZOOM = 16; // whole world
 
 	private Panel main;
 
@@ -39,7 +39,7 @@ public class MoowMap extends Activity {
 	private Point nextMovePoint = new Point();
 
 	private PhysicMap pmap = new PhysicMap(
-			new RawTile(9, 7, MoowMap.START_ZOOM));
+			new RawTile(0, 0, MoowMap.START_ZOOM));
 
 	boolean inMove = false;
 
@@ -117,9 +117,9 @@ public class MoowMap extends Activity {
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.floor((pmap.globalOffset.y + 480) / 256);
+			dy = (int) Math.round((pmap.globalOffset.y + 480) / 256);
 		} else {
-			dy = (int) Math.floor(pmap.globalOffset.y / 256);
+			dy = (int) Math.round(pmap.globalOffset.y / 256);
 
 		}
 
@@ -137,9 +137,9 @@ public class MoowMap extends Activity {
 		}
 
 		if (pmap.globalOffset.y > 0) {
-			dy = (int) Math.floor((pmap.globalOffset.y + 480) / 256);
+			dy = (int) Math.round((pmap.globalOffset.y + 480) / 256);
 		} else {
-			dy = (int) Math.floor(pmap.globalOffset.y / 256);
+			dy = (int) Math.round(pmap.globalOffset.y / 256);
 
 		}
 
