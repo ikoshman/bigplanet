@@ -212,7 +212,7 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private void doDraw(Canvas canvas, Paint paint) {
-	/*
+
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
@@ -223,7 +223,7 @@ public class MapControl extends RelativeLayout {
 			canvas = cv;
 			canvas.setBitmap(cvBitmap);
 		}
-*/
+
 			Bitmap tmpBitmap;
 			canvas.drawBitmap(mapBg, 0, 0, paint);
 

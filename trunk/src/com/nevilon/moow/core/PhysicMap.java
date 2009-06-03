@@ -1,7 +1,6 @@
 package com.nevilon.moow.core;
 
-import com.nevilon.moow.MoowMap;
-import com.nevilon.moow.core.ui.MapControl;
+
 
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -201,6 +200,7 @@ public class PhysicMap {
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
+		System.out.println(defTile);
 		loadCells(defTile);
 	}
 
@@ -267,10 +267,9 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-					cells[i][j] = tileProvider.getTile(
+					cells[i][j] = null;
+					tileProvider.getTile(
 							new RawTile(x, y, tile.z, tileProvider.getMapSourceId()), true);
-
-					updateScreenCommand.execute();
 			}
 		}
 	}
