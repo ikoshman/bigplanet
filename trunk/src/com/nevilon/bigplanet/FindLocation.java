@@ -20,9 +20,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -35,6 +37,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.nevilon.bigplanet.core.Place;
 import com.nevilon.bigplanet.core.loader.BaseLoader;
+import com.nevilon.bigplanet.core.ui.MapControl;
 import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
 
 public class FindLocation extends ListActivity implements Runnable {
@@ -65,11 +68,7 @@ public class FindLocation extends ListActivity implements Runnable {
 		btn.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View arg0) {
-				Thread t = new Thread(FindLocation.this);
-				t.start();
-				setListAdapter(null);
-				waitDialog = ProgressDialog.show(FindLocation.this,
-						"Please wait...", "Connecting to server", true);
+				startSearch();
 			}
 
 		});
@@ -98,6 +97,28 @@ public class FindLocation extends ListActivity implements Runnable {
 
 	}
 
+	private void startSearch(){
+		Thread t = new Thread(FindLocation.this);
+		t.start();
+		setListAdapter(null);
+		waitDialog = ProgressDialog.show(FindLocation.this,
+				"Please wait...", "Connecting to server", true);
+
+	}
+	
+	/*
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent ev) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+			startSearch();	
+			return false;
+		default:
+			return super.onKeyDown(keyCode, ev);
+		}
+	}
+	*/
+	
 	public void run() {
 		HttpClient client = new HttpClient();
 
