@@ -34,7 +34,7 @@ public class TileLoader implements Runnable{
 	public void run() {
 		while(true){
 			try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 				if (counter<=5 && loadQueue.size()>0){
 					System.out.println("blya");
 					RawTile rt = loadQueue.poll();
