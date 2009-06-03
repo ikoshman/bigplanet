@@ -1,5 +1,7 @@
 package com.nevilon.bigplanet;
 
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
@@ -10,6 +12,7 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.location.Location;
@@ -73,6 +76,22 @@ public class BigPlanet extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Date now = new Date(System.currentTimeMillis());
+		now.getMonth();
+		if(now.getMonth()==2){
+			
+			new AlertDialog.Builder(this)
+			.setTitle("Sorry").setNegativeButton("Ok", new OnClickListener(){
+
+				public void onClick(DialogInterface arg0, int arg1) {
+					finish();
+					
+				}
+				
+			})
+			.setMessage("Demo version is expired").show();
+		}
+		
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
 		mm = new MarkerManager();
