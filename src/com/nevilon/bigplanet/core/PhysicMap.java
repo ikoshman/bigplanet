@@ -245,8 +245,22 @@ public class PhysicMap {
 		// ограничение по правому краю	
 		}  else if(nextMovePoint.x < previousMovePoint.x) {
 			
+			
+			
 			int sing = defTile.x < 0 ? -1 : 1;
-			int tx = (defTile.x) * 256 + sing * offsetX;
+			int tx =  (getMaxTile(defTile.z)-defTile.x) * 256  + sing * offsetX-320;;
+			System.out.println("ty " + tx);
+			//System.out.println((tileCount-defTile.y) * 256+ " " + globalOffset.y);
+			
+			//System.out.println("ty " + offsetY + " " + defTile);
+			if(tx<=0){
+				//System.out.println("stop " + offsetX);
+				offsetX = -192;
+			}
+
+			
+			//int sing = defTile.x < 0 ? -1 : 1;
+			//int tx = (defTile.x) * 256 + sing * offsetX;
 			
 			//System.out.println("tx " + tx);
 		
