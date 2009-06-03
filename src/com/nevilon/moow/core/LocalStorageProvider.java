@@ -1,6 +1,7 @@
 package com.nevilon.moow.core;
 
 import java.io.BufferedInputStream;
+import java.io.InputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,14 +24,12 @@ public class LocalStorageProvider {
 	 * @return
 	 */
 	public static Bitmap get(final RawTile tile) {
-		long start = System.currentTimeMillis();
 		BufferedInputStream outStream = localStorage.get(tile);
 		Bitmap bmp = null;
 		if (outStream != null) {
-			bmp = BitmapFactory.decodeStream(outStream);
+			bmp = decode(outStream);
 		}
 		
-		//System.out.println("tile loaded in "+  (System.currentTimeMillis() - start));
 		return bmp;
 	}
 
@@ -38,14 +37,20 @@ public class LocalStorageProvider {
 		localStorage.put(tile, data);
 	}
 
-	public void get(final RawTile tile, final Handler handler) {
+	public static void get(final RawTile tile, final Handler handler) {
 		new Thread() {
 
 			public void run() {
-				handler.handle(get(tile));
+				
+				handler.handle(tile,get(tile),false);
 			}
 
 		}.start();
+	}
+	
+	private static Bitmap decode(InputStream is){
+			Bitmap bmp = BitmapFactory.decodeStream(is);
+			return bmp;
 	}
 
 }
