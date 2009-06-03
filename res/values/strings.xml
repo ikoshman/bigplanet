@@ -10,6 +10,10 @@
     <string name="OK_LABEL">OK</string>
     <string name="CANCEL_LABEL">Cancel</string>
     
+    <string name="ADD_BUTTON">Add</string>
+    <string name="SAVE_BUTTON">Save</string>
+    
+    
     <string name="REMOVE_BOOKMARK_TITLE">Remove bookmark</string>
     <string name="REMOVE_BOOKMARK_MESSAGE">Are you sure?</string>
     

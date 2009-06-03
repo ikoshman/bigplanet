@@ -23,6 +23,7 @@ public class AddBookmarkDialog {
 			final OnDialogClickListener onClickListener) {
 		View v = View.inflate(context, R.layout.addgeobookmark, null);
 		
+		
 		final AlertDialog dialog = new AlertDialog.Builder(context).create();
 		dialog.setView(v);
 		dialog.setTitle(R.string.ADD_BOOKMARK_TITLE);
@@ -47,6 +48,11 @@ public class AddBookmarkDialog {
 		});
 		
 		final Button addBtn = (Button) v.findViewById(R.id.addBtn);
+		if(geoBookmark.getId()==-1){
+			addBtn.setText(R.string.ADD_BUTTON);
+		} else {
+			addBtn.setText(R.string.SAVE_BUTTON);
+		}
 		addBtn.setOnClickListener(new OnClickListener(){
 
 			public void onClick(View v) {
