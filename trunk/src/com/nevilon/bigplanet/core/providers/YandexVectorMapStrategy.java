@@ -12,7 +12,7 @@ public class YandexVectorMapStrategy extends MapStrategy {
 	public YandexVectorMapStrategy(){
 		layers.add(new Layer(){
 
-			private  String SERVER = "http://vec.maps.yandex.net/";
+			private  String SERVER = "http://vec02.maps.yandex.net/";
 			
 			@Override
 			public String getDescription() {
@@ -26,7 +26,7 @@ public class YandexVectorMapStrategy extends MapStrategy {
 
 			@Override
 			public String getURLPattern() {
-				return SERVER+"tiles?l=map&v=2.0.5&x={0}&y={1}d&z={2}";
+				return SERVER+"tiles?l=map&v=2.2.3&x={0}&y={1}d&z={2}";
 			}
 
 			
