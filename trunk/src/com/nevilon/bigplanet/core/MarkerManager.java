@@ -2,6 +2,8 @@ package com.nevilon.bigplanet.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.res.Resources;
@@ -52,6 +54,15 @@ public class MarkerManager {
 	public void addMarker(Place place, int zoom,boolean isGPS, int type){
 		Marker marker = new Marker(place,images.get(type),isGPS);
 		updateParams(marker, zoom);
+		if(isGPS){
+			Iterator<Marker> it = markers.iterator();
+			while(it.hasNext()){
+				Marker m = it.next();
+				if(m.isGPS){
+					it.remove();
+				}
+			}
+		}
 		markers.add(marker);	
 	}
 	
@@ -137,34 +148,6 @@ public class MarkerManager {
 			return this.markerImage;
 		}
 
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + (isGPS ? 1231 : 1237);
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Marker other = (Marker) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (isGPS != other.isGPS)
-				return false;
-			return true;
-		}
-
-		private MarkerManager getOuterType() {
-			return MarkerManager.this;
-		}
 		
 	}
 	
