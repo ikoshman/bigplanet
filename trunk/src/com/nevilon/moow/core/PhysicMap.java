@@ -30,6 +30,10 @@ public class PhysicMap {
 	public RawTile getDefaultTile() {
 		return this.defTile;
 	}
+	
+	public int getZoomLevel(){
+		return this.zoom;
+	}
 
 	/**
 	 * Callback method 
@@ -82,7 +86,7 @@ public class PhysicMap {
 	}
 	
 	/**
-	 * Увеличение центра
+	 * Увеличение уровня детализации с центрированием
 	 */
 	public void zoomInCenter(){
 		zoomIn(160, 240);
