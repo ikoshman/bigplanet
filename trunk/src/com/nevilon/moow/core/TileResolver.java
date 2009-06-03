@@ -23,7 +23,9 @@ public class TileResolver {
 	private Handler localLoaderHandler;
 
 	private MapStrategy mapStrategy = MapStrategyFactory.getInstance()
-			.getStrategy(MapSource.YANDEX_VECTOR);
+			.getStrategy(MapSource.GOOGLE_VECTOR);
+
+	public int count = 0;
 
 	public TileResolver(final PhysicMap physicMap) {
 		this.physicMap = physicMap;
@@ -59,6 +61,7 @@ public class TileResolver {
 
 			@Override
 			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
+				count--;
 				if (bitmap != null && !isScaled) {
 					cacheProvider.putToCache(tile, bitmap);
 					updateMap(tile, bitmap);
@@ -95,9 +98,12 @@ public class TileResolver {
 			bitmap = cacheProvider.getTile(tile);
 		}
 		if (bitmap == null) {
+			count++;
 			// асинхронная загрузка
 			LocalStorageWrapper.get(tile, localLoaderHandler, mapStrategy
 					.getId());
+		} else {
+			System.out.println("found in cache");
 		}
 		return bitmap;
 	}

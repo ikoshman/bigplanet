@@ -17,10 +17,10 @@ public class BitmapCacheWrapper {
 	 */
 	public final static int CACHE_SIZE = 20;
 
-	private BitmapCache cache = new BitmapCache(BitmapCacheWrapper.CACHE_SIZE);
+	private BitmapCache cache = new BitmapCache(15);
 
 	private BitmapCache scaledCache = new BitmapCache(
-			BitmapCacheWrapper.CACHE_SIZE);
+			10);
 
 	/**
 	 * Поиск в кеше скалированых тайлов
