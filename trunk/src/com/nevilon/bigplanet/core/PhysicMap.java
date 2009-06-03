@@ -262,16 +262,6 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	/*
-	public void changeMapSource(int sourceId) {
-		tileProvider.setMapSource(sourceId);
-		cells = new Bitmap[3][3];
-		loadCells(defTile);
-	}
-*/
-	public int getMapSourceId() {
-		return tileProvider.getMapSourceId();
-	}
 
 	public int getWidth() {
 		return width;
