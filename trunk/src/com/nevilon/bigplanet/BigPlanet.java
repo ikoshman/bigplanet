@@ -263,6 +263,7 @@ public class BigPlanet extends Activity {
 		} else {
 			mapControl.setSize(width, height);
 		}
+		mapControl.updateZoomControls();
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
 
