@@ -203,28 +203,7 @@ public class PhysicMap {
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
-		System.out.println(defTile);
 		loadCells(defTile);
-	}
-
-	/**
-	 * Проверяет на допустимость параметры тайла
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	private boolean checkTileXY(int x, int y, int z) {
-		if (x < 0 || y < 0 || z < 0) {
-			return false;
-		}
-		int maxTile = (int) Math.pow(2, 17 - z) - 1;
-		if (x > maxTile || y > maxTile || y < 0) {
-			return false;
-		}
-		return true;
-
 	}
 
 	private RawTile normalize(RawTile tile) {

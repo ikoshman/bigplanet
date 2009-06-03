@@ -72,7 +72,6 @@ public abstract class BaseLoader extends Thread {
 				method.releaseConnection();
 				return data;
 			} else {
-				System.out.println(method.getStatusLine());
 				return null;
 			}
 		} catch (Exception e) {

@@ -1,6 +1,7 @@
 package com.nevilon.bigplanet.core.loader;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 import android.util.Log;
 
@@ -26,7 +27,7 @@ public class TileLoader implements Runnable {
 
 	private boolean useNet = true;
 
-	private LinkedList<RawTile> loadQueue = new LinkedList<RawTile>();
+	private Stack<RawTile> loadQueue = new Stack<RawTile>();
 
 	/**
 	 * Конструктор
@@ -57,12 +58,12 @@ public class TileLoader implements Runnable {
 
 	public synchronized void addToQueue(RawTile tile) {
 		if (useNet) {
-			loadQueue.add(tile);
+			loadQueue.push(tile);
 		}
 	}
 
 	public synchronized RawTile getFromQueue() {
-		return loadQueue.poll();
+		return loadQueue.pop();
 	}
 
 	public synchronized void tileLoaded(RawTile tile, byte[] data) {
