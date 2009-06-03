@@ -1,7 +1,10 @@
 package com.nevilon.bigplanet.core.ui;
 
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -10,9 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.nevilon.bigplanet.R;
 import com.nevilon.bigplanet.core.AbstractCommand;
+import com.nevilon.bigplanet.core.MarkerManager;
 import com.nevilon.bigplanet.core.PhysicMap;
 import com.nevilon.bigplanet.core.RawTile;
+import com.nevilon.bigplanet.core.MarkerManager.Marker;
 
 /**
  * Виджет, реализующий карту
@@ -62,9 +68,11 @@ public class MapControl extends RelativeLayout {
 
 	private OnMapLongClickListener onMapLongClickListener;
 
+	private MarkerManager markerManager;
 	
 	public static Bitmap CELL_BACKGROUND = BitmapUtils.drawBackground(BCG_CELL_SIZE, TILE_SIZE, TILE_SIZE);
 	
+	public Bitmap PLACE_MARKER =	 BitmapFactory.decodeResource(getResources(), R.drawable.marker);
 	
 	/**
 	 * Конструктор
@@ -74,10 +82,10 @@ public class MapControl extends RelativeLayout {
 	 * @param height
 	 * @param startTile
 	 */
-	public MapControl(Context context, int width, int height, RawTile startTile) {
+	public MapControl(Context context, int width, int height, RawTile startTile, MarkerManager markerManager) {
 		super(context);
+		this.markerManager = markerManager;
 		buildView(width, height, startTile);
-
 	}
 
 	public int getMapMode() {
@@ -98,7 +106,7 @@ public class MapControl extends RelativeLayout {
 			OnMapLongClickListener onMapLongClickListener) {
 		this.onMapLongClickListener = onMapLongClickListener;
 	}
-
+	
 	/**
 	 * Устанавливает размеры карты и дочерних контролов
 	 * 
@@ -238,6 +246,7 @@ public class MapControl extends RelativeLayout {
 	 * зума
 	 */
 	private void updateZoomControls() {
+		markerManager.updateAll(pmap.getZoomLevel());
 		int zoomLevel = pmap.getZoomLevel();
 		if(getMapMode() == MapControl.SELECT_MODE){
 			zoomPanel.setVisibility(View.INVISIBLE);
@@ -264,11 +273,13 @@ public class MapControl extends RelativeLayout {
 	 */
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
+		
+		
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 					tmpBitmap = pmap.getCell(i-2, j-2);
-					if (tmpBitmap != null) {
+					if (tmpBitmap != null) {	
 						canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().y, paint);
@@ -280,6 +291,30 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
+		
+		// отрисовка маркеров		
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 7; j++) {
+				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
+					RawTile tile = pmap. getDefaultTile();
+						int z = getPhysicalMap().getZoomLevel();
+						int tileX = PhysicMap.normalizeX(tile.x +(i-2),z);
+						int tileY = PhysicMap.normalizeY(tile.y +(j-2),z);
+						List<Marker> markers =  markerManager.getMarkers(tileX, tileY, z);					
+						for(Marker marker : markers){
+							canvas.drawBitmap(PLACE_MARKER, (i - 2) * TILE_SIZE+ pmap.getGlobalOffset().x +(int)marker.getOffset().x-15,
+									(j - 2) * TILE_SIZE+ pmap.getGlobalOffset().y+ (int)marker.getOffset().y-32,
+									paint);
+						}
+						
+					
+				} 
+			}
+		}
+		
+		
+		
+		
 	}
 
 	/**

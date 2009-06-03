@@ -15,7 +15,7 @@ public class PhysicMap {
 
 	//private HashMap<Tile,ArrayList<Bitmap>> cells = new HashMap<Tile,ArrayList<Bitmap>>(9);
 	
-	private RawTile defTile;
+	public RawTile defTile;
 
 	private int zoom;
 
@@ -133,6 +133,7 @@ public class PhysicMap {
 	}
 	
 	public void zoom(int x, int y, int z) {
+	
 		reload(x, y, z);
 	}
 
@@ -257,29 +258,31 @@ public class PhysicMap {
 		loadCells(defTile);
 	}
 
-	private RawTile normalize(RawTile tile) {
-		tile.x = normalizeX(tile.x, tile.z);
-		tile.y = normalizeY(tile.y, tile.z);
-		return tile;
+	public static RawTile normalize(RawTile tile) {
+		int x = normalizeX(tile.x, tile.z);
+		int y = normalizeY(tile.y, tile.z);
+		int z = tile.z;
+		RawTile newTile = new RawTile(x,y,z,tile.s);
+		return newTile;
 	}
 
-	private int normalizeX(int x, int z) {
+	public static int normalizeX(int x, int z) {
 		int tileCount = (int) Math.pow(2, 17 - z);
 		while (x < 0) {
 			x = tileCount + x;
 		}
-		while (x > tileCount - 1) {
+		while (x >= tileCount) {
 			x = x - tileCount;
 		}
 		return x;
 	}
 
-	private int normalizeY(int y, int z) {
+	public static int normalizeY(int y, int z) {
 		int tileCount = (int) Math.pow(2, 17 - z);
 		while (y < 0) {
 			y = tileCount + y;
 		}
-		while (y > tileCount - 1) {
+		while (y >= tileCount) {
 			y = y - tileCount;
 		}
 		return y;
