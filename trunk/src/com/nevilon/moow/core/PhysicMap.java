@@ -164,14 +164,14 @@ public class PhysicMap {
 
 	private void reload(int x, int y, int z) {
 		
-		//if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
+		if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
 			defTile.x = x;
 			defTile.y = y;
 			defTile.z = z;
 			loadCells(defTile);
-	//	} else {
-			//System.out.println("fuck");
-	//	}
+		} else {
+			System.out.println("fuck");
+		}
 	}
 
 	/**
@@ -204,9 +204,7 @@ public class PhysicMap {
 		while(x<0){
 			x = tileCount+x;		
 		}
-		if (x<0){
-			//x = tileCount+x;
-		} else if (x>tileCount-1){
+		while(x>tileCount-1){
 			x = x - tileCount;
 		}
 		return x;
