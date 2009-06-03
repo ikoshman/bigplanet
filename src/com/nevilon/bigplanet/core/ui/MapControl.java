@@ -79,6 +79,9 @@ public class MapControl extends RelativeLayout {
 	private OnMapLongClickListener onMapLongClickListener;
 
 	
+	public static Bitmap bp = BitmapUtils.drawBackground(16, 256, 256);
+	
+	
 	/**
 	 * Конструктор
 	 * 
@@ -273,17 +276,13 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private void doDraw(Canvas canvas, Paint paint) {
-		paint.setAntiAlias(true);
-
 		if (cvBitmap == null) {
-			cvBitmap = Bitmap.createBitmap(1500, 1500, Bitmap.Config.RGB_565);
+			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
 		if (cv == null) {
 			cv = new Canvas();
 			canvas = cv;
-			canvas.setBitmap(cvBitmap);
 		}
-		Bitmap bp = BitmapUtils.drawBackground(16, 256, 256);
 		Bitmap tmpBitmap;
 		// canvas.drawBitmap(mapBg, 0, 0, paint);
 		// отрисовка тайлов

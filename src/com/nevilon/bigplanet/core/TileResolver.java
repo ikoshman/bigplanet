@@ -32,7 +32,7 @@ public class TileResolver {
 						if (tile.s == strategyId) {
 							LocalStorageWrapper.put(tile, data);
 							Bitmap bmp = LocalStorageWrapper.get(tile);
-							cacheProvider.putToCache(tile, bmp);
+						//	cacheProvider.putToCache(tile, bmp);
 							updateMap(tile, bmp);
 						}
 					}
@@ -69,7 +69,7 @@ public class TileResolver {
 				}
 				if (bitmap != null) {
 					updateMap(tile, bitmap);
-					cacheProvider.putToCache(tile, bitmap);
+				//	cacheProvider.putToCache(tile, bitmap);
 				} else {
 
 					bitmap = cacheProvider.getScaledTile(tile);
@@ -107,7 +107,7 @@ public class TileResolver {
 	public void getTile(final RawTile tile, boolean useCache) {
 		Bitmap bitmap = null;
 		if (useCache) {
-			bitmap = cacheProvider.getTile(tile);
+		//	bitmap = cacheProvider.getTile(tile);
 			if (bitmap != null) {
 				updateMap(tile, bitmap);
 				return;

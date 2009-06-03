@@ -43,16 +43,16 @@ public class BitmapCacheWrapper {
 	 * @param tile
 	 * @return
 	 */
-	public Bitmap getTile(RawTile tile) {
-		return cache.get(tile);
-	}
+//	public Bitmap getTile(RawTile tile) {
+//		return cache.get(tile);
+//	}
 
 	/**
 	 * Помещает битмап в кеш тайлов
 	 */
-	public void putToCache(RawTile tile, Bitmap bitmap) {
-		cache.put(tile, bitmap);
-	}
+	//public void putToCache(RawTile tile, Bitmap bitmap) {
+	//	cache.put(tile, bitmap);
+//	}/
 
 	public void clear() {
 		scaledCache.clear();
