@@ -19,6 +19,7 @@ import android.widget.ZoomControls;
 
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
+import com.nevilon.moow.core.ui.DoubleClickHelper;
 
 public class MoowMap extends Activity {
 
@@ -37,7 +38,7 @@ public class MoowMap extends Activity {
 	
 	boolean inMove = false;
 	
-	private DoubleClickDispatcher dcDispatcher = new DoubleClickDispatcher();
+	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
 
 	private Bitmap mapBg = drawBackground();
 	
@@ -55,12 +56,12 @@ public class MoowMap extends Activity {
 				ZoomControls zc = new ZoomControls(getContext());
 				zc.setOnZoomOutClickListener(new OnClickListener(){
 					public void onClick(View v) {
-						zoomOut();
+						pmap.zoomOut();
 					}
 				});
 				zc.setOnZoomInClickListener(new OnClickListener() {
 					public void onClick(View v) {
-						zoomCenter();
+						pmap.zoomInCenter();
 					}
 				});
 				addView(zc);
@@ -72,56 +73,7 @@ public class MoowMap extends Activity {
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
-	private static class DoubleClickDispatcher{
-		
-		/**
-		 * Минимальный временной промежуток между двумя 
-		 * отдельными касаниями, при котором они воспринимаются как 
-		 * двойное касание
-		 */
-		private static int CLICK_INTERVAL = 400;
-		
-		/**
-		 * Максимальное расстояние между касаниями,
-		 * при котором они воспринимаются как двойное
-		 */
-		private static int CLICK_PRECISE = 3;
-		
-		/**
-		 * Хранит предыдущее событие
-		 */
-		private Point previousPoint;
-		
-		/**
-		 * Хранит время предыдущего события
-		 */
-		private long eventTime;
-		
-		public boolean process(MotionEvent currentEvent){
-			if (previousPoint!=null 
-					&& (System.currentTimeMillis()-eventTime)<DoubleClickDispatcher.CLICK_INTERVAL
-					&& isNear((int)currentEvent.getX(), (int)currentEvent.getY())){
-				return true;
-			}
-			previousPoint = new Point();
-			previousPoint.x  = (int) currentEvent.getX();
-			previousPoint.y  = (int) currentEvent.getY();
-			eventTime = System.currentTimeMillis();
-			return false;
-		}
-		
-		/**
-		 * Проверяет, находится ли первая точка вблизи второй
-		 * @param event
-		 * @return
-		 */
-		private boolean isNear(int x, int y){
-			boolean checkX = Math.abs(previousPoint.x - x)<=DoubleClickDispatcher.CLICK_PRECISE;
-			boolean checkY = Math.abs(previousPoint.y - y)<=DoubleClickDispatcher.CLICK_PRECISE; 
-			return checkX == checkY && checkX == true;		
-		}
-		
-	}
+	
 	
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
@@ -144,7 +96,7 @@ public class MoowMap extends Activity {
 			    quickHack();
 			} else {
 			   if(dcDispatcher.process(event)){
-					zoomIn((int)event.getX(), (int)event.getY());				
+					pmap.zoomIn((int)event.getX(), (int)event.getY());				
 				}
 			}
 			break;
@@ -182,44 +134,9 @@ public class MoowMap extends Activity {
 	    
 	}
 	
-	private void zoomCenter(){
-		zoomIn(160, 240);
-	}
 	
-	/**
-	 * Увеличение уровня детализации
-	 * @param offsetX
-	 * @param offsetY
-	 */
-   private void zoomIn(int offsetX, int offsetY){
-		if(zoom>0){
-			//получение отступа он начала координат
-			int currentZoomX = pmap.getDefaultTile().x*256-pmap.globalOffset.x+offsetX;
-			int currentZoomY = pmap.getDefaultTile().y*256-pmap.globalOffset.y+offsetY;
-			// получение координат углового тайла
-			int tileX = (currentZoomX*2)/256;
-			int tileY = (currentZoomY*2)/256;
-			zoom--;
-			pmap.zoom(tileX, tileY, zoom);
-		}
-	}
 	
-	/**
-	 * Уменьшение уровня детализации
-	 */
-	private void zoomOut(){
-		if((zoom)<16){
-			int currentZoomX = pmap.getDefaultTile().x*256-pmap.globalOffset.x+160;
-			int currentZoomY = pmap.getDefaultTile().y*256-pmap.globalOffset.y+240;
-			int tileX = (currentZoomX/2)/256;
-			int tileY = (currentZoomY/2)/256;
-			zoom++;
-			pmap.zoom(tileX, tileY, zoom);
-
-		}
 		
-	}
-	
 	
 	
 	private void moveCoordinates(float x, float y) {
