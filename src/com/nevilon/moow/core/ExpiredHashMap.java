@@ -36,7 +36,12 @@ public class ExpiredHashMap {
 
 	public Bitmap get(RawTile tile) {
 		// TODO обновить время доступа
-		return expCacheMap.get(tile);
+		Bitmap bmp = expCacheMap.get(tile);
+		if (bmp!=null){
+			expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),
+					bmp);
+		}
+		return bmp;
 	}
 
 	/**
