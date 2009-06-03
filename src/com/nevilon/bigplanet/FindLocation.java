@@ -13,12 +13,6 @@ import org.apache.http.HttpStatus;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import com.nevilon.bigplanet.core.Place;
-import com.nevilon.bigplanet.core.db.GeoBookmark;
-import com.nevilon.bigplanet.core.loader.BaseLoader;
-import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
-
-import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -30,11 +24,14 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.nevilon.bigplanet.core.Place;
+import com.nevilon.bigplanet.core.loader.BaseLoader;
+import com.nevilon.bigplanet.core.xml.GeoLocationHandler;
 
 public class FindLocation extends ListActivity implements Runnable {
 

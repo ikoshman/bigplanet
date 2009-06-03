@@ -1,9 +1,11 @@
 package com.nevilon.bigplanet.core;
 
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+
 
 /**
  * Предназначен для хранения настроек

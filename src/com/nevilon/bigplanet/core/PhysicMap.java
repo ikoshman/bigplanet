@@ -1,13 +1,8 @@
 package com.nevilon.bigplanet.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
-import com.nevilon.bigplanet.core.loader.TileLoader;
 import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class PhysicMap {
@@ -130,10 +125,10 @@ public class PhysicMap {
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x
-					+ getWidth() / 2;
-			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y
-					+ getHeight() / 2;
+			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE - globalOffset.x
+					+ getWidth() / 2);
+			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE - globalOffset.y
+					+ getHeight() / 2);
 
 			// получение координат точки предудущем уровне
 			int nextZoomX = currentZoomX / 2;
@@ -176,10 +171,10 @@ public class PhysicMap {
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
 			// получение отступа он начала координат
-			int currentZoomX = getDefaultTile().x * TILE_SIZE - globalOffset.x
-					+ offsetX;
-			int currentZoomY = getDefaultTile().y * TILE_SIZE - globalOffset.y
-					+ offsetY;
+			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE - globalOffset.x
+					+ offsetX);
+			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE - globalOffset.y
+					+ offsetY);
 
 			// получение координат точки на новом уровне
 			int nextZoomX = currentZoomX * 2;
@@ -207,12 +202,12 @@ public class PhysicMap {
 	/**
 	 * Установка текущего отступа
 	 * 
-	 * @param x
-	 * @param y
+	 * @param (int)f
+	 * @param (int)g
 	 */
 	public void moveCoordinates(float x, float y) {
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
-		nextMovePoint.set((int) x, (int) y);
+		nextMovePoint.set( (int)x,  (int)y);
 		globalOffset.set(globalOffset.x
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
@@ -220,7 +215,6 @@ public class PhysicMap {
 	}
 
 	public Point getAbsoluteCenter() {
-		// TODO не работает при изменении ориентации девайса
 		Point centerPoint = new Point();
 		centerPoint.x = getDistance(getDefaultTile().x) - globalOffset.x
 				+ getWidth() / 2;

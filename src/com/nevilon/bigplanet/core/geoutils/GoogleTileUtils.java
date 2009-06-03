@@ -27,11 +27,14 @@ public class GoogleTileUtils {
 		super();
 	}
 
+	
+
+	
 	/**
 	 * returns a Rectangle2D with x = lon, y = lat, width=lonSpan,
 	 * height=latSpan for an x,y,zoom as used by google.
 	 */
-	public static Point getLatLong(int x, int y, int zoom) {
+	/*public static Point getLatLong(int x, int y, int zoom) {
 		double lon = -180; // x
 		double lonWidth = 360; // width 360
 
@@ -76,11 +79,9 @@ public class GoogleTileUtils {
 
 		return point;
 	}
-
-	
 	public static boolean isValid(RawTile tile){
 		int tileCount = (int) Math.pow(2, 17 - tile.z);
 		return (tile.x<tileCount && tile.y<tileCount);
-	}
+	}*/
 	
 }
