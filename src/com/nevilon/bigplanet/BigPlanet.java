@@ -131,17 +131,17 @@ public class BigPlanet extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		// add map source menu
-		menu.add(0, 0, 0, "Map source");
+		menu.add(0, 0, 0, "Map source").setIcon(R.drawable.database_up);
 		// add tools menu
-		SubMenu sub = menu.addSubMenu(0, 1, 0, "Tools");
+		SubMenu sub = menu.addSubMenu(0, 1, 0, "Tools").setIcon(R.drawable.tools);
 		sub.add(2, 11, 1, "Cache map");
 		// add network mode menu
-		menu.add(0, 3, 0, "Network mode");
+		menu.add(0, 3, 0, "Network mode").setIcon(R.drawable.mode);
 		// add settings menu
 		// menu.add(0, 4,0, "Settings");
 		// add bookmark menu
 
-		sub = menu.addSubMenu(0, 6, 0, "Bookmarks");
+		sub = menu.addSubMenu(0, 6, 0, "Bookmarks").setIcon(R.drawable.bookmark);
 		sub.add(0, 61, 1, "View");
 		sub.add(0, 62, 0, "Add");
 

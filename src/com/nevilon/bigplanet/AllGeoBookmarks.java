@@ -59,8 +59,8 @@ public class AllGeoBookmarks extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, 0, 0, "Edit");
-		menu.add(0, 1, 0, "Delete");
+		menu.add(0, 0, 0, "Edit").setIcon(R.drawable.edit);
+		menu.add(0, 1, 0, "Delete").setIcon(R.drawable.delete);
 		return true;
 	}
 
