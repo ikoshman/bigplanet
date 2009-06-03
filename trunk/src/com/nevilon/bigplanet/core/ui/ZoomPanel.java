@@ -18,10 +18,6 @@ public class ZoomPanel extends RelativeLayout {
 		super(context);
 		zoomControls = new ZoomControls(getContext());
 		addView(zoomControls);
-		int h = zoomControls.getMeasuredHeight();
-		h = zoomControls.getHeight();
-		h = getHeight();
-		// setPadding(80, 368, 0, 0);
 	}
 
 	/**

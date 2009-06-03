@@ -1,8 +1,5 @@
 package com.nevilon.bigplanet.core.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,6 +14,12 @@ import com.nevilon.bigplanet.core.AbstractCommand;
 import com.nevilon.bigplanet.core.PhysicMap;
 import com.nevilon.bigplanet.core.RawTile;
 
+/**
+ * Виджет, реализующий карту
+ * 
+ * @author hudvin
+ * 
+ */
 public class MapControl extends RelativeLayout {
 
 	/*
@@ -30,19 +33,9 @@ public class MapControl extends RelativeLayout {
 	private boolean inMove = false;
 
 	/*
-	 * Время, когда карта перемещалась последний раз
-	 */
-	private long lastMoveTime = -1;
-
-	/*
 	 * Детектор двойного тача
 	 */
-	private DoubleClickHelper dcDispatcher = new DoubleClickHelper();
-
-	/*
-	 * Перерисовка панели с картой
-	 */
-	private boolean running = true;
+	private DoubleClickDetector dcDetector = new DoubleClickDetector();
 
 	/*
 	 * Движок карты
@@ -60,11 +53,6 @@ public class MapControl extends RelativeLayout {
 	private Bitmap mapBg;
 
 	/*
-	 * Координаты точек, история перемещения
-	 */
-	private List<Point> moveHistory = new ArrayList<Point>();
-
-	/*
 	 * Битмап для канввы
 	 */
 	private Bitmap cvBitmap;
@@ -75,45 +63,60 @@ public class MapControl extends RelativeLayout {
 	private Canvas cv;
 
 	/*
-	 * Движок, реалищующий инерцию
-	 */
-	private InertionEngine iengine;
-
-	// нужно ли запускать инерцию
-	private boolean startInertion = false;
-
-	/*
 	 * Размер ячейки фона
 	 */
 	private final static int BCG_CELL_SIZE = 16;
 
+	/**
+	 * Конструктор
+	 * 
+	 * @param context
+	 * @param width
+	 * @param height
+	 * @param startTile
+	 */
 	public MapControl(Context context, int width, int height, RawTile startTile) {
 		super(context);
 		buildView(width, height, startTile);
 
 	}
 
+	/**
+	 * Устанавливает размеры карты и дочерних контролов
+	 * 
+	 * @param width
+	 * @param height
+	 */
 	public void setSize(int width, int height) {
 		buildView(width, height, pmap.getDefaultTile());
 	}
 
-	public void changeMapSource(int sourceId) {
-		pmap.changeMapSource(sourceId);
-	}
-
+	/**
+	 * Возвращает движок карты
+	 * 
+	 * @return
+	 */
 	public PhysicMap getPhysicalMap() {
 		return pmap;
 	}
 
+	/**
+	 * Строит виджет, устанавливает обработчики, размеры и др.
+	 * 
+	 * @param width
+	 * @param height
+	 * @param startTile
+	 */
 	private void buildView(int width, int height, RawTile startTile) {
+		// создание фона
 		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
-
-		// панель с картой
+		// создание панели с картой
 		main = new Panel(this.getContext());
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
-
-		if (zoomPanel == null) {
+		// создание зум-панели
+		if (zoomPanel == null) { // если не создана раньше
 			zoomPanel = new ZoomPanel(this.getContext());
+			// обработчик уменьшения
 			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					pmap.zoomOut();
@@ -121,7 +124,7 @@ public class MapControl extends RelativeLayout {
 					updateZoomControls();
 				}
 			});
-
+			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					pmap.zoomInCenter();
@@ -134,19 +137,23 @@ public class MapControl extends RelativeLayout {
 					LayoutParams.WRAP_CONTENT));
 
 		}
-
 		zoomPanel.setPadding((width - 160) / 2, height - 112, 0, 0);
+		
+		if (pmap == null) { // если не был создан раньше
+			pmap = new PhysicMap(startTile, new AbstractCommand() {
 
-		pmap = new PhysicMap(startTile, new AbstractCommand() {
-
-			@Override
-			public synchronized void execute() {
-				if (main != null) {
-					main.postInvalidate();
+				/**
+				 * Callback, выполняющий перерисовку карты по запросу
+				 */
+				@Override
+				public synchronized void execute() {
+					if (main != null) {
+						main.postInvalidate();
+					}
 				}
-			}
 
-		});
+			});
+		}
 		pmap.setHeight(height);
 		pmap.setWidth(width);
 
@@ -182,8 +189,7 @@ public class MapControl extends RelativeLayout {
 		}
 
 		if (globalOffset.y > 0) {
-			dy = (int) Math
-					.round((globalOffset.y + pmap.getHeight()) / 256);
+			dy = (int) Math.round((globalOffset.y + pmap.getHeight()) / 256);
 		} else {
 			dy = (int) Math.round(globalOffset.y / 256);
 
@@ -218,21 +224,24 @@ public class MapControl extends RelativeLayout {
 		}
 	}
 
+	/**
+	 * Перерисовывает карту
+	 * @param canvas
+	 * @param paint
+	 */
 	private void doDraw(Canvas canvas, Paint paint) {
-
+		
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
-
 		if (cv == null) {
 			cv = new Canvas();
 			canvas = cv;
 			canvas.setBitmap(cvBitmap);
 		}
-
 		Bitmap tmpBitmap;
 		canvas.drawBitmap(mapBg, 0, 0, paint);
-
+		// отрисовка тайлов
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
@@ -246,12 +255,11 @@ public class MapControl extends RelativeLayout {
 
 	}
 
-	private void addPointToHistory(float x, float y) {
-		Point tmpPoint = new Point();
-		tmpPoint.set((int) x, (int) y);
-		moveHistory.add(tmpPoint);
-	}
-
+	/**
+	 * Панель, на которую выводится карта
+	 * @author hudvin
+	 *
+	 */
 	class Panel extends View {
 		Paint paint;
 
@@ -281,34 +289,19 @@ public class MapControl extends RelativeLayout {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
-				// moveHistory.clear();
-				pmap.getNextMovePoint().set((int) event.getX(), (int) event.getY());
-				lastMoveTime = 0;
-				// addPointToHistory(event.getX(), event.getY());
+				pmap.getNextMovePoint().set((int) event.getX(),
+						(int) event.getY());
 				break;
 			case MotionEvent.ACTION_MOVE:
-				lastMoveTime = System.currentTimeMillis();
 				inMove = true;
 				pmap.moveCoordinates(event.getX(), event.getY());
-				// addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
-				// if(startInertion){
-				// stopInertion();
-				// }
-				// long interval = System.currentTimeMillis() - lastMoveTime;
-				// if (interval < 100 && !startInertion) {
-				// lastMoveTime = 0;
-				// startInertion(moveHistory, interval);
-				// return false;
-				// }
-
 				if (inMove) {
 					pmap.moveCoordinates(event.getX(), event.getY());
 					quickHack();
-
 				} else {
-					if (dcDispatcher.process(event)) {
+					if (dcDetector.process(event)) {
 						pmap.zoomIn((int) event.getX(), (int) event.getY());
 						updateZoomControls();
 					}
@@ -321,15 +314,5 @@ public class MapControl extends RelativeLayout {
 		}
 
 	}
-
-	private void startInertion(List<Point> moveHistory, long interval) {
-		iengine = new InertionEngine(moveHistory, interval);
-		startInertion = true;
-	}
-
-	private void stopInertion() {
-		startInertion = false;
-	}
-
 
 }
