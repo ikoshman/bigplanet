@@ -2,6 +2,8 @@ package com.nevilon.bigplanet.core;
 
 import java.util.Random;
 
+import org.apache.http.params.CoreConnectionPNames;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -20,6 +22,8 @@ public class PhysicMap {
 
 	public RawTile defTile;
 
+	public float scaleFactor = 1;
+	
 	private int zoom;
 
 	private Point globalOffset = new Point();
@@ -31,6 +35,12 @@ public class PhysicMap {
 	private int width;
 
 	private int height;
+	
+	private int correctionX;
+	
+	private int correctionY;
+	
+	private boolean inZoom = false;
 
 	private AbstractCommand updateScreenCommand;
 
@@ -117,7 +127,7 @@ public class PhysicMap {
 	}
 
 	public void zoom(int x, int y, int z) {
-		tileResolver.clearCache();
+		tileResolver.gcCache();
 		reload(x, y, z);
 	}
 
@@ -144,11 +154,11 @@ public class PhysicMap {
 			int tileY = nextZoomY / TILE_SIZE;
 
 			// отступ всегда один - точка должна находится в центре экрана
-			int correctionX = nextZoomX - tileX * TILE_SIZE;
-			int correctionY = nextZoomY - tileY * TILE_SIZE;
+			int correctionX = -(nextZoomX - tileX * TILE_SIZE);
+			int correctionY = -(nextZoomY - tileY * TILE_SIZE);
 
-			globalOffset.x = -(correctionX);
-			globalOffset.y = -(correctionY);
+			//globalOffset.x = correctionX;
+			//globalOffset.y = correctionY;
 			zoom++;
 			zoom(tileX, tileY, zoom);
 
@@ -172,6 +182,7 @@ public class PhysicMap {
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
 			// получение отступа он начала координат
+			
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
 					- globalOffset.x + offsetX);
 			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
@@ -190,12 +201,14 @@ public class PhysicMap {
 			int tileY = nextZoomY / TILE_SIZE;
 
 			// отступ всегда один - точка должна находится в центре экрана
-			int correctionX = nextZoomX - tileX * TILE_SIZE;
-			int correctionY = nextZoomY - tileY * TILE_SIZE;
+			correctionX = nextZoomX - tileX * TILE_SIZE;
+			correctionY = nextZoomY - tileY * TILE_SIZE;
 
-			globalOffset.x = -(correctionX);
-			globalOffset.y = -(correctionY);
+			inZoom = true;
+			//globalOffset.x = -(correctionX);
+			//globalOffset.y = -(correctionY);
 			zoom--;
+			
 			zoom(tileX, tileY, zoom);
 		}
 	}
@@ -226,6 +239,12 @@ public class PhysicMap {
 
 	private void updateMap() {
 		if (tileResolver.loaded == 9) {
+			if(inZoom){
+				globalOffset.x = -(correctionX);
+				globalOffset.y = -(correctionY);
+				inZoom = false;
+				scaleFactor =1;
+			}
 			updateScreenCommand.execute();
 			int r = random.nextInt(10);
 			if (r > 7) {
@@ -273,6 +292,7 @@ public class PhysicMap {
 	 */
 	private synchronized void loadCells(RawTile tile) {
 		tileResolver.loaded = 0;
+		scaleFactor = 1;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
