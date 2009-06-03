@@ -12,8 +12,6 @@ public class PhysicMap {
 	private TileResolver tileResolver;
 
 	private Bitmap[][] cells = new Bitmap[3][3];
-
-	//private HashMap<Tile,ArrayList<Bitmap>> cells = new HashMap<Tile,ArrayList<Bitmap>>(9);
 	
 	public RawTile defTile;
 
@@ -76,13 +74,14 @@ public class PhysicMap {
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
+		System.out.println("dx " + dx + " dy: " +dy);
+		//dx = normalize(dx,getZoomLevel());
+		//dy = normalize(dy,getZoomLevel());
+		
 		if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
 			if (dx >= 0 && dy >= 0) {
 				try {
 					setBitmap(bitmap, dx, dy);
-					System.out.println("set bitmap");
-					//cells[dx][dy] = bitmap;
-				//	updateScreenCommand.execute(true);
 					updateMap();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -94,16 +93,13 @@ public class PhysicMap {
 
 	public void move(int dx, int dy) {
 		System.gc();
-		reload(defTile.x - dx, defTile.y - dy, defTile.z);
-
+		RawTile t = getDefaultTile();
+		reload(defTile.x - dx,
+				defTile.y -dy,
+				defTile.z);
 	}
 
-	/*
-	public Bitmap[][] getCells() {
-		return cells;
-	}
-*/
-
+	
 	
 	public void goTo(int x,int y, int z, int offsetX, int offsetY){
 		int fullX = x*256+offsetX;
@@ -230,7 +226,6 @@ public class PhysicMap {
 
 	
 	private void updateMap(){
-		System.out.println("counter " + tileResolver.loaded);
 		if(tileResolver.loaded ==9){
 			updateScreenCommand.execute();
 		}
@@ -244,29 +239,19 @@ public class PhysicMap {
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
+		//defTile = normalize(defTile);
 		loadCells(defTile);
 	}
 
 	public static RawTile normalize(RawTile tile) {
-		int x = normalizeX(tile.x, tile.z);
-		int y = normalizeY(tile.y, tile.z);
+		int x = normalize(tile.x, tile.z);
+		int y = normalize(tile.y, tile.z);
 		int z = tile.z;
 		RawTile newTile = new RawTile(x,y,z,tile.s);
 		return newTile;
 	}
 
-	public static int normalizeX(int x, int z) {
-		int tileCount = (int) Math.pow(2, 17 - z);
-		while (x < 0) {
-			x = tileCount + x;
-		}
-		while (x >= tileCount) {
-			x = x - tileCount;
-		}
-		return x;
-	}
-
-	public static int normalizeY(int y, int z) {
+	public static int normalize(int y, int z) {
 		int tileCount = (int) Math.pow(2, 17 - z);
 		while (y < 0) {
 			y = tileCount + y;
@@ -284,18 +269,16 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void  loadCells(RawTile tile) {
-		System.out.println("reload " + getZoomLevel());
 		tileResolver.loaded = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
 				x = (tile.x + i);
-				x = normalizeX(x, tile.z);
+				x = normalize(x, tile.z);
 
 				y = (tile.y + j);
-				y = normalizeY(y, tile.z);
+				y = normalize(y, tile.z);
 				setBitmap(MapControl.CELL_BACKGROUND, i, j);
-				//cells[i][j] = MapControl.CELL_BACKGROUND;
 				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
 						.getMapSourceId()));
 			}

@@ -161,7 +161,6 @@ public class MapControl extends RelativeLayout {
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					System.out.println("zoomin " + pmap.getZoomLevel());
 					pmap.zoomInCenter();
 					quickHack();
 					updateZoomControls();
@@ -200,8 +199,11 @@ public class MapControl extends RelativeLayout {
 
 	private void quickHack() {
 		int dx = 0, dy = 0;
-		int tdx, tdy;
+		int tdx=0, tdy=0;
 		Point globalOffset = pmap.getGlobalOffset();
+		
+		
+		for(int i=0;i<2;i++){
 		if (globalOffset.x > 0) {
 			dx = Math.round((globalOffset.x + pmap.getWidth()) / TILE_SIZE);
 		} else {
@@ -212,14 +214,19 @@ public class MapControl extends RelativeLayout {
 			dy = Math.round((globalOffset.y + pmap.getHeight()) / TILE_SIZE);
 		} else {
 			dy = Math.round(globalOffset.y / TILE_SIZE);
-
 		}
 
 		globalOffset.x = globalOffset.x - dx * TILE_SIZE;
 		globalOffset.y = globalOffset.y - dy * TILE_SIZE;
+		
 
-		tdx = dx;
-		tdy = dy;
+		tdx+=dx;
+		tdy+=dy;
+		}
+		
+		
+		
+		/*System.out.println("first " + tdx + " " +tdy + " " + globalOffset);
 
 		if (globalOffset.x > 0) {
 			dx = Math.round((globalOffset.x + pmap.getWidth()) / TILE_SIZE);
@@ -232,14 +239,18 @@ public class MapControl extends RelativeLayout {
 					/ TILE_SIZE);
 		} else {
 			dy = (int) Math.round(globalOffset.y / TILE_SIZE);
-
 		}
-
+		
 		globalOffset.x = globalOffset.x - dx * TILE_SIZE;
 		globalOffset.y = globalOffset.y - dy * TILE_SIZE;
 
+		//System.out.println(globalOffset);
+		
 		tdx += dx;
 		tdy += dy;
+		*/
+		System.out.println("second " + tdx + " " +tdy + " " + globalOffset);
+		
 		if (!(tdx == 0 && tdy == 0)) {
 			pmap.move(tdx, tdy);
 		}
@@ -301,8 +312,8 @@ public class MapControl extends RelativeLayout {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 					RawTile tile = pmap.getDefaultTile();
 					int z = getPhysicalMap().getZoomLevel();
-					int tileX = PhysicMap.normalizeX(tile.x + (i - 2), z);
-					int tileY = PhysicMap.normalizeY(tile.y + (j - 2), z);
+					int tileX = PhysicMap.normalize(tile.x + (i - 2), z);
+					int tileY = PhysicMap.normalize(tile.y + (j - 2), z);
 					List<Marker> markers = markerManager.getMarkers(tileX,
 							tileY, z);
 					for (Marker marker : markers) {
