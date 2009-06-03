@@ -22,7 +22,7 @@ public class TileResolver {
 	private Handler localLoaderHandler;
 
 	private int strategyId = -1;
-	
+
 	public int loaded = 0;
 
 	public TileResolver(final PhysicMap physicMap) {
@@ -52,7 +52,7 @@ public class TileResolver {
 						cacheProvider.putToScaledCache(tile, bitmap);
 						updateMap(tile, bitmap);
 					}
-					
+
 				}
 			}
 
@@ -61,13 +61,13 @@ public class TileResolver {
 		this.localLoaderHandler = new Handler() {
 
 			@Override
-			public  void handle(RawTile tile, Bitmap bitmap,
-					boolean isScaled) {
-				if(tile.s ==-1){
+			public void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
+				if (tile.s == -1) {
 					throw new IllegalStateException();
 				}
 				if (bitmap != null) { // если тайл есть в файловом кеше
-					if(tile.s == strategyId && tile.z == physicMap.getZoomLevel()){
+					if (tile.s == strategyId
+							&& tile.z == physicMap.getZoomLevel()) {
 						loaded++;
 					}
 					cacheProvider.putToCache(tile, bitmap);
@@ -112,7 +112,7 @@ public class TileResolver {
 	 * @return
 	 */
 	public void getTile(final RawTile tile) {
-		if(tile.s == -1){
+		if (tile.s == -1) {
 			return;
 		}
 		Bitmap bitmap = cacheProvider.getTile(tile);
@@ -121,9 +121,13 @@ public class TileResolver {
 			loaded++;
 			updateMap(tile, bitmap);
 		} else {
-
-			updateMap(tile, MapControl.CELL_BACKGROUND);
-			LocalStorageWrapper.get(tile,localLoaderHandler);
+			//bitmap = LocalStorageWrapper.get(tile);
+			//if (bitmap != null) {
+			//	loaded++;
+				//updateMap(tile, bitmap);
+			//}
+			//updateMap(tile, MapControl.CELL_BACKGROUND);
+			 LocalStorageWrapper.get(tile,localLoaderHandler);
 		}
 	}
 
@@ -134,12 +138,12 @@ public class TileResolver {
 		tileLoader.setMapStrategy(mapStrategy);
 		System.gc();
 	}
-	
-	public void clearCache(){
+
+	public void clearCache() {
 		cacheProvider.clear();
 	}
-	
-	public void gcCache(){
+
+	public void gcCache() {
 		cacheProvider.gc();
 	}
 

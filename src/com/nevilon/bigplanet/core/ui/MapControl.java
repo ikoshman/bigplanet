@@ -14,6 +14,7 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
 import android.widget.RelativeLayout;
 
 import com.nevilon.bigplanet.R;
@@ -295,10 +296,10 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-	   Bitmap tmpBitmap;
+		Bitmap tmpBitmap;
 		Matrix matr = new Matrix();
 		
-		matr.postScale(pmap.scaleFactor, pmap.scaleFactor,320/2,480/2);
+		matr.postScale((float)pmap.scaleFactor, (float)pmap.scaleFactor,getWidth()/2,getHeight()/2);
 		canvas.setMatrix(matr);
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
@@ -309,7 +310,7 @@ public class MapControl extends RelativeLayout {
 						canvas.drawBitmap(tmpBitmap, (i - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 								+ pmap.getGlobalOffset().y, paint);
-					}
+					} 
 				} else {
 					canvas.drawBitmap(CELL_BACKGROUND, (i - 2) * TILE_SIZE
 							+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
@@ -317,7 +318,6 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-
 		// отрисовка маркеров
 	/*	for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
