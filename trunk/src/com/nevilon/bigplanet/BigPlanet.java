@@ -85,7 +85,7 @@ public class BigPlanet extends Activity {
 		// add network mode menu
 		menu.add(0, 3, 0, "Network mode");
 		//add settings menu
-		menu.add(0, 4,0, "Settings");
+		//menu.add(0, 4,0, "Settings");
 		return true;
 	}
 
@@ -145,19 +145,21 @@ public class BigPlanet extends Activity {
 			selectNetworkMode();
 			break;
 		case 4:
-			showSettingsMenu();
+			//showSettingsMenu();
 			break;
 		}
 		return false;
 
 	}
 
+	/*
 	private void showSettingsMenu(){
 		Intent intent = new Intent();
 		intent.setClass(this, SettingsMenu.class);
 		startActivity(intent);
 	}
 	
+	*/
 	/**
 	 * Отображает диалоги для кеширования карты в заданном радиусе
 	 */

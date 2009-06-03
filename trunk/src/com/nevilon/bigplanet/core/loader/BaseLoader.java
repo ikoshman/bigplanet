@@ -9,6 +9,8 @@ import com.nevilon.bigplanet.core.providers.MapStrategy;
 
 public abstract class BaseLoader extends Thread {
 
+	public static final int CONNECTION_TIMEOUT = 8000;
+
 	private RawTile[] tiles;
 
 	private boolean stop = false;
@@ -57,9 +59,9 @@ public abstract class BaseLoader extends Thread {
 		try {
 			HttpClient client = new HttpClient();
 
-			client.getHttpConnectionManager().getParams().setSoTimeout(4000);
+			client.getHttpConnectionManager().getParams().setSoTimeout(BaseLoader.CONNECTION_TIMEOUT);
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(
-					4000);
+					BaseLoader.CONNECTION_TIMEOUT);
 
 			GetMethod method = new GetMethod(getStrategy().getServer()
 					+ getStrategy().getURL(tile.x, tile.y, tile.z));
