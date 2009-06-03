@@ -1,75 +1,109 @@
 package com.nevilon.moow.core;
 
-import java.io.BufferedInputStream;
 import java.util.Stack;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.Config;
 import android.util.Log;
 
 public class TileProvider implements Runnable {
+	private TileLoader tileLoader;
 
-	private LocalStorage localStorage = new LocalStorage();
-
-	private TileLoader tileLoader = new TileLoader(this);
-
-	BitmapCache inMemoryCache = new BitmapCache();
+	public BitmapCache scaledCache = new BitmapCache(30);
 
 	private Stack<RawTile> queue = new Stack<RawTile>();
 
 	private PhysicMap physicMap;
 
-	public TileProvider(PhysicMap physicMap) {
+	private LocalStorageProvider localProvider = new LocalStorageProvider();
+
+	private BitmapCacheProvider cacheProvider = new BitmapCacheProvider();
+
+	public TileProvider(final PhysicMap physicMap) {
+		tileLoader = new TileLoader(
+				
+				new Handler() {
+					@Override
+					public void handle(RawTile tile, byte[] data) {
+						localProvider.put(tile, data);
+						Bitmap bmp = localProvider.get(tile);
+						cacheProvider.putToCache(tile, bmp);
+						physicMap.update(bmp, tile);
+					}
+
+				}
+		
+		);
 		this.physicMap = physicMap;
 		new Thread(tileLoader).start();
-		Thread th = new Thread(this);
-		th.start();
+		new Thread(this).start();
 	}
 
-	void getTile(RawTile tile) {
-		Bitmap tmpBitmap = inMemoryCache.get(tile);
-		if (tmpBitmap != null) {
-			returnTile(tmpBitmap, tile);
-		} else {
+	/**
+	 * Загружает заданный тайл
+	 * 
+	 * @param tile
+	 * @return
+	 */
+	public Bitmap getTile(final RawTile tile, boolean useCache) {
+		Bitmap bitmap = null;
+		if (useCache) {
+			bitmap = cacheProvider.getTile(tile);
+		}
+		if (bitmap == null) {
+			// асинхронная загрузка
+			bitmap = localProvider.get(tile);
+			localProvider.get(tile, new Handler(){
+
+				@Override
+				public void handle(Object object) {
+					physicMap.update((Bitmap)object, tile);
+					
+				}
+
+				
+			});
+		}
+		if (bitmap == null) {
+			new Thread(new TileScaler(tile)).start();
 			addToQueue(tile);
 		}
+		return bitmap;
 	}
 
 	public void run() {
-		Bitmap tmpBitmap;
 		while (true) {
 			if (queue.size() > 0) {
 				Log.i("LOADER", "try to load in any way");
-				RawTile tile = queue.pop();
-				BufferedInputStream outStream = localStorage.get(tile);
-				if (outStream != null) {
-					tmpBitmap = BitmapFactory.decodeStream(outStream);
-					inMemoryCache.put(tile, tmpBitmap);
-					returnTile(tmpBitmap, tile);
-				} else {
-					// скалирование существующего тайла с предыдущего уровня
-					new Thread(new TileScaler(tile)).start();
-					// запрос на загрузку тайла с сервера
-					tileLoader.load(tile);
-				}
-
+				tileLoader.load(queue.pop());
+	
 			}
 		}
 	}
 
-	public synchronized void returnTile(Bitmap bitmap, RawTile tile) {
+	public void returnTile(Bitmap bitmap, RawTile tile, boolean isScaled) {
+		if (isScaled) {
+			cacheProvider.putToScaledCache(tile, bitmap);
+		} else {
+			cacheProvider.putToCache(tile, bitmap);
+		}
 		physicMap.update(bitmap, tile);
 	}
 
 	public void putToStorage(RawTile tile, byte[] data) {
-		localStorage.put(tile, data);
+		localProvider.put(tile, data);
 	}
 
 	private void addToQueue(RawTile tile) {
 		queue.push(tile);
 	}
 
+	/**
+	 * Предназначен для выполнения скалирования
+	 * 
+	 * @author hudvin
+	 * 
+	 */
 	private class TileScaler implements Runnable {
 
 		private RawTile tile;
@@ -81,21 +115,8 @@ public class TileProvider implements Runnable {
 		public void run() {
 			Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
 			if (bmp4scale != null) {
-				returnTile(bmp4scale, tile);
+				returnTile(bmp4scale, tile, true);
 			}
-		}
-
-		private Bitmap loadTile(RawTile tile) {
-			Bitmap bmp4scale = null;
-			bmp4scale = TileProvider.this.inMemoryCache.get(tile);
-			BufferedInputStream outStream;
-			if (bmp4scale == null) {
-				outStream = localStorage.get(tile);
-				if (outStream != null) {
-					bmp4scale = BitmapFactory.decodeStream(outStream);
-				}
-			}
-			return bmp4scale;
 		}
 
 		/**
@@ -123,16 +144,23 @@ public class TileProvider implements Runnable {
 			while (bitmap == null && tmpZ <= 17) {
 				tmpZ++;
 
+				int scale = tmpZ - z;
+
 				// получение отступа от начала координат на предыдущем уровне
-				offsetParentX = (int) (offsetX / Math.pow(2, tmpZ - z));
-				offsetParentY = (int) (offsetY / Math.pow(2, tmpZ - z));
+				offsetParentX = (int) (offsetX / Math.pow(2, scale));
+				offsetParentY = (int) (offsetY / Math.pow(2, scale));
 
 				// получение координат тайла на предыдущем уровне
 				parentTileX = offsetParentX / 256;
 				parentTileY = offsetParentY / 256;
 
+				offsetParentX = offsetParentX - parentTileX * 256;
+				offsetParentY = offsetParentY - parentTileY * 256;
+
 				// необходимо возвращать, во сколько раз увеличить!!!
-				bitmap = loadTile(new RawTile(parentTileX, parentTileY, tmpZ));
+
+				bitmap = localProvider.get(new RawTile(parentTileX,
+						parentTileY, tmpZ));
 				if (bitmap == null) {
 				} else { // родительский тайл найден и загружен
 					// получение отступа в родительском тайле
@@ -140,7 +168,6 @@ public class TileProvider implements Runnable {
 					offsetParentY = offsetParentY - parentTileY * 256;
 
 					// получение уровня скалирования
-					int scale = tmpZ - z;
 					// получение размера тайла в родительском тайле
 					int tileSize = getTileSize(scale);
 

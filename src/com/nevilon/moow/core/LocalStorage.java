@@ -8,27 +8,34 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
- * Реализация файлового кеша
- * Для хранения тайлов используется дерево
+ * Реализация файлового кеша Для хранения тайлов используется дерево
+ * 
  * @author hudvin
- *
+ * 
  */
 public class LocalStorage {
+
+	private static LocalStorage localStorage;
 
 	/**
 	 * Корневой каталог для файлового кеша
 	 */
 	private static final String root_dir_location = "/sdcard/moow/";
-	
+
+	public static LocalStorage getInstance() {
+		if (localStorage == null) {
+			localStorage = new LocalStorage();
+		}
+		return localStorage;
+	}
+
 	/**
-	 * Конструктор
-	 * Инициализация файлового кеша(если необходимо)
+	 * Конструктор Инициализация файлового кеша(если необходимо)
 	 */
-	public LocalStorage() {
+	private LocalStorage() {
 		init();
 	}
 
-	
 	/**
 	 * Очистка файлового кеша
 	 */
@@ -48,6 +55,7 @@ public class LocalStorage {
 
 	/**
 	 * Удаляет (рекурсивно) каталог и все его содержимое
+	 * 
 	 * @param dir
 	 * @return
 	 */
@@ -66,6 +74,7 @@ public class LocalStorage {
 
 	/**
 	 * Построение пути сохранения для тайла
+	 * 
 	 * @param x
 	 * @param y
 	 * @param z
@@ -85,16 +94,20 @@ public class LocalStorage {
 
 	/**
 	 * Сохраняет тайл в файловый кеш
-	 * @param tile параметры тайла
-	 * @param data параметры тайла
+	 * 
+	 * @param tile
+	 *            параметры тайла
+	 * @param data
+	 *            параметры тайла
 	 */
 	public void put(RawTile tile, byte[] data) {
-		String path = buildPath(tile.x,tile.y, tile.z);
+		String path = buildPath(tile.x, tile.y, tile.z);
 		File fullPath = new File(path);
 		fullPath.mkdirs();
 		fullPath = new File(path + "tile.tl");
 		try {
-			BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(fullPath), 65536);
+			BufferedOutputStream outStream = new BufferedOutputStream(
+					new FileOutputStream(fullPath), 65536);
 			outStream.write(data);
 			outStream.flush();
 			outStream.close();
@@ -103,22 +116,25 @@ public class LocalStorage {
 		}
 
 	}
-	
+
 	/**
 	 * Возвращает заданный тайл или null(если не найден)
-	 * @param tile параметры тайла
+	 * 
+	 * @param tile
+	 *            параметры тайла
 	 * @return тайл
 	 */
 	public BufferedInputStream get(RawTile tile) {
 		String path = buildPath(tile.x, tile.y, tile.z);
 		File tileFile = new File(path + "/tile.tl");
-		if (tileFile.exists()){
+		if (tileFile.exists()) {
 			try {
-				return new BufferedInputStream(new FileInputStream(tileFile),65536);
+				return new BufferedInputStream(new FileInputStream(tileFile),
+						65536);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-		} 
+		}
 		return null;
 	}
 
