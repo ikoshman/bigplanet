@@ -13,8 +13,9 @@
     <string name="REMOVE_BOOKMARK_TITLE">Remove bookmark</string>
     <string name="REMOVE_BOOKMARK_MESSAGE">Are you sure?</string>
     
+    <string name="ABOUT_MENU">About</string>
     <string name="MAP_SOURCE_MENU">Map source</string>
-    <string name="TOOLS_MENU">Tools</string>
+    <string name="TOOLS_MENU">More</string>
     <string name="CACHE_MAP_MENU">Save map for offline use</string>
     <string name="NETWORK_MODE_MENU">Network mode</string>
     <string name="BOOKMARKS_MENU">Bookmarks</string>
@@ -43,4 +44,6 @@
     
     <string name="DOWNLOAD_PROGRESS_MESSAGE_PATTERN">{0} km, {1} tile(s) / {2} KB</string>
     
+    <string name="ABOUT_MESSAGE">Developed by Vadim Bartko. All questions, proposals and bug reports  send to hudvin@gmail.com</string>
+    <string name="ABOUT_TITLE">About</string>
 </resources>

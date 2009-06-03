@@ -1,25 +1,32 @@
 package com.nevilon.bigplanet;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.view.View.OnClickListener;
 
 import com.nevilon.bigplanet.core.Preferences;
 import com.nevilon.bigplanet.core.RawTile;
@@ -35,7 +42,7 @@ import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 public class BigPlanet extends Activity {
 
 	private static final String BOOKMARK_DATA = "bookmark";
-	
+
 	private Toast textMessage;
 
 	/*
@@ -91,9 +98,10 @@ public class BigPlanet extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
 		case RESULT_OK:
-			GeoBookmark bookmark = (GeoBookmark) data.getSerializableExtra(BOOKMARK_DATA);
+			GeoBookmark bookmark = (GeoBookmark) data
+					.getSerializableExtra(BOOKMARK_DATA);
 			mapControl.getPhysicalMap().setDefTile(bookmark.getTile());
-			
+
 			Point offset = new Point();
 			offset.set(bookmark.getOffsetX(), bookmark.getOffsetY());
 			mapControl.getPhysicalMap().setGlobalOffset(offset);
@@ -128,17 +136,22 @@ public class BigPlanet extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		// add map source menu
-		menu.add(0, 0, 0, R.string.MAP_SOURCE_MENU).setIcon(R.drawable.database_up);
+		menu.add(0, 0, 0, R.string.MAP_SOURCE_MENU).setIcon(
+				R.drawable.database_up);
 		// add tools menu
-		SubMenu sub = menu.addSubMenu(0, 1, 0, R.string.TOOLS_MENU).setIcon(R.drawable.tools);
+		SubMenu sub = menu.addSubMenu(0, 1, 0, R.string.TOOLS_MENU).setIcon(
+				R.drawable.tools);
 		sub.add(2, 11, 1, R.string.CACHE_MAP_MENU);
+		sub.add(2, 12, 1, R.string.ABOUT_MENU);
+
 		// add network mode menu
 		menu.add(0, 3, 0, R.string.NETWORK_MODE_MENU).setIcon(R.drawable.mode);
 		// add settings menu
 		// menu.add(0, 4,0, "Settings");
 		// add bookmark menu
 
-		sub = menu.addSubMenu(0, 6, 0, R.string.BOOKMARKS_MENU).setIcon(R.drawable.bookmark);
+		sub = menu.addSubMenu(0, 6, 0, R.string.BOOKMARKS_MENU).setIcon(
+				R.drawable.bookmark);
 		sub.add(0, 61, 1, R.string.BOOKMARKS_VIEW_MENU);
 		sub.add(0, 62, 0, R.string.BOOKMARK_ADD_MENU);
 
@@ -175,11 +188,12 @@ public class BigPlanet extends Activity {
 							.getGlobalOffset().x);
 					newGeoBookmark.setOffsetY(mapControl.getPhysicalMap()
 							.getGlobalOffset().y);
-					
-					newGeoBookmark.setTile(mapControl.getPhysicalMap().getDefaultTile());
+
+					newGeoBookmark.setTile(mapControl.getPhysicalMap()
+							.getDefaultTile());
 					newGeoBookmark.getTile().s = mapControl.getPhysicalMap()
-					.getTileResolver().getMapSourceId(); 
-					
+							.getTileResolver().getMapSourceId();
+
 					AddBookmarkDialog.show(BigPlanet.this, newGeoBookmark,
 							new OnDialogClickListener() {
 
@@ -242,6 +256,9 @@ public class BigPlanet extends Activity {
 			// showSettingsMenu();
 			break;
 
+		case 12:
+			showAbout();
+			break;
 		case 62:
 			switchToBookmarkMode();
 			break;
@@ -253,10 +270,29 @@ public class BigPlanet extends Activity {
 
 	}
 
+	private void showAbout() {
+		TextView tv = new TextView(this);
+		tv.setGravity(Gravity.CENTER);
+		tv.setText(R.string.ABOUT_MESSAGE);
+		tv.setTextSize(16f);
+		new AlertDialog.Builder(this)
+		.setTitle(R.string.ABOUT_TITLE)
+		.setView(tv)
+		.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+
+							}
+
+						}).show();
+	}
+
 	private void showAllGeoBookmarks() {
 		Intent intent = new Intent();
 		intent.setClass(this, AllGeoBookmarks.class);
-		startActivityForResult(intent,0);
+		startActivityForResult(intent, 0);
 	}
 
 	private void switchToBookmarkMode() {
@@ -266,19 +302,18 @@ public class BigPlanet extends Activity {
 		}
 	}
 
-	
-	private void showMessage(){
+	private void showMessage() {
 		textMessage = Toast.makeText(this, R.string.SELECT_OBJECT_MESSAGE,
 				Toast.LENGTH_LONG);
 		textMessage.show();
 	}
-	
-	private void hideMessage(){
-		if(textMessage!=null){
+
+	private void hideMessage() {
+		if (textMessage != null) {
 			textMessage.cancel();
 		}
 	}
-	
+
 	/**
 	 * Отображает диалоги для кеширования карты в заданном радиусе
 	 */
@@ -311,11 +346,11 @@ public class BigPlanet extends Activity {
 				RadioGroup.LayoutParams.WRAP_CONTENT,
 				RadioGroup.LayoutParams.WRAP_CONTENT);
 
-		modesRadioGroup
-				.addView(buildRadioButton(getResources().getString((R.string.OFFLINE_MODE_LABEL)), 0), 0, layoutParams);
+		modesRadioGroup.addView(buildRadioButton(getResources().getString(
+				(R.string.OFFLINE_MODE_LABEL)), 0), 0, layoutParams);
 
-		modesRadioGroup
-				.addView(buildRadioButton(getResources().getString(R.string.ONLINE_MODE_LABEL), 1), 0, layoutParams);
+		modesRadioGroup.addView(buildRadioButton(getResources().getString(
+				R.string.ONLINE_MODE_LABEL), 1), 0, layoutParams);
 
 		boolean useNet = Preferences.getUseNet();
 		int checked = 0;
