@@ -123,7 +123,7 @@ public class TileLoader implements Runnable {
 		public void run() {
 			try {
 				TileLoader.this.tileLoaded(tile, load());
-				//TileLoader.this.tileLoaded(tile, null);
+				// TileLoader.this.tileLoaded(tile, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
