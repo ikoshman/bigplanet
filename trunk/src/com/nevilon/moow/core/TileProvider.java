@@ -94,18 +94,10 @@ public class TileProvider implements Runnable {
 		 	} else {
 		 		oy = 0;
 		 	}
-		 	Bitmap bmp4scale = null;
-		 	bmp4scale = findTile(tile.x, tile.y, tile.z);
-	 		
-		 	if (bmp4scale!=null){
-		 		
-		 		int[] pixels = new int[128*128];
-		 		
-		 		bmp4scale.getPixels(pixels, 0, 128, ox*128 ,oy*128, 128, 128);
-		 		bmp4scale = Bitmap.createBitmap(pixels, 128, 128, Config.RGB_565);
-		 		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp4scale, 256, 256, false);
-		 		returnTile(scaledBitmap, tile);
 		 	
+		 	Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
+		 	if (bmp4scale!=null){
+		 		returnTile(bmp4scale, tile); 	
 		 	}	
 		}
 		
@@ -124,6 +116,15 @@ public class TileProvider implements Runnable {
 		}
 		
 		
+		/**
+		 * Возвращает размеры тайла при зуммировании
+		 * @param zoom
+		 * @return
+		 */
+		private int getTileSize(int zoom){
+			return (int) (256/Math.pow(2, zoom));
+		}
+		
 		private Bitmap findTile(int x, int y, int z){
 			Bitmap bitmap = null;
 			int offsetX;
@@ -135,7 +136,6 @@ public class TileProvider implements Runnable {
 			// получение отступа от начала координат на начальном уровне
 			offsetX = x*256; // отступ от начала координат по ox
 			offsetY = y*256; // отступ от начала координат по oy
-
 			int tmpZ = z;
 			while(bitmap == null && tmpZ<=17){
 				tmpZ++;
@@ -147,17 +147,29 @@ public class TileProvider implements Runnable {
 				// получение координат тайла на предыдущем уровне
 				parentTileX = offsetParentX/256; 
 				parentTileY = offsetParentY/256;
-				
-				// получение четверти 
-				
+		
+				// необходимо возвращать, во сколько раз увеличить!!! pow(2,tmp-z)
 				bitmap =  loadTile(new RawTile(parentTileX, parentTileY,tmpZ));
 				if(bitmap == null){
 					System.out.println("not found");
-				} else {
-					System.out.println("found " + parentTileX + " " + parentTileY+ " "+ tmpZ);
+				} else { // родительский тайл найден и загружен
+					// получение отступа в родительском тайле
+					offsetParentX=offsetParentX - parentTileX*256;
+					offsetParentY=offsetParentY - parentTileY*256;
+
+					// получение уровня скалирования
+					int scale = tmpZ-z;
+					// получение размера тайла в родительском тайле
+					int tileSize = getTileSize(scale);
+					
+					// копирование области и скалирование
+					int[] pixels = new int[tileSize*tileSize];
+					
+					bitmap.getPixels(pixels, 0, tileSize, offsetParentX ,offsetParentY, tileSize, tileSize);
+			 		bitmap = Bitmap.createBitmap(pixels, tileSize, tileSize, Config.RGB_565);
+			 		return Bitmap.createScaledBitmap(bitmap, 256, 256, false);
 				}
-			}
-			
+			}	
 			return bitmap;
 		}
 		
