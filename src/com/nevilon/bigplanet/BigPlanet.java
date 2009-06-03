@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -78,7 +79,7 @@ public class BigPlanet extends Activity {
 		super.onCreate(savedInstanceState);
 		Date now = new Date(System.currentTimeMillis());
 		now.getMonth();
-		if (now.getMonth() == 2) {
+		/*if (now.getMonth() == 2) {
 
 			new AlertDialog.Builder(this).setTitle("Sorry").setNegativeButton(
 					"Ok", new OnClickListener() {
@@ -90,7 +91,7 @@ public class BigPlanet extends Activity {
 
 					}).setMessage("Demo version is expired").show();
 		}
-
+		*/
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
 		mm = new MarkerManager(getResources());
@@ -387,6 +388,8 @@ public class BigPlanet extends Activity {
 
 	private void showAbout() {
 		TextView tv = new TextView(this);
+		tv.setLinksClickable(true);
+		tv.setAutoLinkMask(Linkify.EMAIL_ADDRESSES);
 		tv.setGravity(Gravity.CENTER);
 		tv.setText(R.string.ABOUT_MESSAGE);
 		tv.setTextSize(12f);
