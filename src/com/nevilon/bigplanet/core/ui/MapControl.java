@@ -141,6 +141,7 @@ public class MapControl extends RelativeLayout {
 	 * @param height
 	 */
 	public void setSize(int width, int height) {
+		removeAllViews();
 		buildView(width, height, pmap.getDefaultTile());
 
 	}
@@ -184,14 +185,7 @@ public class MapControl extends RelativeLayout {
 			// обработчик уменьшения
 			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					scalePoint.set(getWidth() / 2, getHeight() / 2);
-					//RawTile tile = new RawTile(pmap.getDefaultTile().x-2,pmap.getDefaultTile().y-2,
-					//		pmap.getDefaultTile().z,
-					//		pmap.getTileResolver().getMapSourceId()
-					//);
-					//scaleMap = pmap.getTileResolver().fillMap(
-					//		tile,5);
-					//scalePoint.set(getWidth() / 2, getHeight() / 2);
+					scalePoint.set(pmap.getWidth() / 2, pmap.getHeight() / 2);
 					new Thread() {
 
 						@Override
@@ -218,7 +212,7 @@ public class MapControl extends RelativeLayout {
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					scalePoint.set(getWidth() / 2, getHeight() / 2);
+					scalePoint.set(pmap.getWidth() / 2, pmap.getHeight() / 2);
 					new Thread() {
 
 						@Override
@@ -262,7 +256,7 @@ public class MapControl extends RelativeLayout {
 		}
 		pmap.setHeight(height);
 		pmap.setWidth(width);
-
+		quickHack();
 	}
 
 	private synchronized void updateScreen() {
@@ -336,15 +330,13 @@ public class MapControl extends RelativeLayout {
 	 * @param paint
 	 */
 	private synchronized void doDraw(Canvas c, Paint paint) {
-		if(cb==null){
+		if(cb==null || cb.getHeight()!=pmap.getHeight()){
 			cs = new Canvas();
-			
-			cb = Bitmap.createBitmap(getWidth(),
-					getHeight(), Bitmap.Config.ARGB_8888);
-		 	
+			cb = Bitmap.createBitmap(pmap.getWidth(),
+					pmap.getHeight(), Bitmap.Config.RGB_565); 	
 		 	cs.setBitmap(cb); 
 		}
-		Bitmap tmpBitmap;
+		 	Bitmap tmpBitmap;
 			for (int i = 0; i < 7; i++) {
 				for (int j = 0; j < 7; j++) {
 					if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
@@ -374,7 +366,7 @@ public class MapControl extends RelativeLayout {
 			}
 		
 		
-
+/*
 		if (pmap.scaleFactor == 1) {
 			// отрисовка маркеров
 			for (int i = 0; i < 7; i++) {
@@ -404,14 +396,12 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
+		*/
 		Matrix matr = new Matrix();
 		matr.postScale((float) pmap.scaleFactor, (float) pmap.scaleFactor,
 				scalePoint.x, scalePoint.y);
 		c.drawColor(BitmapUtils.BACKGROUND_COLOR);
 		c.drawBitmap(cb, matr, paint);
-		
-	   
-	    
 		//canvas.restore();
 	}
 
@@ -444,8 +434,6 @@ public class MapControl extends RelativeLayout {
 	class Panel extends View {
 		Paint paint;
 
-		Bitmap b;
-		
 		public Panel(Context context) {
 			super(context);
 			paint = new Paint();
@@ -454,7 +442,7 @@ public class MapControl extends RelativeLayout {
 
 		@Override
 		protected void onDraw(Canvas canvas) {
-			//super.onDraw(canvas);
+			super.onDraw(canvas);
 			doDraw(canvas, paint);
 			
 		}
@@ -478,8 +466,8 @@ public class MapControl extends RelativeLayout {
 				if (dcDetector.process(event)) {
 					if (mapMode == MapControl.ZOOM_MODE) {
 						scalePoint.set((int) event.getX(), (int) event.getY());
-						float sx = (getWidth() / 2 - event.getX());
-						float sy = (getHeight() / 2 - event.getY());
+						float sx = (pmap.getWidth() / 2 - event.getX());
+						float sy = (pmap.getHeight() / 2 - event.getY());
 						final float dx = (sx / (1f / 0.1f));
 						final float dy = (sy / (1f / 0.1f));
 						
@@ -491,6 +479,8 @@ public class MapControl extends RelativeLayout {
 								float ty = 0;
 								int scaleX = scalePoint.x;
 								int scaleY = scalePoint.y;
+								System.out.println(pmap.getGlobalOffset());
+								
 								float ox = pmap.getGlobalOffset().x;
 								float oy = pmap.getGlobalOffset().y;
 							    
@@ -509,7 +499,6 @@ public class MapControl extends RelativeLayout {
 										
 										pmap.getGlobalOffset().x = (int) ox;
 										pmap.getGlobalOffset().y = (int) oy;
-										
 										postInvalidate();
 
 										
