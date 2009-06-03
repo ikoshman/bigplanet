@@ -1,5 +1,7 @@
 package com.nevilon.moow;
 
+import java.security.acl.LastOwnerException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -37,6 +39,8 @@ public class MoowMap extends Activity {
 	boolean canDraw = true;
 
 	Bitmap[][] tiles = new Bitmap[4][4];
+	
+	private long lastTouchTime =-1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +62,7 @@ public class MoowMap extends Activity {
 				});
 				zc.setOnZoomInClickListener(new OnClickListener() {
 					public void onClick(View v) {
-						zoomIn();
+						zoomCenter();
 					}
 				});
 				addView(zc);
@@ -74,6 +78,11 @@ public class MoowMap extends Activity {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			nextMovePoint.set((int) event.getX(), (int) event.getY());
+			if (System.currentTimeMillis() - lastTouchTime<1000){
+				zoomIn((int)event.getX(), (int)event.getY());
+			} else {
+				lastTouchTime = System.currentTimeMillis();
+			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			moveCoordinates(event.getX(), event.getY());
@@ -113,10 +122,14 @@ public class MoowMap extends Activity {
 	   
 	}
 	
-	private void zoomIn(){
+	private void zoomCenter(){
+		zoomIn(160, 240);
+	}
+	
+	private void zoomIn(int offsetX, int offsetY){
 		//получение отступа он начала координат
-		int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+160;
-		int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+240;
+		int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+offsetX;
+		int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+offsetY;
 		// получение координат углового тайла
 		int tileX = (currentZoomX*2)/256;
 		int tileY = (currentZoomY*2)/256;
