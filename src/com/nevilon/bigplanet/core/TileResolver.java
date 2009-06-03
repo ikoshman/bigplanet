@@ -7,6 +7,7 @@ import com.nevilon.bigplanet.core.providers.MapStrategy;
 import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
 import com.nevilon.bigplanet.core.storage.LocalStorageWrapper;
+import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class TileResolver {
 
@@ -32,7 +33,7 @@ public class TileResolver {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
 						LocalStorageWrapper.put(tile, data);
-						Bitmap bmp = LocalStorageWrapper.get(tile);
+						Bitmap bmp = LocalStorageWrapper.get(tile,false);
 						cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
@@ -97,6 +98,9 @@ public class TileResolver {
 	private void updateMap(RawTile tile, Bitmap bitmap) {
 		if (tile.s == strategyId) {
 			physicMap.update(bitmap, tile);
+			if(tile.l ==1){
+				System.out.println("traffic");
+			}
 		}
 	}
 
@@ -107,13 +111,19 @@ public class TileResolver {
 	 * @return
 	 */
 	public void getTile(final RawTile tile) {
+		//if(tile.l == 1){
+		//	load(tile);
+		//	return;
+		//}
 		Bitmap bitmap = cacheProvider.getTile(tile);
 		if (bitmap != null) {
 			// возврат тайла
 			//loaded++;
 			updateMap(tile, bitmap);
 		} else {
-			LocalStorageWrapper.get(tile, localLoaderHandler);
+
+			updateMap(tile, MapControl.bp);
+			LocalStorageWrapper.get(tile,false ,localLoaderHandler);
 		}
 	}
 

@@ -53,14 +53,17 @@ public class LocalStorage {
 	 * Инициализация файлового кеша
 	 */
 	private void init() {
+		//clear();
 		File dir = new File(root_dir_location);
 		if (!(dir.exists() && dir.isDirectory())) {
 			dir.mkdirs();
 		}
+		dir = new File(root_dir_location+"layouts/");
+		dir.mkdirs();
 	}
 
 	public boolean isExists(RawTile tile) {
-		String path = buildPath(tile);
+		String path = buildPath(tile,"");
 		File tileFile = new File(path + TILE_FILE_NAME);
 		return tileFile.exists();
 	}
@@ -92,9 +95,10 @@ public class LocalStorage {
 	 * @param z
 	 * @return
 	 */
-	private String buildPath(RawTile tile) {
+	private String buildPath(RawTile tile, String prefix) {
 	    StringBuffer path = new StringBuffer();
 		path.append(root_dir_location);
+		path.append(prefix);
 		path.append(tile.toString());
 		return path.toString();
 	}
@@ -107,8 +111,13 @@ public class LocalStorage {
 	 * @param data
 	 *            параметры тайла
 	 */
-	public void put(RawTile tile, byte[] data) {
-		String path = buildPath(tile);
+	public void put(RawTile tile, byte[] data, boolean isTemp) {
+		String path;
+		if(isTemp){
+			path = buildPath(tile, "/layouts/");
+		} else {
+			path  = buildPath(tile,"");
+		}
 		File fullPath = new File(path);
 		fullPath.mkdirs();
 		fullPath = new File(path + TILE_FILE_NAME);
@@ -131,8 +140,13 @@ public class LocalStorage {
 	 *            параметры тайла
 	 * @return тайл
 	 */
-	public BufferedInputStream get(RawTile tile) {
-		String path = buildPath(tile);
+	public BufferedInputStream get(RawTile tile,boolean isTemp) {
+		String path;
+		if(isTemp){
+			path = buildPath(tile, "/layouts/");
+		} else {
+			path  = buildPath(tile,"");
+		}
 		File tileFile = new File(path + TILE_FILE_NAME);
 		if (tileFile.exists()) {
 			try {

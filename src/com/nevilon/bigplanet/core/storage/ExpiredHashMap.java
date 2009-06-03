@@ -71,7 +71,7 @@ public class ExpiredHashMap {
 		private long addedOn = -1;
 
 		public ExpRawTile(RawTile tile, long addedOn) {
-			super(tile.x, tile.y, tile.z, tile.s);
+			super(tile.x, tile.y, tile.z, tile.s,tile.l);
 			this.addedOn = addedOn;
 		}
 

@@ -111,7 +111,7 @@ public class DAO {
                 RawTile tile = new RawTile(c.getInt(c.getColumnIndex(COLUMN_X)),
                 		c.getInt(c.getColumnIndex(COLUMN_Y)),
                 		c.getInt(c.getColumnIndex(COLUMN_Z)),
-                		c.getInt(c.getColumnIndex(COLUMN_S))
+                		c.getInt(c.getColumnIndex(COLUMN_S)),0
                 );
                 
                 bookmark.setTile(tile);

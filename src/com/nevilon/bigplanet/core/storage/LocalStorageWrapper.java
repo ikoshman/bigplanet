@@ -25,8 +25,8 @@ public class LocalStorageWrapper {
 	 * @param tile
 	 * @return
 	 */
-	public static Bitmap get(final RawTile tile) {
-		BufferedInputStream outStream = localStorage.get(tile);
+	public static Bitmap get(final RawTile tile, boolean isTemp) {
+		BufferedInputStream outStream = localStorage.get(tile,isTemp);
 		Bitmap bmp = null;
 		if (outStream != null) {
 			bmp = BitmapFactory.decodeStream(outStream);
@@ -40,15 +40,15 @@ public class LocalStorageWrapper {
 	}
 
 	public static void put(RawTile tile, byte[] data) {
-		localStorage.put(tile, data);
+		localStorage.put(tile, data,false);
 	}
 
-	public static void get(final RawTile tile, final Handler handler) {
+	public static void get(final RawTile tile,final boolean isTemp, final Handler handler) {
 		new Thread() {
 
 			public void run() {
 
-				handler.handle(tile, get(tile), false);
+				handler.handle(tile, get(tile, isTemp), false);
 			}
 
 		}.start();

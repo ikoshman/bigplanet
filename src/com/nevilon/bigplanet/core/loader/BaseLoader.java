@@ -64,9 +64,8 @@ public abstract class BaseLoader extends Thread {
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(
 					BaseLoader.CONNECTION_TIMEOUT);
 
-			GetMethod method = new GetMethod(getStrategy().getServer()
-					+ getStrategy().getURL(tile.x, tile.y, tile.z));
-
+			GetMethod method = new GetMethod(getStrategy().getURL(tile.x, tile.y, tile.z,tile.l));
+			//if(tile.l = )
 			int statusCode = client.executeMethod(method);
 			if (statusCode != -1 && method.getStatusCode() == HttpStatus.SC_OK) {
 				byte data[] = method.getResponseBody();
