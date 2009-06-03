@@ -1,5 +1,8 @@
 package com.nevilon.moow.core;
 
+import com.nevilon.moow.MoowMap;
+import com.nevilon.moow.core.ui.MapControl;
+
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
@@ -21,21 +24,26 @@ public class PhysicMap {
 
 	public Point nextMovePoint = new Point();
 	
-	public boolean canDraw = true;
-	
 	private int width;
 	
-	
 	private int height;
+	
+	private AbstractCommand updateScreenCommand;
 
 
-	public PhysicMap(RawTile defTile) {
+	public PhysicMap(RawTile defTile, AbstractCommand updateScreenCommand) {
 		this.defTile = defTile;
+		this.updateScreenCommand = updateScreenCommand;
 		this.zoom = defTile.z;
 		tileProvider = new TileResolver(this);
 		loadCells(defTile);
 	}
 
+	public void create(){
+		loadCells(defTile);
+		updateScreenCommand.execute();	
+	}
+	
 	public RawTile getDefaultTile() {
 		return normalize(this.defTile);
 	}
@@ -51,23 +59,19 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	public synchronized void update(Bitmap bitmap, RawTile tile) {
-		//canDraw = false;
 		int dx = tile.x - defTile.x;
 		int dy = tile.y - defTile.y;
 		if (dx <= 2 && dy <= 2 && tile.z == defTile.z) {
 			if (dx >= 0 && dy >= 0) {
 				try {
 					cells[dx][dy] = bitmap;
+					updateScreenCommand.execute();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		if(tileProvider.count ==0){
-			canDraw = true;
-
-		}
-
+		
 	}
 
 	public void move(int dx, int dy) {
@@ -122,7 +126,7 @@ public class PhysicMap {
 	 * Увеличение уровня детализации с центрированием
 	 */
 	public void zoomInCenter() {
-		zoomIn(160, 240);
+		zoomIn(getWidth()/2, getHeight()/2);
 	}
 
 	/**
@@ -175,6 +179,7 @@ public class PhysicMap {
 				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
 
+		updateScreenCommand.execute();
 	}
 
 	
@@ -254,29 +259,20 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private void loadCells(RawTile tile) {
-		canDraw = false;
-		tileProvider.count = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
-
 				x = (tile.x + i);
 				x = normalizeX(x, tile.z);
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-				if (!checkTileXY(x, y, tile.z)) {
-					
-					cells[i][j] = null;
-				} else {
-					// cells[i][j] = null;
 					cells[i][j] = tileProvider.getTile(
 							new RawTile(x, y, tile.z), true);
-				}
 
+					updateScreenCommand.execute();
 			}
 		}
-		//canDraw = true;
 	}
 
 	public void changeMapSource(int sourceId) {

@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.nevilon.moow.core.AbstractCommand;
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
 
@@ -54,8 +55,7 @@ public class MapControl extends RelativeLayout {
 	/*
 	 * Движок карты
 	 */
-	private PhysicMap pmap = new PhysicMap(new RawTile(0, 0,
-			MapControl.START_ZOOM));
+	private PhysicMap pmap;
 
 	/*
 	 * Панель с зум-контролами
@@ -97,15 +97,14 @@ public class MapControl extends RelativeLayout {
 	
 	public MapControl(Context context, int width, int height) {
 		super(context);
-		
-		pmap.setHeight(height);
-		pmap.setWidth(width);
+
 		mapBg = BitmapUtils.drawBackground(BCG_CELL_SIZE, height, width);
+	
 		// панель с картой
 		main = new Panel(context);
 		addView(main, 0, new ViewGroup.LayoutParams(width, height));
 
-		(new Thread(new CanvasUpdater())).start();
+		//(new Thread(new CanvasUpdater())).start();
 
 		zoomPanel = new ZoomPanel(context);
 		zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
@@ -126,7 +125,23 @@ public class MapControl extends RelativeLayout {
 
 		addView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
+		 pmap = new PhysicMap(new RawTile(0, 0,
+					MapControl.START_ZOOM), new AbstractCommand(){
 
+						@Override
+						public synchronized void execute() {
+							if(main!=null){
+								System.out.println("call");
+								main.postInvalidate();
+							} else {
+								System.out.println("FFFF");
+							}
+						}
+			 
+		 });
+		pmap.setHeight(height);
+		pmap.setWidth(width);
+			
 	}
 
 	public void changeMapSource(int sourceId){
@@ -140,6 +155,7 @@ public class MapControl extends RelativeLayout {
 	public PhysicMap getPhysicalMap(){
 		return pmap;
 	}
+	
 	
 	private void quickHack() {
 		int dx = 0, dy = 0;
@@ -206,9 +222,11 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private void doDraw(Canvas canvas, Paint paint) {
+	
 		if (cvBitmap == null) {
 			cvBitmap = Bitmap.createBitmap(768, 768, Bitmap.Config.RGB_565);
 		}
+		
 
 		if (cv == null) {
 			cv = new Canvas();
@@ -216,7 +234,6 @@ public class MapControl extends RelativeLayout {
 			canvas.setBitmap(cvBitmap);
 		}
 
-		synchronized (this) {
 			Bitmap tmpBitmap;
 			canvas.drawBitmap(mapBg, 0, 0, paint);
 
@@ -230,7 +247,6 @@ public class MapControl extends RelativeLayout {
 					}
 				}
 			}
-		}
 
 	}
 	
@@ -249,6 +265,13 @@ public class MapControl extends RelativeLayout {
 			paint = new Paint();
 		}
 
+		@Override
+		protected void onAttachedToWindow(){
+			super.onAttachedToWindow();
+			postInvalidateDelayed(500);
+			
+		}
+		
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
@@ -311,54 +334,6 @@ public class MapControl extends RelativeLayout {
 
 	private void stopInertion() {
 		startInertion = false;
-	}
-
-	class CanvasUpdater implements Runnable {
-
-		private static final int UPDATE_INTERVAL = 20;
-
-		int step = 0;
-
-		int d = 3;
-
-		public void run() {
-			while (running) {
-				try {
-					Thread.sleep(CanvasUpdater.UPDATE_INTERVAL);
-					// if (startInertion) {
-					// processInertion();
-					// }
-					if(pmap.canDraw){
-						main.postInvalidate();
-						
-					} else {
-					//	System.out.println("none");
-					}
-				} catch (InterruptedException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-
-		private void processInertion() {
-			if (step % 10 == 0) {
-				iengine.reduceSpeed();
-			}
-
-			if (step > iengine.step / 7 || d < 0) {
-				startInertion = false;
-				// quickHack();
-				step = 0;
-				return;
-			}
-
-			step++;
-
-			pmap.globalOffset.x += iengine.dx;
-			pmap.globalOffset.y += iengine.dy;
-
-		}
-
 	}
 
 }

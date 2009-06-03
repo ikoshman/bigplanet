@@ -21,8 +21,7 @@ public class TileResolver {
 
 	private int strategyId = MapStrategyFactory.GOOGLE_VECTOR;
 	
-	public int count = 0;
-
+	
 	public TileResolver(final PhysicMap physicMap) {
 		this.physicMap = physicMap;
 		tileLoader = new TileLoader(
@@ -32,6 +31,9 @@ public class TileResolver {
 					public void handle(RawTile tile, byte[] data) {
 						LocalStorageWrapper.put(tile, data, strategyId);
 						Bitmap bmp = LocalStorageWrapper.get(tile, strategyId);
+						if(bmp == null){
+							System.out.println("1111");
+						}
 						cacheProvider.putToCache(tile, bmp);
 						updateMap(tile, bmp);
 					}
@@ -45,12 +47,15 @@ public class TileResolver {
 
 			@Override
 			public synchronized void  handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
-				decCounter();
-				updateMap(tile, bitmap);
-				if (isScaled) {
-					cacheProvider.putToScaledCache(tile, bitmap);
+				if(bitmap!=null){
+					updateMap(tile, bitmap);
+					if (isScaled) {
+						cacheProvider.putToScaledCache(tile, bitmap);
+					}	
 				}
+				
 			}
+		
 
 		};
 		// обработчик загрузки с дискового кеша
@@ -58,7 +63,6 @@ public class TileResolver {
 
 			@Override
 			public synchronized void handle(RawTile tile, Bitmap bitmap, boolean isScaled) {
-				decCounter();
 				if (bitmap != null) {
 					updateMap(tile, bitmap);
 					cacheProvider.putToCache(tile, bitmap);
@@ -66,14 +70,12 @@ public class TileResolver {
 					
 					bitmap = cacheProvider.getScaledTile(tile);
 					if(bitmap==null){
-						incCounter();
-						
 						new Thread(new TileScaler(tile, scaledHandler, strategyId)).start();
 						
 					} else {
-						decCounter();
+						updateMap(tile, bitmap);
+						
 					}
-					updateMap(tile, bitmap);
 					load(tile);
 				}
 			}
@@ -86,18 +88,7 @@ public class TileResolver {
 		tileLoader.load(tile);
 	}
 	
-	private void incCounter(){
-		synchronized (this) {
-			count++;
-		}
-	}
 	
-	
-	private void decCounter(){
-		synchronized (this) {
-			count--;
-		}
-	}
 
 	private synchronized void updateMap(RawTile tile, Bitmap bitmap) {
 		physicMap.update(bitmap, tile);
@@ -115,7 +106,6 @@ public class TileResolver {
 			//bitmap = cacheProvider.getTile(tile);
 		}
 		if (bitmap == null) {
-			incCounter();
 			// асинхронная загрузка
 			LocalStorageWrapper.get(tile, localLoaderHandler, strategyId);
 		}
