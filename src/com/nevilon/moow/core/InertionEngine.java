@@ -20,6 +20,11 @@ public class InertionEngine {
 	
 	public double dy;
 	
+	// величины ускорения
+	public double ax;
+	
+	public double ay;
+	
 	private Stack<Point> moveHistory;
 	
 	
@@ -27,11 +32,11 @@ public class InertionEngine {
 		this.interval = interval;
 		this.moveHistory = moveHistory;
 		findAB();
-		//dx = b.x - a.x;
-		//dy = b.y - a.y;
-		dx = 30;
-		dy = 50;
-		interval = 1000;
+		
+		dx = b.x - a.x;
+		dy = b.y - a.y;
+		ax = (dx/interval);
+		ay = (dy/interval);
 	}
 	
 	
