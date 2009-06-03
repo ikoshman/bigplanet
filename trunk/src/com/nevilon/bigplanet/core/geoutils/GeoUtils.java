@@ -131,6 +131,26 @@ public class GeoUtils {
 	   }
 
 
+	   public static String TileXYToQuadKey(int tileX, int tileY, int levelOfDetail)
+       {
+           StringBuilder quadKey = new StringBuilder();
+           for (int i = levelOfDetail; i > 0; i--)
+           {
+               char digit = '0';
+               int mask = 1 << (i - 1);
+               if ((tileX & mask) != 0)
+               {
+                   digit++;
+               }
+               if ((tileY & mask) != 0)
+               {
+                   digit++;
+                   digit++;
+               }
+               quadKey.append(digit);
+           }
+           return quadKey.toString();
+       }
 
 
 	   /**
@@ -138,8 +158,11 @@ public class GeoUtils {
 	    * @param args
 	    */
 	   public static void main(String[] args) {
-	      System.out.println(toTileXY(50.4536290 , 30.5038280, 10));
-	      System.out.println(getPixelOffsetInTile(50.4536290, 30.5038280, 10));
+	      //System.out.println(toTileXY(50.4536290 , 30.5038280, 10));
+	      //System.out.println(getPixelOffsetInTile(50.4536290, 30.5038280, 10));
+	      System.out.println(TileXYToQuadKey(327, 795, 11));
+	      
+	      
 	     }
 
 	}

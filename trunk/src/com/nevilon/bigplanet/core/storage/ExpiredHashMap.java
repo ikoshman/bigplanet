@@ -34,9 +34,9 @@ public class ExpiredHashMap {
 	}
 	
 	public synchronized void put(RawTile tile, Bitmap bitmap) {
-		if (expCacheMap.size() >= maxSize) {
-			gc();
-		}
+		//if (expCacheMap.size() >= maxSize) {
+		//	gc();
+		//}
 		expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),
 				bitmap);
 	}
@@ -54,6 +54,7 @@ public class ExpiredHashMap {
 	 * Удаляет определенную часть самых старых элементов в кеше
 	 */
 	public void gc() {
+		if(expCacheMap.size() >= maxSize){
 		Iterator<ExpRawTile> it = expCacheMap.keySet().iterator();
 		List<ExpRawTile> listToSort = new ArrayList<ExpRawTile>();
 		while (it.hasNext()) {
@@ -64,6 +65,7 @@ public class ExpiredHashMap {
 			expCacheMap.remove(listToSort.get(i));
 		}
 		Log.i("CACHE", "clean");
+		}
 	}
 
 	private class ExpRawTile extends RawTile implements Comparable<ExpRawTile> {

@@ -15,10 +15,10 @@ public class BitmapCacheWrapper {
 	/*
 	 * размер кеша (для каждого обоих типов)
 	 */
-	public final static int CACHE_SIZE = 20;
+	public final static int CACHE_SIZE = 30;
 	private BitmapCache cache = new BitmapCache(CACHE_SIZE);
 
-	private BitmapCache scaledCache = new BitmapCache(5);
+	private BitmapCache scaledCache = new BitmapCache(10);
 
 	private static BitmapCacheWrapper instance;
 	
@@ -65,6 +65,12 @@ public class BitmapCacheWrapper {
 	 */
 	public void putToCache(RawTile tile, Bitmap bitmap) {
 	cache.put(tile, bitmap);
+	}
+	
+	public void gc(){
+		scaledCache.gc();
+		cache.gc();
+		System.gc();
 	}
 
 	public void clear() {
