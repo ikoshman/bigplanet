@@ -42,7 +42,6 @@ public class YandexVectorMapStrategy extends MapStrategy {
 		Layer layer = layers.get(layout);
 		String url = MessageFormat.format(layer.getURLPattern(),
 				String.valueOf(x), String.valueOf(y), String.valueOf(17 - z)); 
-		System.out.println(url);
 		return url;
 	}
 

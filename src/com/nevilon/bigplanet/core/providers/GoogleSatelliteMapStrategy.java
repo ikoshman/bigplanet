@@ -24,7 +24,7 @@ public class GoogleSatelliteMapStrategy extends MapStrategy {
 
 			@Override
 			public String getURLPattern() {
-				return SERVER+"kh?v=36&hl=ru&x={0}&y={1}&z={2}&s=Gal";
+				return SERVER+"kh?v=36&hl=en&x={0}&y={1}&z={2}&s=Gal";
 			}
 
 			

@@ -25,7 +25,7 @@ public class GoogleLandscapeMapStrategy extends MapStrategy {
 
 			@Override
 			public String getURLPattern() {
-				return SERVER+"mt?v=w2p.87&hl=ru&x={0}&y={1}&z={2}&s=Galil";
+				return SERVER+"mt?v=w2p.87&hl=en&x={0}&y={1}&z={2}&s=Galil";
 			}
 
 
