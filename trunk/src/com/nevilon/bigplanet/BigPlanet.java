@@ -172,6 +172,7 @@ public class BigPlanet extends Activity {
 
 				@Override
 				public void onMapLongClick(int x, int y) {
+					hideMessage();
 					final GeoBookmark newGeoBookmark = new GeoBookmark();
 					newGeoBookmark.setOffsetX(mapControl.getPhysicalMap()
 							.getGlobalOffset().x);
@@ -229,6 +230,7 @@ public class BigPlanet extends Activity {
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		hideMessage();
 		switch (item.getItemId()) {
 		case 11:
 			showMapSaver();
@@ -263,12 +265,23 @@ public class BigPlanet extends Activity {
 	private void switchToBookmarkMode() {
 		if (mapControl.getMapMode() != MapControl.SELECT_MODE) {
 			mapControl.setMapMode(MapControl.SELECT_MODE);
-			textMessage = Toast.makeText(this, "Select object",
-					Toast.LENGTH_LONG);
-			textMessage.show();
+			showMessage();
 		}
 	}
 
+	
+	private void showMessage(){
+		textMessage = Toast.makeText(this, "Select object",
+				Toast.LENGTH_LONG);
+		textMessage.show();
+	}
+	
+	private void hideMessage(){
+		if(textMessage!=null){
+			textMessage.cancel();
+		}
+	}
+	
 	/**
 	 * Отображает диалоги для кеширования карты в заданном радиусе
 	 */
