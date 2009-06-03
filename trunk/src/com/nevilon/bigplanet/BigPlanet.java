@@ -89,6 +89,7 @@ public class BigPlanet extends Activity {
 		}
 		Preferences.putTile(mapControl.getPhysicalMap().getDefaultTile());
 		Preferences.putOffset(mapControl.getPhysicalMap().getGlobalOffset());
+		System.gc();
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
