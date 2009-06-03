@@ -1,15 +1,41 @@
 package com.nevilon.bigplanet.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import com.nevilon.bigplanet.R;
 import com.nevilon.bigplanet.core.geoutils.GeoUtils;
 import com.nevilon.bigplanet.core.geoutils.Point;
 
 public class MarkerManager {
 
+	public static final int MY_LOCATION_MARKER = 0;
+	
+	public static final int BOOKMARK_MARKER = 1;
+	
+	public static final int SEARCH_MARKER = 2;
+	
+	private  HashMap<Integer,MarkerImage> images = new HashMap<Integer,MarkerImage>(); 
+	
+	
 	private List<Marker> markers = new ArrayList<Marker>();
-
+	
+	private Resources resources;
+	
+	public MarkerManager(Resources resources){	
+		this.resources = resources;
+		images.put(MY_LOCATION_MARKER, new MarkerImage(decodeBitmap(R.drawable.current_postion),0,0));
+	    images.put(BOOKMARK_MARKER,new MarkerImage(decodeBitmap(R.drawable.bookmark_marker),12,32));
+		images.put(SEARCH_MARKER, new MarkerImage(decodeBitmap(R.drawable.location_marker),12,32));	
+	}
+	
+	
 	
 	// вызывается при зуммировании, пересчет отступа и координат тайла всех маркеров
 	public void updateCoordinates(int z){
@@ -24,8 +50,8 @@ public class MarkerManager {
 		}
 	}
 	
-	public void addMarker(Place place, int zoom,boolean isGPS){
-		Marker marker = new Marker(place,isGPS);
+	public void addMarker(Place place, int zoom,boolean isGPS, int type){
+		Marker marker = new Marker(place,images.get(type),isGPS);
 		updateParams(marker, zoom);
 		markers.add(marker);	
 	}
@@ -54,6 +80,38 @@ public class MarkerManager {
 		return result;
 	}
 	
+	private Bitmap decodeBitmap(int resourceId){
+		return BitmapFactory.decodeResource(resources, resourceId);
+	}
+	
+	public static class MarkerImage{
+		
+		private Bitmap image;
+		
+		private int offsetX;
+		
+		private int offsetY;
+		
+		public MarkerImage(Bitmap image, int offsetX, int offsetY){
+			this.image = image;
+			this.offsetX = offsetX;
+			this.offsetY = offsetY;
+		}
+		
+		public Bitmap getImage(){
+			return this.image;
+		}
+		
+		public int getOffsetX(){
+			return this.offsetX;
+		}
+		
+		public int getOffsetY(){
+			return this.offsetY;
+		}
+		
+	}
+	
 	public  class Marker {
 		
 		private Place place;
@@ -64,13 +122,20 @@ public class MarkerManager {
 		
 		private boolean isGPS;
 		
-		public Marker(Place place, boolean isGPS){
+		private MarkerImage markerImage;
+		
+		public Marker(Place place, MarkerImage markerImage, boolean isGPS){
 			this.place = place;	
 			this.isGPS = isGPS;
+			this.markerImage = markerImage;
 		}
 		
 		public Point getOffset(){
 			return this.offset;
+		}
+		
+		public MarkerImage getMarkerImage(){
+			return this.markerImage;
 		}
 
 		@Override

@@ -94,7 +94,7 @@ public class BigPlanet extends Activity {
 		
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
-		mm = new MarkerManager();
+		mm = new MarkerManager(getResources());
 		RawTile savedTile = Preferences.getTile();
 		configMapControl(savedTile);
 		// использовать ли сеть
@@ -138,7 +138,7 @@ public class BigPlanet extends Activity {
 		case GO_TO_LOCATION:
 			int z = 5;
 			Place place = (Place) data.getSerializableExtra("place");
-			mm.addMarker(place, z,false);
+			mm.addMarker(place, z,false, MarkerManager.SEARCH_MARKER);
 			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
 					place.getLat(), place.getLon(), z);
 			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
@@ -371,7 +371,7 @@ public class BigPlanet extends Activity {
 		Place place = new Place();
 		place.setLat(lat);
 		place.setLon(lon);
-		mm.addMarker(place, z,true);
+		mm.addMarker(place, z,true,MarkerManager.MY_LOCATION_MARKER);
 	}
 
 	private void showSearch() {
