@@ -95,7 +95,6 @@ public class TileProvider implements Runnable {
 		 			bmp4scale = BitmapFactory.decodeStream(outStream);
 		 		}
 		 	}
-		 	if(bmp4scale==null){System.out.println("not loaded blya");}
 		 	return bmp4scale;
 		}
 		
@@ -147,11 +146,12 @@ public class TileProvider implements Runnable {
 					
 					// копирование области и скалирование
 					int[] pixels = new int[tileSize*tileSize];
-					
-					bitmap.getPixels(pixels, 0, tileSize, offsetParentX ,offsetParentY, tileSize, tileSize);
-			 		bitmap = Bitmap.createBitmap(pixels, tileSize, tileSize, Config.RGB_565);
-			 		return Bitmap.createScaledBitmap(bitmap, 256, 256, false);
-				}
+					if(offsetParentY>0){
+						bitmap.getPixels(pixels, 0, tileSize, offsetParentX ,offsetParentY, tileSize, tileSize);
+				 		bitmap = Bitmap.createBitmap(pixels, tileSize, tileSize, Config.RGB_565);
+				 		return Bitmap.createScaledBitmap(bitmap, 256, 256, false);
+					}
+									}
 			}	
 			return bitmap;
 		}

@@ -1,6 +1,7 @@
 package com.nevilon.moow.core;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 
 public class PhysicMap {
 
@@ -9,6 +10,9 @@ public class PhysicMap {
 	private Bitmap[][] cells = new Bitmap[3][3];
 
 	private RawTile defTile;
+	
+	public Point globalOffset = new Point();
+
 
 	public PhysicMap(RawTile defTile) {
 		this.defTile = defTile;
@@ -42,6 +46,7 @@ public class PhysicMap {
 
 	public void move(int dx, int dy){	
 		reload(defTile.x -dx,defTile.y - dy, defTile.z);
+		
 	}
 	
 	public Bitmap[][] getCells() {
@@ -54,6 +59,18 @@ public class PhysicMap {
 
 	
 	private void reload(int x, int y, int z){
+		System.out.println(y);
+		int tileCount = (int) Math.pow(2, 17-defTile.z);
+		/*if(y<0){return;}
+		if(x<0){
+			x = tileCount+x;
+			System.out.println("offsetX " +globalOffset.x);
+			globalOffset.x = 320+globalOffset.x-256;
+		} else if(x>tileCount-1){
+			x = Math.abs(x-tileCount);
+			globalOffset.x = globalOffset.x -256;
+		}
+		*/
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
@@ -74,6 +91,15 @@ public class PhysicMap {
 				int x, y;
 				x = (tile.x + i);
 				y = (tile.y + j);
+
+				/*int tileCount = (int) Math.pow(2, 17-defTile.z);
+				
+				if(x<0){
+					x = tileCount+x;
+				} else if(x>tileCount-1){
+					x = Math.abs(tileCount-x);
+				}
+				*/
 				Bitmap tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,y,tile.z));
 				if(tmpBitmap!=null){
 					cells[i][j] = tmpBitmap;

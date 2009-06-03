@@ -26,15 +26,14 @@ public class MoowMap extends Activity {
 
 	private Point previousMovePoint = new Point();
 	private Point nextMovePoint = new Point();
-	private Point globalOffset = new Point();
-
+	
 	private  int zoom = 12; // whole world
 
 	private PhysicMap pmap = new PhysicMap(new RawTile(9, 7, zoom));
 	
 	boolean inMove = false;
 	
-	private long lastTouchTime =-1;
+	private DoubleClickDispatcher dcDispatcher = new DoubleClickDispatcher();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,27 +66,80 @@ public class MoowMap extends Activity {
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 	}
 
+	private static class DoubleClickDispatcher{
+		
+		/**
+		 * Минимальный временной промежуток между двумя 
+		 * отдельными касаниями, при котором они воспринимаются как 
+		 * двойное касание
+		 */
+		private static int CLICK_INTERVAL = 400;
+		
+		/**
+		 * Максимальное расстояние между касаниями,
+		 * при котором они воспринимаются как двойное
+		 */
+		private static int CLICK_PRECISE = 3;
+		
+		/**
+		 * Хранит предыдущее событие
+		 */
+		private Point previousPoint;
+		
+		/**
+		 * Хранит время предыдущего события
+		 */
+		private long eventTime;
+		
+		public boolean process(MotionEvent currentEvent){
+			if (previousPoint!=null 
+					&& (System.currentTimeMillis()-eventTime)<DoubleClickDispatcher.CLICK_INTERVAL
+					&& isNear((int)currentEvent.getX(), (int)currentEvent.getY())){
+				return true;
+			}
+			previousPoint = new Point();
+			previousPoint.x  = (int) currentEvent.getX();
+			previousPoint.y  = (int) currentEvent.getY();
+			eventTime = System.currentTimeMillis();
+			return false;
+		}
+		
+		/**
+		 * Проверяет, находится ли первая точка вблизи второй
+		 * @param event
+		 * @return
+		 */
+		private boolean isNear(int x, int y){
+			boolean checkX = Math.abs(previousPoint.x - x)<=DoubleClickDispatcher.CLICK_PRECISE;
+			boolean checkY = Math.abs(previousPoint.y - y)<=DoubleClickDispatcher.CLICK_PRECISE; 
+			return checkX == checkY && checkX == true;		
+		}
+		
+	}
+	
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
+		// опускание клавиши
 		case MotionEvent.ACTION_DOWN:
 			inMove = false;
-			nextMovePoint.set((int) event.getX(), (int) event.getY());
-			if (System.currentTimeMillis() - lastTouchTime<1000){
-				zoomIn((int)event.getX(), (int)event.getY());
-			} else {
-				lastTouchTime = System.currentTimeMillis();
-			}
-			break;
+			nextMovePoint.set((int) event.getX(), (int) event.getY());	
+			break;	
+		// движение
 		case MotionEvent.ACTION_MOVE:
 			inMove = true;
 			moveCoordinates(event.getX(), event.getY());
 			break;
+		// поднятие клавиши
 		case MotionEvent.ACTION_UP:
+			System.out.println("UP");
 			if(inMove){
 				moveCoordinates(event.getX(), event.getY());
 			    quickHack();
 			    quickHack();
-			    
+			} else {
+			   if(dcDispatcher.process(event)){
+					zoomIn((int)event.getX(), (int)event.getY());				
+				}
 			}
 			
 			break;
@@ -96,27 +148,33 @@ public class MoowMap extends Activity {
 		return super.onTouchEvent(event);
 	}
 
+	
 	private  void  quickHack(){
 		int dx = 0,dy = 0;
-	    if(globalOffset.x>0){
-	    	dx = Math.round((globalOffset.x+320)/256);
+	    if(pmap.globalOffset.x>0){
+	    	dx = Math.round((pmap.globalOffset.x+320)/256);
 	    } else {
-	    	dx = Math.round((globalOffset.x)/256);
+	    	dx = Math.round((pmap.globalOffset.x)/256);
 	    }
 	    
 	    
-	    if(globalOffset.y>0){
-	    	dy = (int)Math.floor((globalOffset.y+480)/256);  
+	    
+	    
+	    if(pmap.globalOffset.y>0){
+	    	dy = (int)Math.floor((pmap.globalOffset.y+480)/256);  
 	    } else {
-	    	dy = (int)Math.floor(globalOffset.y/256);
+	    	dy = (int)Math.floor(pmap.globalOffset.y/256);
 		    
 	    }
 	    
-	    globalOffset.x = globalOffset.x - dx*256 ;
-	    globalOffset.y = globalOffset.y - dy*256;
+	    pmap.globalOffset.x = pmap.globalOffset.x - dx*256 ;
+	    pmap.globalOffset.y = pmap.globalOffset.y - dy*256;
+	    
 	    
 	    pmap.move(dx, dy);
-	   
+	    
+	  
+	    
 	}
 	
 	private void zoomCenter(){
@@ -131,8 +189,8 @@ public class MoowMap extends Activity {
    private void zoomIn(int offsetX, int offsetY){
 		if(zoom>0){
 			//получение отступа он начала координат
-			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+offsetX;
-			int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+offsetY;
+			int currentZoomX = pmap.getDefaultTile().x*256-pmap.globalOffset.x+offsetX;
+			int currentZoomY = pmap.getDefaultTile().y*256-pmap.globalOffset.y+offsetY;
 			// получение координат углового тайла
 			int tileX = (currentZoomX*2)/256;
 			int tileY = (currentZoomY*2)/256;
@@ -146,8 +204,8 @@ public class MoowMap extends Activity {
 	 */
 	private void zoomOut(){
 		if((zoom)<16){
-			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+160;
-			int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+240;
+			int currentZoomX = pmap.getDefaultTile().x*256-pmap.globalOffset.x+160;
+			int currentZoomY = pmap.getDefaultTile().y*256-pmap.globalOffset.y+240;
 			int tileX = (currentZoomX/2)/256;
 			int tileY = (currentZoomY/2)/256;
 			zoom++;
@@ -162,8 +220,8 @@ public class MoowMap extends Activity {
 	private void moveCoordinates(float x, float y) {
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 		nextMovePoint.set((int) x, (int) y);
-		globalOffset.set(globalOffset.x
-				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
+		pmap.globalOffset.set(pmap.globalOffset.x
+				+ (nextMovePoint.x - previousMovePoint.x), pmap.globalOffset.y
 				+ (nextMovePoint.y - previousMovePoint.y));
 	}
 
@@ -175,8 +233,8 @@ public class MoowMap extends Activity {
 			for (int j = 0; j < 3; j++) {
 				tmpBitmap = pmap.getCells()[i][j];
 				if (tmpBitmap != null) {
-					canvas.drawBitmap(tmpBitmap, (i) * 256 + globalOffset.x,
-							(j) * 256 + globalOffset.y, paint);
+					canvas.drawBitmap(tmpBitmap, (i) * 256 + pmap.globalOffset.x,
+							(j) * 256 + pmap.globalOffset.y, paint);
 				}
 			}
 		}
