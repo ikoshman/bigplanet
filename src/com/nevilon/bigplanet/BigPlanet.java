@@ -2,6 +2,7 @@ package com.nevilon.bigplanet;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -44,14 +45,12 @@ public class BigPlanet extends Activity {
 		int mapSourceId = Preferences.getSourceId();
 		mapControl.getPhysicalMap().getTileResolver().setMapSource(mapSourceId);
 		// величина отступа
-		Point globalOffset = Preferences.getOffset(); 
+		Point globalOffset = Preferences.getOffset();
 		mapControl.getPhysicalMap().setGlobalOffset(globalOffset);
 		// использовать ли сеть
 		boolean useNet = Preferences.getUseNet();
 		mapControl.getPhysicalMap().getTileResolver().setUseNet(useNet);
 	}
-
-	
 
 	/**
 	 * Обрабатывает поворот телефона
@@ -63,8 +62,7 @@ public class BigPlanet extends Activity {
 	}
 
 	/**
-	 * Запоминает текущий тайл и отступ при выгрузке
-	 * приложения
+	 * Запоминает текущий тайл и отступ при выгрузке приложения
 	 */
 	@Override
 	protected void onDestroy() {
@@ -86,12 +84,13 @@ public class BigPlanet extends Activity {
 		sub.add(2, 11, 1, "Cache map");
 		// add network mode menu
 		menu.add(0, 3, 0, "Network mode");
+		//add settings menu
+		menu.add(0, 4,0, "Settings");
 		return true;
 	}
 
 	/**
-	 * Устанавливает статус(активен/неактивен)
-	 * пунктов меню
+	 * Устанавливает статус(активен/неактивен) пунктов меню
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -99,7 +98,6 @@ public class BigPlanet extends Activity {
 		menu.findItem(11).setEnabled(useNet);
 		return true;
 	}
-
 
 	/**
 	 * Устанавливает размеры карты и др. свойства
@@ -116,7 +114,14 @@ public class BigPlanet extends Activity {
 		}
 		setContentView(mapControl, new ViewGroup.LayoutParams(width, height));
 	}
-	
+
+	/**
+	 * Создает радиокнопку с заданными параметрами
+	 * 
+	 * @param label
+	 * @param id
+	 * @return
+	 */
 	private RadioButton buildRadioButton(String label, int id) {
 		RadioButton btn = new RadioButton(this);
 		btn.setText(label);
@@ -124,15 +129,14 @@ public class BigPlanet extends Activity {
 		return btn;
 	}
 
+	/**
+	 * Обрабатывает нажатие на меню
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 11:
-			MapSaverUI mapSaverUI = new MapSaverUI(this, mapControl
-					.getPhysicalMap().getZoomLevel(), mapControl
-					.getPhysicalMap().getAbsoluteCenter(), mapControl
-					.getPhysicalMap().getTileResolver().getMapSourceId());
-			mapSaverUI.show();
+			showMapSaver();
 			break;
 		case 0:
 			selectMapSource();
@@ -140,9 +144,29 @@ public class BigPlanet extends Activity {
 		case 3:
 			selectNetworkMode();
 			break;
+		case 4:
+			showSettingsMenu();
+			break;
 		}
 		return false;
 
+	}
+
+	private void showSettingsMenu(){
+		Intent intent = new Intent();
+		intent.setClass(this, SettingsMenu.class);
+		startActivity(intent);
+	}
+	
+	/**
+	 * Отображает диалоги для кеширования карты в заданном радиусе
+	 */
+	private void showMapSaver() {
+		MapSaverUI mapSaverUI = new MapSaverUI(this, mapControl
+				.getPhysicalMap().getZoomLevel(), mapControl.getPhysicalMap()
+				.getAbsoluteCenter(), mapControl.getPhysicalMap()
+				.getTileResolver().getMapSourceId());
+		mapSaverUI.show();
 	}
 
 	/**
