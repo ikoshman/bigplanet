@@ -471,8 +471,8 @@ public class MapControl extends RelativeLayout {
 						scalePoint.set((int) event.getX(), (int) event.getY());
 						float sx = (pmap.getWidth() / 2 - event.getX());
 						float sy = (pmap.getHeight() / 2 - event.getY());
-						final float dx = (sx / (1f / 0.1f));
-						final float dy = (sy / (1f / 0.1f));
+						final float dx = (sx / (1f / 0.2f));
+						final float dy = (sy / (1f / 0.2f));
 						
 						new Thread() {
 
@@ -488,9 +488,9 @@ public class MapControl extends RelativeLayout {
 							    
 								while (pmap.scaleFactor <= 2) {
 									try {
-										Thread.sleep(SMOOT_ZOOM_INTERVAL);
+										Thread.sleep(SMOOT_ZOOM_INTERVAL*2);
 										
-										pmap.scaleFactor += 0.1f;
+										pmap.scaleFactor += 0.2f;
 
 										tx += dx;
 										ty += dy;
