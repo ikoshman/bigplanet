@@ -1,15 +1,16 @@
 package com.nevilon.bigplanet.core.loader;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.http.HttpStatus;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import com.nevilon.bigplanet.core.RawTile;
 import com.nevilon.bigplanet.core.providers.MapStrategy;
 
 public abstract class BaseLoader extends Thread {
 
-	public static final int CONNECTION_TIMEOUT = 8000;
+	public static final int CONNECTION_TIMEOUT = 10000;
 
 	private RawTile[] tiles;
 
@@ -55,30 +56,43 @@ public abstract class BaseLoader extends Thread {
 		return true;
 	}
 
-	private byte[] load(RawTile tile) throws Exception {
-
+	private byte[] load(RawTile tile) {
+		HttpURLConnection connection = null;
 		try {
-			HttpClient client = new HttpClient();
-
-			client.getHttpConnectionManager().getParams().setSoTimeout(BaseLoader.CONNECTION_TIMEOUT);
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(
-					BaseLoader.CONNECTION_TIMEOUT);
-
-			GetMethod method = new GetMethod(getStrategy().getURL(tile.x, tile.y, tile.z,0));
-			//if(tile.l = )
-			int statusCode = client.executeMethod(method);
-			if (statusCode != -1 && method.getStatusCode() == HttpStatus.SC_OK) {
-				byte data[] = method.getResponseBody();
-				method.releaseConnection();
-				return data;
-			} else {
+			URL u = new URL(getStrategy().getURL(tile.x, tile.y, tile.z, 0));
+			connection = (HttpURLConnection) u
+					.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setReadTimeout(BaseLoader.CONNECTION_TIMEOUT);
+			connection.setConnectTimeout(BaseLoader.CONNECTION_TIMEOUT);
+			connection.connect();
+			int responseCode = connection.getResponseCode();
+			if (responseCode!= HttpURLConnection.HTTP_OK) {
 				return null;
 			}
+			int contentLength = connection.getContentLength();
+			InputStream raw = connection.getInputStream();
+			InputStream in = new BufferedInputStream(raw, 4096);
+			byte[] data = new byte[contentLength];
+			int bytesRead = 0;
+			int offset = 0;
+			while (offset < contentLength) {
+				bytesRead = in.read(data, offset, data.length - offset);
+				if (bytesRead == -1)
+					break;
+				offset += bytesRead;
+			}
+			in.close();
+			if (offset != contentLength) {
+				return null;
+			}
+			return data;
 		} catch (Exception e) {
 			e.printStackTrace();
-
-			return null;
+		} finally{
+			connection.disconnect();
 		}
+		return null;
 
 	}
 
