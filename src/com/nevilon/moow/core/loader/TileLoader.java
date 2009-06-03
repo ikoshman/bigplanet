@@ -100,7 +100,7 @@ public class TileLoader implements Runnable {
 
 
 		@Override
-		protected void handle(RawTile tile, byte[] data) {
+		protected void handle(RawTile tile, byte[] data, int meta) {
 			TileLoader.this.tileLoaded(tile, data);
 		}
 

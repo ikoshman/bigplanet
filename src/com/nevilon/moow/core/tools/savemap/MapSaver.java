@@ -56,7 +56,10 @@ public class MapSaver {
 	}
 
 	
-	private void handle(RawTile tile, byte[] data){
+	private void handle(RawTile tile, byte[] data, int meta){
+		if(data == null && meta==1 ){
+			totalSuccessful++;
+		} else 
 		if(data==null){
 			totalUnsuccessful++;
 		} else {
@@ -86,8 +89,9 @@ public class MapSaver {
 
 
 		@Override
-		protected void handle(RawTile tile, byte[] data) {
-			MapSaver.this.handle(tile, data);
+		protected void handle(RawTile tile, byte[] data, int meta) {
+			MapSaver.this.handle(tile, data, meta
+					);
 		}
 		
 
