@@ -8,6 +8,8 @@ import com.nevilon.bigplanet.core.db.GeoBookmark;
 import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,6 +26,18 @@ public class AllGeoBookmarks extends ListActivity{
 		DAO dao = new DAO(this);
 		geoBookmarks  =  dao.getBookmarks();
 		setListAdapter(new SpeechListAdapter(this));
+	}
+
+	
+	/**
+	 * Создает элементы меню
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, 0, 0, "Edit");
+		menu.add(0, 1, 0, "Delete");
+		return true;
 	}
 
 	
@@ -69,26 +83,26 @@ public class AllGeoBookmarks extends ListActivity{
 		public SpeechView(Context context, String name, String description) {
 			super(context);
 			View v = View.inflate(AllGeoBookmarks.this, R.layout.geobookmark, null);
-			TextView txt1 = (TextView) v.findViewById(android.R.id.text1);
-			txt1.setText(name);
+			nameLabel = (TextView) v.findViewById(android.R.id.text1);
+			nameLabel.setText(name);
 
-			TextView txt2 = (TextView) v.findViewById(android.R.id.text2);
-			txt2.setText(description);
+			descriptionLabel = (TextView) v.findViewById(android.R.id.text2);
+			descriptionLabel.setText(description);
 			addView(v);
 		}
 
 		public void setName(String name) {
-			mTitle.setText(name);
+			descriptionLabel.setText(name);
 		}
 
 		public void setDescription(String description) {
-			mDialogue.setText(description);
+			descriptionLabel.setText(description);
 		}
 
 		protected long id;
 
-		private TextView mTitle;
-		private TextView mDialogue;
+		private TextView nameLabel;
+		private TextView descriptionLabel;
 	}
 	
 }
