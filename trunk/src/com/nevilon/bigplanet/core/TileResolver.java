@@ -159,16 +159,22 @@ public class TileResolver {
 		}
 	}
 	
-	public void fillMap(RawTile tile){
-		Bitmap[][] cells = new Bitmap[3][3];
-		for(int i=0;i<4;i++){
-			for(int j=0;j<4;j++){
+	public Bitmap[][] fillMap(RawTile tile, final int size){
+		Bitmap[][] cells = new Bitmap[size][size];
+		for(int i=0;i<size;i++){
+			for(int j=0;j<size;j++){
+				int x, y;
+				x = (tile.x + i);
+				y = (tile.y + j);
+				
+				RawTile tmp = new RawTile(x,y,tile.z, tile.s);
+				
 				Bitmap bitmap;
-				bitmap =  cacheProvider.getTile(tile);
+				bitmap =  cacheProvider.getTile(tmp);
 				if(bitmap==null){
-					bitmap= LocalStorageWrapper.get(null);
+					bitmap= LocalStorageWrapper.get(tmp);
 					if(bitmap==null){
-						bitmap = TileScaler.get(null);
+						bitmap = TileScaler.get(tmp);
 						if(bitmap==null){
 							// установить фон
 						}
@@ -177,6 +183,7 @@ public class TileResolver {
 				cells[i][j]=bitmap;
 			}
 		}
+		return cells;
 	}
 
 }
