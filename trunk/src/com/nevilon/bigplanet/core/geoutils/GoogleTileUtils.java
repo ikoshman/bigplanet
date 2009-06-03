@@ -6,6 +6,8 @@ package com.nevilon.bigplanet.core.geoutils;
  * No warranty for this code is taken in any way. 
  */
 
+import com.nevilon.bigplanet.core.RawTile;
+
 import android.graphics.Point;
 
 /**
@@ -75,4 +77,10 @@ public class GoogleTileUtils {
 		return point;
 	}
 
+	
+	public static boolean isValid(RawTile tile){
+		int tileCount = (int) Math.pow(2, 17 - tile.z);
+		return (tile.x<tileCount && tile.y<tileCount);
+	}
+	
 }

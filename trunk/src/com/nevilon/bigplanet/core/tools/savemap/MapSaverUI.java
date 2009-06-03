@@ -2,20 +2,20 @@ package com.nevilon.bigplanet.core.tools.savemap;
 
 import java.text.MessageFormat;
 import java.util.Stack;
+import java.util.Timer;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -34,16 +34,22 @@ public class MapSaverUI {
 	private Context context;
 
 	private int zoomLevel;
+	
+  	private boolean alreadyCreated = false;
 
 	private Point absoluteCenter;
 
 	private MapSaver mapSaver;
 
-	private Stack<RawTile> tiles;
+	private Stack<RawTile> tiles = new Stack<RawTile>();
 
 	private int sourceId;
 
+	private int radius = 0;
+
 	private TextView downloadInfo;
+
+	private Timer timer = new Timer();
 
 	public MapSaverUI(Context context, int zoomLevel, Point absoluteCenter,
 			int sourceId) {
@@ -66,33 +72,13 @@ public class MapSaverUI {
 		View v = View.inflate(context, R.layout.savemap, null);
 
 		downloadInfo = (TextView) v.findViewById(R.id.downloadInfo);
-		final EditText radiusValue = (EditText) v
-				.findViewById(R.id.radiusValue);
 
-		radiusValue.addTextChangedListener(new TextWatcher() {
-
-			public void afterTextChanged(Editable arg0) {
-				int radius = Integer.parseInt(arg0.toString());
-				updateLabels(radius);
-
-			}
-
-			public void beforeTextChanged(CharSequence arg0, int arg1,
-					int arg2, int arg3) {
-			}
-
-			public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-					int arg3) {
-			}
-
-		});
-
-		radiusValue.setText("0");
-		updateLabels(0);
+		updateLabels();
 		final Button startButton = (Button) v.findViewById(R.id.startButton);
 		startButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
+				getTiles(radius, false);
 				paramsDialog.dismiss();
 				showProgressDialog();
 				// запуск загрузки, отображение индикатора
@@ -121,9 +107,8 @@ public class MapSaverUI {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromTouch) {
 
-				int radius = (int) Math.pow(2, progress);
-				radiusValue.setText(String.valueOf(radius));
-				updateLabels(radius);
+				radius = (int) Math.pow(2, progress);
+				updateLabels();
 			}
 
 		});
@@ -132,10 +117,11 @@ public class MapSaverUI {
 
 	}
 
-	private void updateLabels(int radius) {
-		tiles = getTiles(radius);
-		downloadInfo.setText(String.valueOf(tiles.size()) + " tile(s) / "
-				+ String.valueOf(tiles.size() * 20000 / 1024) + " KB");
+	private void updateLabels() {
+		int tilesCount = getTiles(radius, true);
+		downloadInfo.setText(String.valueOf(radius) + " km, "
+				+ String.valueOf(tilesCount) + " tile(s) / "
+				+ String.valueOf(tilesCount * 1100 / 1024) + " KB");
 
 	}
 
@@ -143,40 +129,103 @@ public class MapSaverUI {
 		final ProgressDialog downloadDialog = new ProgressDialog(context);
 		downloadDialog.setTitle("Downloading...");
 		downloadDialog.setCancelable(true);
+
 		downloadDialog.setButton("Cancel",
 				new DialogInterface.OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int which) {
 						mapSaver.stopDownload();
 						downloadDialog.dismiss();
+						timer.cancel();
 					}
 
 				});
 
 		downloadDialog.show();
 
-		mapSaver = new MapSaver(tiles, MapStrategyFactory
-				.getStrategy(MapStrategyFactory.GOOGLE_VECTOR), new Handler() {
+		final Thread updateThread;
+		mapSaver = new MapSaver(tiles,
+				MapStrategyFactory.getStrategy(sourceId), new Handler() {
+					
+			
+			     @Override
+					public void handleMessage(Message msg) {
+						
+			    	 
+			    	 
+			    	 
+			    	 switch (msg.what) {
+						case 0:
+							System.out.println("case");
+							if (!alreadyCreated && mapSaver.getTotalSuccessful()
+									+ mapSaver.getTotalUnsuccessful() == tiles
+									.size()) {
+								alreadyCreated = true;
+								downloadDialog.dismiss();
+								
+								System.out.println("create");
+								
+								Builder completeDialog = new AlertDialog.Builder(
+										context)
+								.setTitle("Download complete")
+										.setMessage("All tiles were saved")
+											.setPositiveButton(
+													"Ok",
+													new DialogInterface.OnClickListener() {
+
+													public void onClick(
+															DialogInterface dialog,
+															int which) {
+														downloadDialog.cancel();
+														System.out.println("close");
+													}
+
+												});
+								completeDialog.show();
+							}
+
+							break;
+						}
+						super.handleMessage(msg);
+					}
+
+				});
+
+		final Handler handler = new Handler() {
+
 			@Override
 			public void handleMessage(Message msg) {
-				switch (msg.what) {
-				case 0:
-					if (mapSaver.getTotalSuccessful()
-							+ mapSaver.getTotalUnsuccessful() == tiles.size()) {
-						downloadDialog.dismiss();
-					} else {
-						String message = MessageFormat.format(DOWNLOAD_MESSAGE,
-								mapSaver.getTotalSuccessful(), tiles.size(),
-								mapSaver.getTotalKB(), mapSaver
-										.getTotalUnsuccessful());
-						downloadDialog.setMessage(message);
-					}
-					break;
-				}
-				super.handleMessage(msg);
+
+				String message = MessageFormat.format(DOWNLOAD_MESSAGE,
+						mapSaver.getTotalSuccessful(), tiles.size(), mapSaver
+								.getTotalKB(), mapSaver.getTotalUnsuccessful());
+				downloadDialog.setMessage(message);
 			}
 
-		});
+		};
+
+		updateThread = new Thread() {
+
+
+			@Override
+			public void run() {
+
+				while (downloadDialog != null && downloadDialog.isShowing()) {
+					try {
+						Thread.sleep(1000);
+						handler.sendEmptyMessage(0);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+				}
+				System.out.println("fuck");
+
+			}
+
+		};
+
+		updateThread.start();
 
 		String message = MessageFormat.format(DOWNLOAD_MESSAGE, mapSaver
 				.getTotalSuccessful(), tiles.size(), mapSaver.getTotalKB(),
@@ -185,7 +234,7 @@ public class MapSaverUI {
 		mapSaver.download();
 	}
 
-	private Stack<RawTile> getTiles(int radius) {
+	private int getTiles(int radius, boolean onlyCount) {
 		Point latLon = GoogleTileUtils.getLatLong(absoluteCenter.x / 256,
 				absoluteCenter.y / 256, zoomLevel);
 		double resolution = (Math.cos(latLon.x * Math.PI / 180) * 2 * Math.PI * 6378137)
@@ -201,14 +250,22 @@ public class MapSaverUI {
 		int topX = cx - dTile;
 		int topY = cy - dTile;
 
-		final Stack<RawTile> tiles = new Stack<RawTile>();
+		tiles.clear();
+		int count = 0;
 		for (int i = topX; i <= topX + 2 * dTile; i++) {
 			for (int j = topY; j <= topY + 2 * dTile; j++) {
-				RawTile tile = new RawTile(i, j, zoomLevel, sourceId);
-				tiles.add(tile);
+				if (onlyCount) {
+					count++;
+				} else {
+					RawTile tile = new RawTile(i, j, zoomLevel, sourceId);
+					if (GoogleTileUtils.isValid(tile)) {
+						tiles.add(tile);
+					}
+
+				}
 			}
 		}
-		return tiles;
+		return count;
 	}
 
 }

@@ -78,6 +78,7 @@ public class PhysicMap {
 	}
 
 	public void move(int dx, int dy) {
+		System.gc();
 		reload(defTile.x - dx, defTile.y - dy, defTile.z);
 
 	}
@@ -87,6 +88,7 @@ public class PhysicMap {
 	}
 
 	public void zoom(int x, int y, int z) {
+		System.gc();
 		reload(x, y, z);
 	}
 

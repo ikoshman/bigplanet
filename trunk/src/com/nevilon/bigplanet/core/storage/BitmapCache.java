@@ -52,16 +52,5 @@ public class BitmapCache {
 		return cacheMap.get(tile);
 	}
 
-	/**
-	 * Получение битмапа из кеша
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return битмап (или null если не найден)
-	 */
-	public Bitmap get(int x, int y, int z, int s) {
-		return cacheMap.get(new RawTile(x, y, z, s));
-	}
 
 }

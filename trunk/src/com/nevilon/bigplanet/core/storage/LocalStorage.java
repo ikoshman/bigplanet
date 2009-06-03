@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+
 import com.nevilon.bigplanet.core.RawTile;
 
 /**
@@ -20,11 +21,13 @@ public class LocalStorage {
 	private static final int BUFFER_SIZE = 4096;
 
 	private static LocalStorage localStorage;
+	
+	private static String TILE_FILE_NAME = "tile";
 
 	/**
 	 * Корневой каталог для файлового кеша
 	 */
-	private static final String root_dir_location = "/sdcard/moow/";
+	private static final String root_dir_location = "/sdcard/bigplanet/";
 
 	public static LocalStorage getInstance() {
 		if (localStorage == null) {
@@ -58,8 +61,8 @@ public class LocalStorage {
 	}
 
 	public boolean isExists(RawTile tile) {
-		String path = buildPath(tile.x, tile.y, tile.z);
-		File tileFile = new File(path + "/tile." + tile.s + ".tl");
+		String path = buildPath(tile);
+		File tileFile = new File(path + TILE_FILE_NAME);
 		return tileFile.exists();
 	}
 
@@ -90,15 +93,10 @@ public class LocalStorage {
 	 * @param z
 	 * @return
 	 */
-	private String buildPath(int x, int y, int z) {
-		String intPath = String.valueOf(z) + String.valueOf(x)
-				+ String.valueOf(y);
-		StringBuffer path = new StringBuffer();
+	private String buildPath(RawTile tile) {
+	    StringBuffer path = new StringBuffer();
 		path.append(root_dir_location);
-		for (int i = 0; i < intPath.length(); i++) {
-			path.append(intPath.charAt(i));
-			path.append("/");
-		}
+		path.append(tile.toString());
 		return path.toString();
 	}
 
@@ -111,10 +109,10 @@ public class LocalStorage {
 	 *            параметры тайла
 	 */
 	public void put(RawTile tile, byte[] data) {
-		String path = buildPath(tile.x, tile.y, tile.z);
+		String path = buildPath(tile);
 		File fullPath = new File(path);
 		fullPath.mkdirs();
-		fullPath = new File(path + "tile." + tile.s + ".tl");
+		fullPath = new File(path + TILE_FILE_NAME);
 		try {
 			BufferedOutputStream outStream = new BufferedOutputStream(
 					new FileOutputStream(fullPath), BUFFER_SIZE);
@@ -135,8 +133,8 @@ public class LocalStorage {
 	 * @return тайл
 	 */
 	public BufferedInputStream get(RawTile tile) {
-		String path = buildPath(tile.x, tile.y, tile.z);
-		File tileFile = new File(path + "/tile." + tile.s + ".tl");
+		String path = buildPath(tile);
+		File tileFile = new File(path + TILE_FILE_NAME);
 		if (tileFile.exists()) {
 			try {
 				BufferedInputStream io = new BufferedInputStream(

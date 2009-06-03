@@ -146,10 +146,8 @@ public class MapControl extends RelativeLayout {
 				 * Callback, выполняющий перерисовку карты по запросу
 				 */
 				@Override
-				public synchronized void execute() {
-					if (main != null) {
-						main.postInvalidate();
-					}
+				public  void execute() {
+					updateScreen();
 				}
 
 			});
@@ -159,7 +157,14 @@ public class MapControl extends RelativeLayout {
 
 	}
 
-	private void quickHack() {
+	
+	private synchronized void  updateScreen(){
+		if (main != null) {
+			main.postInvalidate();
+		}
+	}
+	
+	private  void quickHack() {
 		int dx = 0, dy = 0;
 		int tdx, tdy;
 		Point globalOffset = pmap.getGlobalOffset();
@@ -317,6 +322,7 @@ public class MapControl extends RelativeLayout {
 	public void setMapSource(int sourceId) {
 		getPhysicalMap().getTileResolver().setMapSource(sourceId);
 		getPhysicalMap().reloadTiles();
+		updateScreen();
 	}
 
 }

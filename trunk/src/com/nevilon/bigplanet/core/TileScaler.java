@@ -24,9 +24,7 @@ public class TileScaler implements Runnable {
 
 	public void run() {
 		Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
-		// if (bmp4scale != null) {
 		handler.handle(tile, bmp4scale, true);
-		// }
 	}
 
 	/**
@@ -78,7 +76,7 @@ public class TileScaler implements Runnable {
 
 				// копирование области и скалирование
 				int[] pixels = new int[tileSize * tileSize];
-				if (offsetParentY >= 0 && offsetParentX >= 0) {
+				if (offsetParentY >= 0 && offsetParentX >= 0 && tileSize>0) {
 					bitmap.getPixels(pixels, 0, tileSize, offsetParentX,
 							offsetParentY, tileSize, tileSize);
 					bitmap = Bitmap.createBitmap(pixels, tileSize, tileSize,

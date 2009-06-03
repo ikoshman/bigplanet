@@ -37,6 +37,7 @@ public abstract class BaseLoader extends Thread {
 			}
 			if (checkTile(tile)) {
 				try {
+					System.out.println(tile);
 					byte[] data = load(tile);
 					handle(tile, data, 0);
 				} catch (Exception e) {
@@ -50,7 +51,7 @@ public abstract class BaseLoader extends Thread {
 
 	}
 
-	private boolean checkTile(RawTile tile) {
+	protected boolean checkTile(RawTile tile) {
 		return true;
 	}
 
