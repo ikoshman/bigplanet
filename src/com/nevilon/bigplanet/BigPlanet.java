@@ -121,7 +121,11 @@ public class BigPlanet extends Activity {
 		// add settings menu
 		// menu.add(0, 4,0, "Settings");
 		// add bookmark menu
-		menu.add(0,5,0,"Add bookmark");
+		
+		sub = menu.addSubMenu(0, 6, 0, "Bookmarks");
+		sub.add(0, 61, 1, "View");
+		sub.add(0,62,0,"Add");
+		
 		return true;
 	}
 
@@ -210,13 +214,23 @@ public class BigPlanet extends Activity {
 			// showSettingsMenu();
 			break;
 			
-		case 5:
+		case 62:
 			switchToBookmarkMode();
+			break;
+		case 61:
+			showAllGeoBookmarks();
+			break;
 		}
 		return false;
 
 	}
 
+	private void showAllGeoBookmarks(){
+		Intent intent = new Intent();
+		intent.setClass(this, AllGeoBookmarks.class);
+		startActivity(intent);
+	}
+	
 	
 	private void switchToBookmarkMode(){
 		if(mapControl.getMapMode()!=MapControl.SELECT_MODE){
