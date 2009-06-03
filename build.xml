@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<project name="moow" default="sing">
+
+<target name="sing">
+
+
+
+  <signjar jar="bin/moow.apk"  destDir="." alias="android" keystore="/home/hudvin/android.keystore" verbose="yes" storepass="qwerty" preservelastmodified="true">
+  </signjar>
+
+</target>
+
+</project>
