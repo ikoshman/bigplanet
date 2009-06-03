@@ -1,9 +1,7 @@
 package com.nevilon.bigplanet;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -12,18 +10,14 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SubMenu;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
@@ -40,6 +34,8 @@ import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 
 public class BigPlanet extends Activity {
 
+	private static final String BOOKMARK_DATA = "bookmark";
+	
 	private Toast textMessage;
 
 	/*
@@ -95,7 +91,7 @@ public class BigPlanet extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
 		case RESULT_OK:
-			GeoBookmark bookmark = (GeoBookmark) data.getSerializableExtra("bookmark");
+			GeoBookmark bookmark = (GeoBookmark) data.getSerializableExtra(BOOKMARK_DATA);
 			mapControl.getPhysicalMap().setDefTile(bookmark.getTile());
 			
 			Point offset = new Point();
@@ -132,19 +128,19 @@ public class BigPlanet extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		// add map source menu
-		menu.add(0, 0, 0, "Map source").setIcon(R.drawable.database_up);
+		menu.add(0, 0, 0, R.string.MAP_SOURCE_MENU).setIcon(R.drawable.database_up);
 		// add tools menu
-		SubMenu sub = menu.addSubMenu(0, 1, 0, "Tools").setIcon(R.drawable.tools);
-		sub.add(2, 11, 1, "Cache map");
+		SubMenu sub = menu.addSubMenu(0, 1, 0, R.string.TOOLS_MENU).setIcon(R.drawable.tools);
+		sub.add(2, 11, 1, R.string.CACHE_MAP_MENU);
 		// add network mode menu
-		menu.add(0, 3, 0, "Network mode").setIcon(R.drawable.mode);
+		menu.add(0, 3, 0, R.string.NETWORK_MODE_MENU).setIcon(R.drawable.mode);
 		// add settings menu
 		// menu.add(0, 4,0, "Settings");
 		// add bookmark menu
 
-		sub = menu.addSubMenu(0, 6, 0, "Bookmarks").setIcon(R.drawable.bookmark);
-		sub.add(0, 61, 1, "View");
-		sub.add(0, 62, 0, "Add");
+		sub = menu.addSubMenu(0, 6, 0, R.string.BOOKMARKS_MENU).setIcon(R.drawable.bookmark);
+		sub.add(0, 61, 1, R.string.BOOKMARKS_VIEW_MENU);
+		sub.add(0, 62, 0, R.string.BOOKMARK_ADD_MENU);
 
 		return true;
 	}
@@ -272,7 +268,7 @@ public class BigPlanet extends Activity {
 
 	
 	private void showMessage(){
-		textMessage = Toast.makeText(this, "Select object",
+		textMessage = Toast.makeText(this, R.string.SELECT_OBJECT_MESSAGE,
 				Toast.LENGTH_LONG);
 		textMessage.show();
 	}
@@ -302,7 +298,7 @@ public class BigPlanet extends Activity {
 		networkModeDialog = new Dialog(this);
 		networkModeDialog.setCanceledOnTouchOutside(true);
 		networkModeDialog.setCancelable(true);
-		networkModeDialog.setTitle("Select network mode");
+		networkModeDialog.setTitle(R.string.SELECT_NETWORK_MODE_LABEL);
 
 		final LinearLayout mainPanel = new LinearLayout(this);
 		mainPanel.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
@@ -316,10 +312,10 @@ public class BigPlanet extends Activity {
 				RadioGroup.LayoutParams.WRAP_CONTENT);
 
 		modesRadioGroup
-				.addView(buildRadioButton("Offline", 0), 0, layoutParams);
+				.addView(buildRadioButton(getResources().getString((R.string.OFFLINE_MODE_LABEL)), 0), 0, layoutParams);
 
 		modesRadioGroup
-				.addView(buildRadioButton("Online ", 1), 0, layoutParams);
+				.addView(buildRadioButton(getResources().getString(R.string.ONLINE_MODE_LABEL), 1), 0, layoutParams);
 
 		boolean useNet = Preferences.getUseNet();
 		int checked = 0;
@@ -354,7 +350,7 @@ public class BigPlanet extends Activity {
 		mapSourceDialog = new Dialog(this);
 		mapSourceDialog.setCanceledOnTouchOutside(true);
 		mapSourceDialog.setCancelable(true);
-		mapSourceDialog.setTitle("Select map source");
+		mapSourceDialog.setTitle(R.string.SELECT_MAP_SOURCE_TITLE);
 
 		ScrollView scrollPanel = new ScrollView(this);
 		scrollPanel.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,

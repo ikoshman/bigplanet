@@ -2,12 +2,6 @@ package com.nevilon.bigplanet;
 
 import java.util.List;
 
-import com.nevilon.bigplanet.core.db.DAO;
-import com.nevilon.bigplanet.core.db.GeoBookmark;
-import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
-import com.nevilon.bigplanet.core.ui.MapControl;
-import com.nevilon.bigplanet.core.ui.OnDialogClickListener;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
@@ -16,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,8 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemLongClickListener;
 
+import com.nevilon.bigplanet.core.db.DAO;
+import com.nevilon.bigplanet.core.db.GeoBookmark;
+import com.nevilon.bigplanet.core.ui.AddBookmarkDialog;
+import com.nevilon.bigplanet.core.ui.OnDialogClickListener;
+
 public class AllGeoBookmarks extends ListActivity {
 
+	private static final String BOOKMARK_DATA = "bookmark";
 	private List<GeoBookmark> geoBookmarks;
 
 	@Override
@@ -44,7 +43,7 @@ public class AllGeoBookmarks extends ListActivity {
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Intent intent = new Intent();
-				intent.putExtra("bookmark", geoBookmarks.get(position));
+				intent.putExtra(BOOKMARK_DATA, geoBookmarks.get(position));
 				setResult(RESULT_OK,intent);
 				finish();
 				return false;
@@ -59,8 +58,8 @@ public class AllGeoBookmarks extends ListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, 0, 0, "Edit").setIcon(R.drawable.edit);
-		menu.add(0, 1, 0, "Delete").setIcon(R.drawable.delete);
+		menu.add(0, 0, 0, R.string.EDIT_MENU).setIcon(R.drawable.edit);
+		menu.add(0, 1, 0, R.string.DELETE_MENU).setIcon(R.drawable.delete);
 		return true;
 	}
 
@@ -100,9 +99,9 @@ public class AllGeoBookmarks extends ListActivity {
 			break;
 
 		case 1: // удаление закладки
-			new AlertDialog.Builder(this).setTitle("Bookmark removing")
-					.setMessage("Are you really want to remove this bookmark?")
-					.setPositiveButton("Yes",
+			new AlertDialog.Builder(this).setTitle(R.string.REMOVE_BOOKMARK_TITLE)
+					.setMessage(R.string.REMOVE_BOOKMARK_MESSAGE)
+					.setPositiveButton(R.string.YES_LABEL,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int whichButton) {
@@ -111,7 +110,7 @@ public class AllGeoBookmarks extends ListActivity {
 											bookmarkId).getId());
 									setData();
 								}
-							}).setNegativeButton("No", null).show();
+							}).setNegativeButton(R.string.NO_LABEL, null).show();
 			break;
 		default:
 			break;

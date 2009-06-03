@@ -27,15 +27,13 @@ import com.nevilon.bigplanet.core.providers.MapStrategyFactory;
 
 public class MapSaverUI {
 
-	private static final String DOWNLOAD_MESSAGE = "{0} tile(s) of {1} downloaded({2}KB), {3} error(s)";
-
-	final String MESSAGE_PATTERN = DOWNLOAD_MESSAGE;
+	private final String DOWNLOAD_MESSAGE_PATTERN;
 
 	private Context context;
 
 	private int zoomLevel;
-	
-  	private boolean alreadyCreated = false;
+
+	private boolean alreadyCreated = false;
 
 	private Point absoluteCenter;
 
@@ -57,6 +55,7 @@ public class MapSaverUI {
 		this.absoluteCenter = absoluteCenter;
 		this.zoomLevel = zoomLevel;
 		this.sourceId = sourceId;
+		DOWNLOAD_MESSAGE_PATTERN = getText(R.string.DOWNLOAD_MESSAGE_PATTERN);
 	}
 
 	public void show() {
@@ -65,7 +64,7 @@ public class MapSaverUI {
 
 	private void showParamsDialog() {
 		final Dialog paramsDialog = new Dialog(context);
-		paramsDialog.setTitle("Select radius of region");
+		paramsDialog.setTitle(R.string.REGION_RADIUS_TITLE);
 		paramsDialog.setCanceledOnTouchOutside(true);
 		paramsDialog.setCancelable(true);
 
@@ -119,18 +118,18 @@ public class MapSaverUI {
 
 	private void updateLabels() {
 		int tilesCount = getTiles(radius, true);
-		downloadInfo.setText(String.valueOf(radius) + " km, "
-				+ String.valueOf(tilesCount) + " tile(s) / "
-				+ String.valueOf(tilesCount * 1100 / 1024) + " KB");
-
+		String message = MessageFormat.format(
+				getText(R.string.DOWNLOAD_PROGRESS_MESSAGE_PATTERN), radius,
+				tilesCount, (int) (tilesCount * 1100 / 1024));
+		downloadInfo.setText(message);
 	}
 
 	private void showProgressDialog() {
 		final ProgressDialog downloadDialog = new ProgressDialog(context);
-		downloadDialog.setTitle("Downloading...");
+		downloadDialog.setTitle(R.string.DOWNLOAD_IN_PROGRESS_MESSAGE);
 		downloadDialog.setCancelable(true);
 
-		downloadDialog.setButton("Cancel",
+		downloadDialog.setButton(getText(R.string.CANCEL_LABEL),
 				new DialogInterface.OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int which) {
@@ -146,38 +145,33 @@ public class MapSaverUI {
 		final Thread updateThread;
 		mapSaver = new MapSaver(tiles,
 				MapStrategyFactory.getStrategy(sourceId), new Handler() {
-					
-			
-			     @Override
+
+					@Override
 					public void handleMessage(Message msg) {
-						
-			    	 
-			    	 
-			    	 
-			    	 switch (msg.what) {
+
+						switch (msg.what) {
 						case 0:
-							System.out.println("case");
-							if (!alreadyCreated && mapSaver.getTotalSuccessful()
-									+ mapSaver.getTotalUnsuccessful() == tiles
-									.size()) {
+							if (!alreadyCreated
+									&& mapSaver.getTotalSuccessful()
+											+ mapSaver.getTotalUnsuccessful() == tiles
+											.size()) {
 								alreadyCreated = true;
 								downloadDialog.dismiss();
-								
-								System.out.println("create");
-								
+
 								Builder completeDialog = new AlertDialog.Builder(
 										context)
-								.setTitle("Download complete")
-										.setMessage("All tiles were saved")
-											.setPositiveButton(
-													"Ok",
-													new DialogInterface.OnClickListener() {
+										.setTitle(
+												R.string.DOWNLOAD_COMPLETE_TITLE)
+										.setMessage(
+												R.string.DOWNLOAD_COMPLETE_MESSAGE)
+										.setPositiveButton(
+												R.string.OK_LABEL,
+												new DialogInterface.OnClickListener() {
 
 													public void onClick(
 															DialogInterface dialog,
 															int which) {
 														downloadDialog.cancel();
-														System.out.println("close");
 													}
 
 												});
@@ -196,7 +190,7 @@ public class MapSaverUI {
 			@Override
 			public void handleMessage(Message msg) {
 
-				String message = MessageFormat.format(DOWNLOAD_MESSAGE,
+				String message = MessageFormat.format(DOWNLOAD_MESSAGE_PATTERN,
 						mapSaver.getTotalSuccessful(), tiles.size(), mapSaver
 								.getTotalKB(), mapSaver.getTotalUnsuccessful());
 				downloadDialog.setMessage(message);
@@ -205,7 +199,6 @@ public class MapSaverUI {
 		};
 
 		updateThread = new Thread() {
-
 
 			@Override
 			public void run() {
@@ -219,19 +212,21 @@ public class MapSaverUI {
 					}
 
 				}
-				System.out.println("fuck");
-
 			}
 
 		};
 
 		updateThread.start();
 
-		String message = MessageFormat.format(DOWNLOAD_MESSAGE, mapSaver
-				.getTotalSuccessful(), tiles.size(), mapSaver.getTotalKB(),
-				mapSaver.getTotalUnsuccessful());
+		String message = MessageFormat.format(DOWNLOAD_MESSAGE_PATTERN,
+				mapSaver.getTotalSuccessful(), tiles.size(), mapSaver
+						.getTotalKB(), mapSaver.getTotalUnsuccessful());
 		downloadDialog.setMessage(message);
 		mapSaver.download();
+	}
+
+	private String getText(int resourceId) {
+		return context.getResources().getText(resourceId).toString();
 	}
 
 	private int getTiles(int radius, boolean onlyCount) {
