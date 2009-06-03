@@ -242,7 +242,7 @@ public class PhysicMap {
 
 	
 	private void updateMap(){
-		System.out.println("counter " + tileResolver.loaded);
+		//System.out.println("counter " + tileResolver.loaded);
 		if(tileResolver.loaded ==9){
 			updateScreenCommand.execute();
 		}

@@ -1,8 +1,12 @@
 package com.nevilon.bigplanet;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +25,7 @@ import android.view.SubMenu;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -46,7 +51,7 @@ import com.nevilon.bigplanet.core.ui.OnMapLongClickListener;
 public class BigPlanet extends Activity {
 
 	public static final int GO_TO_LOCATION = 20;
-	
+
 	private static final String BOOKMARK_DATA = "bookmark";
 
 	private Toast textMessage;
@@ -55,22 +60,22 @@ public class BigPlanet extends Activity {
 	 * Графический движок, реализующий карту
 	 */
 	private MapControl mapControl;
-	
+
 	private MarkerManager mm;
-	
+
 	private LocationManager locationManager;
 
 	private boolean inHome = false;
-	
+
 	/**
 	 * Конструктор
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
-	 	mm = new MarkerManager();
+		mm = new MarkerManager();
 		RawTile savedTile = Preferences.getTile();
 		configMapControl(savedTile);
 		// использовать ли сеть
@@ -85,8 +90,6 @@ public class BigPlanet extends Activity {
 		mapControl.getPhysicalMap().reloadTiles();
 	}
 
-
-	
 	/**
 	 * Обрабатывает поворот телефона
 	 */
@@ -115,12 +118,14 @@ public class BigPlanet extends Activity {
 		switch (resultCode) {
 		case GO_TO_LOCATION:
 			int z = 5;
-			Place place = (Place)data.getSerializableExtra("place");
-			mm.addMarker(place,z);
-			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(place.getLat(), place.getLon(), z);
-			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
-			mapControl.goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
-			break;	
+			Place place = (Place) data.getSerializableExtra("place");
+			mm.addMarker(place, z);
+			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
+					place.getLat(), place.getLon(), z);
+			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
+					.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
+			mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
+			break;
 		case RESULT_OK:
 			GeoBookmark bookmark = (GeoBookmark) data
 					.getSerializableExtra(BOOKMARK_DATA);
@@ -160,29 +165,26 @@ public class BigPlanet extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, 7, 0, "My location").setIcon(R.drawable.home);
-		
-		SubMenu sub = menu.addSubMenu(0, 6, 0, R.string.BOOKMARKS_MENU).setIcon(
-				R.drawable.bookmark);
+
+		SubMenu sub = menu.addSubMenu(0, 6, 0, R.string.BOOKMARKS_MENU)
+				.setIcon(R.drawable.bookmark);
 		sub.add(0, 61, 1, R.string.BOOKMARKS_VIEW_MENU);
 		sub.add(0, 62, 0, R.string.BOOKMARK_ADD_MENU);
-		
-		
+
 		// add tools menu
 		sub = menu.addSubMenu(0, 1, 0, R.string.TOOLS_MENU).setIcon(
 				R.drawable.tools);
 		sub.add(2, 11, 1, R.string.CACHE_MAP_MENU);
 		sub.add(2, 12, 1, R.string.SEARCH_MENU);
 		sub.add(2, 13, 1, R.string.ABOUT_MENU);
-		sub.add(2,14,1,R.string.MAP_SOURCE_MENU);
+		sub.add(2, 14, 1, R.string.MAP_SOURCE_MENU);
 		sub.add(2, 15, 0, R.string.NETWORK_MODE_MENU);
-		
+
 		// add network mode menu
 		// add settings menu
 		// menu.add(0, 4,0, "Settings");
 		// add bookmark menu
 
-		
-		
 		return true;
 	}
 
@@ -304,64 +306,70 @@ public class BigPlanet extends Activity {
 
 	}
 
-	private void showMyLocation(){
+	private void showMyLocation() {
 		inHome = false;
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationListener(){
+		List<String> providers = locationManager.getProviders(true);
+		String provider = providers.get(0);
+		locationManager.requestLocationUpdates(provider, 10000, 1,
+				new LocationListener() {
 
-			public void onLocationChanged(Location location) {
-				locationManager.removeUpdates(this);
-				if(!inHome){
-					inHome = true;
-					goToMyLocation(location);
-				}
-			}
+					public void onLocationChanged(Location location) {
+						locationManager.removeUpdates(this);
+						if (!inHome) {
+							inHome = true;
+							goToMyLocation(location);
+						}
+					}
 
-			public void onProviderDisabled(String arg0) {}
+					public void onProviderDisabled(String arg0) {
+					}
 
-			public void onProviderEnabled(String arg0) {}
+					public void onProviderEnabled(String arg0) {
+					}
 
-			public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
-			
-		});
-		if(!inHome){
-			goToMyLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+					public void onStatusChanged(String arg0, int arg1,
+							Bundle arg2) {
+					}
+
+				});
+		if (!inHome) {
+			goToMyLocation(locationManager.getLastKnownLocation(provider));
 			inHome = true;
 		}
 	}
-	
-	private void goToMyLocation(Location location){
+
+	private void goToMyLocation(Location location) {
 		double lat = location.getLatitude();
 		double lon = location.getLongitude();
-		
+
 		int z = 1;
-		com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(lat, lon, z);
-		com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils.getPixelOffsetInTile(lat, lon, z);
-		mapControl.goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
-		
+		com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(lat,
+				lon, z);
+		com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
+				.getPixelOffsetInTile(lat, lon, z);
+		mapControl.goTo((int) p.x, (int) p.y, z, (int) off.x, (int) off.y);
+
 		Place place = new Place();
 		place.setLat(lat);
 		place.setLon(lon);
-		mm.addMarker(place,z);
+		mm.addMarker(place, z);
 		System.out.println("gps");
 	}
-	
-	private void showSearch(){
+
+	private void showSearch() {
 		Intent intent = new Intent();
 		intent.setClass(this, FindLocation.class);
 		startActivityForResult(intent, 0);
 	}
-	
+
 	private void showAbout() {
 		TextView tv = new TextView(this);
 		tv.setGravity(Gravity.CENTER);
 		tv.setText(R.string.ABOUT_MESSAGE);
 		tv.setTextSize(16f);
-		new AlertDialog.Builder(this)
-		.setTitle(R.string.ABOUT_TITLE)
-		.setView(tv)
-		.setIcon(R.drawable.comment)
-		.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
+		new AlertDialog.Builder(this).setTitle(R.string.ABOUT_TITLE)
+				.setView(tv).setIcon(R.drawable.comment).setPositiveButton(
+						"Yes", new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
@@ -506,11 +514,7 @@ public class BigPlanet extends Activity {
 		scrollPanel.addView(mainPanel);
 		mapSourceDialog.setContentView(scrollPanel);
 		mapSourceDialog.show();
-		
-		
-		
-	}
-	
 
-	
+	}
+
 }
