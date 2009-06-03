@@ -224,33 +224,6 @@ public class MapControl extends RelativeLayout {
 		tdy+=dy;
 		}
 		
-		
-		
-		/*System.out.println("first " + tdx + " " +tdy + " " + globalOffset);
-
-		if (globalOffset.x > 0) {
-			dx = Math.round((globalOffset.x + pmap.getWidth()) / TILE_SIZE);
-		} else {
-			dx = Math.round((globalOffset.x) / TILE_SIZE);
-		}
-
-		if (globalOffset.y > 0) {
-			dy = (int) Math.round((globalOffset.y + pmap.getHeight())
-					/ TILE_SIZE);
-		} else {
-			dy = (int) Math.round(globalOffset.y / TILE_SIZE);
-		}
-		
-		globalOffset.x = globalOffset.x - dx * TILE_SIZE;
-		globalOffset.y = globalOffset.y - dy * TILE_SIZE;
-
-		//System.out.println(globalOffset);
-		
-		tdx += dx;
-		tdy += dy;
-		*/
-		System.out.println("second " + tdx + " " +tdy + " " + globalOffset);
-		
 		if (!(tdx == 0 && tdy == 0)) {
 			pmap.move(tdx, tdy);
 		}
