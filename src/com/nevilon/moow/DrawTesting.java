@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnLongClickListener;
+import android.widget.TextView;
 import android.graphics.*;
 import android.content.*;
 
@@ -37,6 +38,7 @@ public class DrawTesting extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		main = new Panel(this);
 		setContentView(main, new ViewGroup.LayoutParams(320, 480));
@@ -56,6 +58,7 @@ public class DrawTesting extends Activity {
 				//влево
 				totalX += currentX-oldX;
 			}
+			
 
 			if (oldY > currentY) {
 				// вниз
@@ -67,8 +70,8 @@ public class DrawTesting extends Activity {
 
 			oldX = currentX;
 			oldY = currentY;
-			currentX = event.getX() - 40;
-			currentY = event.getY() - 100;
+			currentX = event.getX();
+			currentY = event.getY();
 
 			moving = true;
 			System.out.println("ACTION_MOVE");
@@ -79,20 +82,14 @@ public class DrawTesting extends Activity {
 			if (moving) {
 			}
 			moving = false;
+			oldX =0;
+			oldY = 0;
+			//currentX =0;
+			//currentY = 0;
 			break;
 		}
 
 		return super.onTouchEvent(event);
-		/*
-		 * boolean isMove = event.getAction() == MotionEvent.ACTION_MOVE;
-		 * 
-		 * if (isMove) { //totalX+=Math.abs(currentX-oldX); if(currentX>oldX){
-		 * totalX-=8; //totalX = totalX+(currentX-oldX); } else { totalX+=8;
-		 * //totalX=totalX+(currentX+oldX); } totalX-=8; oldX = currentX; oldY =
-		 * currentY; currentX = event.getX(); //- 40; currentY = event.getY();
-		 * //- 100; Log.e("ACTION", String.valueOf(event.getAction())); return
-		 * super.onTouchEvent(event); } return super.onTouchEvent(event);
-		 */
 	}
 
 	private void loadTiles() {
@@ -130,21 +127,7 @@ public class DrawTesting extends Activity {
 			 
 
 		}
-		float x1 = currentX;
-		float y1 = currentY;
-		float x2 = (currentX) + 256;
-		float y2 = (currentY) + 256;
-		String mess = String.valueOf(x1) + " " + String.valueOf(y1) + " "
-				+ String.valueOf(x2) + " " + String.valueOf(y2);
-		// Log.i("MAP",mess);
-
-		// canvas.clipRect(x1, y1, x2, y2);
-		// Bitmap btp = BitmapFactory
-		// .decodeResource(getResources(), R.drawable.mt);
-		// canvas.drawBitmap(btp, currentX - 20, currentY + 20, paint);
-
-		// canvas.drawBitmap(btp, currentX - 20, currentY + 20, paint);
-		// }
+	
 	}
 
 	class Panel extends View implements OnLongClickListener {
@@ -153,7 +136,9 @@ public class DrawTesting extends Activity {
 		public Panel(Context context) {
 			super(context);
 			paint = new Paint();
-			// this.setOnLongClickListener(this);
+			TextView txt = new TextView(getContext());
+			txt.setText("xxxxxxxx");
+			addContentView(txt,new ViewGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT) );
 		}
 
 		@Override
