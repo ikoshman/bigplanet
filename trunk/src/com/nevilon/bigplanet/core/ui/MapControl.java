@@ -259,7 +259,7 @@ public class MapControl extends RelativeLayout {
 		}
 		pmap.setHeight(height);
 		pmap.setWidth(width);
-		quickHack();
+		pmap.quickHack();
 	}
 
 	private synchronized void updateScreen() {
@@ -268,37 +268,7 @@ public class MapControl extends RelativeLayout {
 		}
 	}
 
-	private void quickHack() {
-		int dx = 0, dy = 0;
-		int tdx = 0, tdy = 0;
-		Point globalOffset = pmap.getGlobalOffset();
 
-		for (int i = 0; i < 2; i++) {
-			if (globalOffset.x > 0) {
-				dx = Math.round((globalOffset.x + pmap.getWidth()) / TILE_SIZE);
-			} else {
-				dx = Math.round((globalOffset.x) / TILE_SIZE);
-			}
-
-			if (globalOffset.y > 0) {
-				dy = Math
-						.round((globalOffset.y + pmap.getHeight()) / TILE_SIZE);
-			} else {
-				dy = Math.round(globalOffset.y / TILE_SIZE);
-			}
-
-			globalOffset.x = globalOffset.x - dx * TILE_SIZE;
-			globalOffset.y = globalOffset.y - dy * TILE_SIZE;
-
-			tdx += dx;
-			tdy += dy;
-		}
-
-		if (!(tdx == 0 && tdy == 0)) {
-			pmap.move(tdx, tdy);
-		}
-
-	}
 
 	/**
 	 * Устанавливает состояние zoomIn/zoomOut контролов в зависимости от уровня
@@ -529,7 +499,7 @@ public class MapControl extends RelativeLayout {
 				} else {
 					if (inMove) {
 						pmap.moveCoordinates(event.getX(), event.getY());
-						quickHack();
+						pmap.quickHack();
 					}
 				}
 				break;

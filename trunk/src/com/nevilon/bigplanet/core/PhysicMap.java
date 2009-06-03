@@ -23,7 +23,7 @@ public class PhysicMap {
 	public RawTile defTile;
 
 	public double scaleFactor = 1.00d;
-	
+
 	private int zoom;
 
 	private Point globalOffset = new Point();
@@ -35,11 +35,11 @@ public class PhysicMap {
 	private int width;
 
 	private int height;
-	
+
 	private int correctionX;
-	
+
 	private int correctionY;
-	
+
 	public int inZoom = 0;
 
 	private AbstractCommand updateScreenCommand;
@@ -157,8 +157,8 @@ public class PhysicMap {
 			correctionX = -(nextZoomX - tileX * TILE_SIZE);
 			correctionY = -(nextZoomY - tileY * TILE_SIZE);
 
-			//globalOffset.x = correctionX;
-			//globalOffset.y = correctionY;
+			// globalOffset.x = correctionX;
+			// globalOffset.y = correctionY;
 			inZoom = -1;
 			zoom++;
 			zoom(tileX, tileY, zoom);
@@ -183,7 +183,7 @@ public class PhysicMap {
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
 			// получение отступа он начала координат
-			
+
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE
 					- globalOffset.x + offsetX);
 			int currentZoomY = (int) (getDefaultTile().y * TILE_SIZE
@@ -206,10 +206,10 @@ public class PhysicMap {
 			correctionY = nextZoomY - tileY * TILE_SIZE;
 
 			inZoom = 1;
-			//globalOffset.x = -(correctionX);
-			//globalOffset.y = -(correctionY);
+			// globalOffset.x = -(correctionX);
+			// globalOffset.y = -(correctionY);
 			zoom--;
-			
+
 			zoom(tileX, tileY, zoom);
 		}
 	}
@@ -217,15 +217,61 @@ public class PhysicMap {
 	/**
 	 * Установка текущего отступа
 	 * 
-	 * @param (int)f
-	 * @param (int)g
+	 * @param (int)x - координата x тача
+	 * @param (int)y - координата y тача
 	 */
-	public void moveCoordinates(float x, float y) {
+	public void moveCoordinates(final float x, final float y) {
+		// System.out.println(defTile.x + " " + defTile.y);
 		previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
 		nextMovePoint.set((int) x, (int) y);
-		globalOffset.set(globalOffset.x
-				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
-				+ (nextMovePoint.y - previousMovePoint.y));
+		int offsetX = globalOffset.x + (nextMovePoint.x - previousMovePoint.x);
+
+		int offsetY = globalOffset.y + (nextMovePoint.y - previousMovePoint.y);
+
+		if (getDefaultTile().x == 0) {
+			int sing = defTile.x < 0 ? -1 : 1;
+			int tx = defTile.x * 256 + sing * offsetX;
+			//System.out.println("offsetx " + tx);
+			if (nextMovePoint.x > previousMovePoint.x) {
+				 System.out.println("right");
+			
+				if (tx <= 0) {
+					//System.out.println("tx");
+					offsetX = 0;
+				}
+			
+				 
+			} else if (nextMovePoint.x < previousMovePoint.x) {
+				// System.out.println("up");
+				//if (tx <= 0) {
+					//System.out.println("tx");
+				//	offsetX = 0;
+
+			//	}
+			}
+
+		}
+
+		/*
+		if (getDefaultTile().y == 0) {
+
+			int sing = defTile.y < 0 ? -1 : 1;
+			int ty = defTile.y * 256 + sing * offsetY;
+
+			if (nextMovePoint.y > previousMovePoint.y) {
+				// System.out.println("right");
+			} else if (nextMovePoint.y < previousMovePoint.y) {
+				// System.out.println("left");
+				if (ty <= 0) {
+
+					offsetY = 0;
+
+					System.out.println("ty");
+				}
+			}
+		}
+		*/
+		globalOffset.set(offsetX, offsetY);
 		updateMap();
 	}
 
@@ -238,13 +284,44 @@ public class PhysicMap {
 		return centerPoint;
 	}
 
+	public void quickHack() {
+		int dx = 0, dy = 0;
+		int tdx = 0, tdy = 0;
+		Point globalOffset = getGlobalOffset();
+
+		for (int i = 0; i < 2; i++) {
+			if (globalOffset.x > 0) {
+				dx = Math.round((globalOffset.x + getWidth()) / TILE_SIZE);
+			} else {
+				dx = Math.round((globalOffset.x) / TILE_SIZE);
+			}
+
+			if (globalOffset.y > 0) {
+				dy = Math.round((globalOffset.y + getHeight()) / TILE_SIZE);
+			} else {
+				dy = Math.round(globalOffset.y / TILE_SIZE);
+			}
+
+			globalOffset.x = globalOffset.x - dx * TILE_SIZE;
+			globalOffset.y = globalOffset.y - dy * TILE_SIZE;
+
+			tdx += dx;
+			tdy += dy;
+		}
+
+		if (!(tdx == 0 && tdy == 0)) {
+			move(tdx, tdy);
+		}
+
+	}
+
 	private void updateMap() {
 		if (tileResolver.loaded == 9) {
-			if(inZoom!=0){
-				globalOffset.x = (-1)*inZoom*(correctionX);
-				globalOffset.y = (-1)*inZoom*(correctionY);
+			if (inZoom != 0) {
+				globalOffset.x = (-1) * inZoom * (correctionX);
+				globalOffset.y = (-1) * inZoom * (correctionY);
 				inZoom = 0;
-				scaleFactor =1;
+				scaleFactor = 1;
 			}
 			updateScreenCommand.execute();
 			int r = random.nextInt(10);
@@ -262,16 +339,16 @@ public class PhysicMap {
 		defTile.x = x;
 		defTile.y = y;
 		defTile.z = z;
-		// defTile = normalize(defTile);
 		loadCells(defTile);
 	}
 
 	public static RawTile normalize(RawTile tile) {
-		int x = normalize(tile.x, tile.z);
-		int y = normalize(tile.y, tile.z);
-		int z = tile.z;
-		RawTile newTile = new RawTile(x, y, z, tile.s);
-		return newTile;
+		//int x = normalize(tile.x, tile.z);
+		//int y = normalize(tile.y, tile.z);
+		//int z = tile.z;
+		//RawTile newTile = new RawTile(x, y, z, tile.s);
+		//return newTile;
+		return tile;
 	}
 
 	public static int normalize(int y, int z) {
@@ -301,10 +378,10 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalize(y, tile.z);
-				if(scaleFactor ==1){
+				if (scaleFactor == 1) {
 					setBitmap(MapControl.CELL_BACKGROUND, i, j);
 				}
-				//setBitmap(null, i, j);
+				// setBitmap(null, i, j);
 				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
 						.getMapSourceId()));
 			}
