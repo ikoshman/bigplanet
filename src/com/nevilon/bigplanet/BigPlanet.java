@@ -348,7 +348,6 @@ public class BigPlanet extends Activity {
 		place.setLat(lat);
 		place.setLon(lon);
 		mm.addMarker(place, z);
-		System.out.println("gps");
 	}
 
 	private void showSearch() {
