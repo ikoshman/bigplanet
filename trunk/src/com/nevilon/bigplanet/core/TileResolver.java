@@ -48,10 +48,11 @@ public class TileResolver {
 					boolean isScaled) {
 				loaded++;
 				if (bitmap != null) {
-					updateMap(tile, bitmap);
 					if (isScaled) {
 						cacheProvider.putToScaledCache(tile, bitmap);
+						updateMap(tile, bitmap);
 					}
+					
 				}
 			}
 
@@ -62,12 +63,15 @@ public class TileResolver {
 			@Override
 			public  void handle(RawTile tile, Bitmap bitmap,
 					boolean isScaled) {
+				if(tile.s ==-1){
+					throw new IllegalStateException();
+				}
 				if (bitmap != null) { // если тайл есть в файловом кеше
 					if(tile.s == strategyId && tile.z == physicMap.getZoomLevel()){
 						loaded++;
 					}
-					updateMap(tile, bitmap);
 					cacheProvider.putToCache(tile, bitmap);
+					updateMap(tile, bitmap);
 				} else { // если тайла нет в файловом кеше
 					bitmap = cacheProvider.getScaledTile(tile);
 					if (bitmap == null) {
@@ -97,6 +101,7 @@ public class TileResolver {
 
 	private void updateMap(RawTile tile, Bitmap bitmap) {
 		if (tile.s == strategyId) {
+			System.out.println("update map");
 			physicMap.update(bitmap, tile);
 		}
 	}
@@ -108,10 +113,9 @@ public class TileResolver {
 	 * @return
 	 */
 	public void getTile(final RawTile tile) {
-		//if(tile.l == 1){
-		//	load(tile);
-		//	return;
-		//}
+		if(tile.s == -1){
+			return;
+		}
 		Bitmap bitmap = cacheProvider.getTile(tile);
 		if (bitmap != null) {
 			// возврат тайла

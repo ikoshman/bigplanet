@@ -63,6 +63,7 @@ public class FindLocation extends ListActivity implements Runnable {
 
 		// text to search
 		searhText = (EditText) findViewById(R.id.searcText);
+		
 		// search button
 		ImageButton btn = (ImageButton) v.findViewById(R.id.searchBtn);
 		btn.setOnClickListener(new OnClickListener() {
@@ -110,15 +111,15 @@ public class FindLocation extends ListActivity implements Runnable {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent ev) {
 		switch (keyCode) {
-		case KeyEvent.KEYCODE_DPAD_CENTER:
+		case KeyEvent.KEYCODE_ENTER:
 			startSearch();	
 			return false;
 		default:
 			return super.onKeyDown(keyCode, ev);
 		}
 	}
-	*/
 	
+	*/
 	public void run() {
 		HttpClient client = new HttpClient();
 

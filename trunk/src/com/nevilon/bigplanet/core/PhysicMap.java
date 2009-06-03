@@ -40,25 +40,10 @@ public class PhysicMap {
 	}
 
 	public Bitmap getCell(int x, int y){
-		//Tile t = new Tile();
-		//t.x = x;
-		//t.y = y;
-		//Bitmap tmp =  cells.get(t).get(0);
-		//System.out.println(tmp);
-		//return tmp ;
 		return cells[x][y];
 	}
 	
 	private void setBitmap(Bitmap bmp, int x, int y){
-		/*Tile t = new Tile();
-		t.x = x;
-		t.y = y;
-		if(cells.get(t)==null){
-			cells.put(t, new ArrayList<Bitmap>());
-		}
-		cells.get(t).add(0,bmp);
-		*/
-		//cells.get put(t, bmp);
 		cells[x][y] = bmp;
 	}
 	
@@ -95,7 +80,9 @@ public class PhysicMap {
 			if (dx >= 0 && dy >= 0) {
 				try {
 					setBitmap(bitmap, dx, dy);
+					System.out.println("set bitmap");
 					//cells[dx][dy] = bitmap;
+				//	updateScreenCommand.execute(true);
 					updateMap();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -187,6 +174,7 @@ public class PhysicMap {
 	 */
 	public void zoomIn(int offsetX, int offsetY) {
 		if (zoom > 0) {
+			System.out.println("zoomImap " + zoom);
 			// получение отступа он начала координат
 			int currentZoomX = (int) (getDefaultTile().x * TILE_SIZE - globalOffset.x
 					+ offsetX);
@@ -242,7 +230,7 @@ public class PhysicMap {
 
 	
 	private void updateMap(){
-		//System.out.println("counter " + tileResolver.loaded);
+		System.out.println("counter " + tileResolver.loaded);
 		if(tileResolver.loaded ==9){
 			updateScreenCommand.execute();
 		}
@@ -296,6 +284,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void  loadCells(RawTile tile) {
+		System.out.println("reload " + getZoomLevel());
 		tileResolver.loaded = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -305,8 +294,8 @@ public class PhysicMap {
 
 				y = (tile.y + j);
 				y = normalizeY(y, tile.z);
-				//setBitmap(MapControl.CELL_BACKGROUND, i, j);
-				cells[i][j] = MapControl.CELL_BACKGROUND;
+				setBitmap(MapControl.CELL_BACKGROUND, i, j);
+				//cells[i][j] = MapControl.CELL_BACKGROUND;
 				tileResolver.getTile(new RawTile(x, y, zoom, tileResolver
 						.getMapSourceId()));
 			}

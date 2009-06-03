@@ -38,7 +38,9 @@ public class BitmapCache {
 	 *            битмап
 	 */
 	public void put(RawTile tile, Bitmap bitmap) {
-		System.out.println(tile.s);
+		if(tile.s==-1){
+			throw new IllegalStateException();
+		}
 		cacheMap.put(tile, bitmap);
 	}
 
