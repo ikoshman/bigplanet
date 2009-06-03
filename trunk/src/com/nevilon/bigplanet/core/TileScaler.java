@@ -64,7 +64,7 @@ public class TileScaler implements Runnable {
 			// необходимо возвращать, во сколько раз увеличить!!!
 			
 			RawTile tmpTile = new RawTile(parentTileX,
-					parentTileY, tmpZ, tile.s,0);
+					parentTileY, tmpZ, tile.s);
 			
 			if(bitmap==null){
 				bitmap =  BitmapCacheWrapper.getInstance().getTile(tmpTile);	
@@ -96,7 +96,7 @@ public class TileScaler implements Runnable {
 				}
 			}
 		}
-		return bitmap;
+		return null;
 	}
 
 }

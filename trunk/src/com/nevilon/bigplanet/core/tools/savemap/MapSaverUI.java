@@ -257,7 +257,7 @@ public class MapSaverUI {
 				if (onlyCount) {
 					count++;
 				} else {
-					RawTile tile = new RawTile(i, j, zoomLevel, sourceId,0);
+					RawTile tile = new RawTile(i, j, zoomLevel, sourceId);
 					if (GeoUtils.isValid(tile)) {
 						tiles.add(tile);
 					}
