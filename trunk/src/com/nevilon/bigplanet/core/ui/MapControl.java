@@ -339,19 +339,12 @@ public class MapControl extends RelativeLayout {
 		if(cb==null){
 			cs = new Canvas();
 			
-			cb = Bitmap.createBitmap(320,
-					480, Bitmap.Config.ARGB_8888);
+			cb = Bitmap.createBitmap(getWidth(),
+					getHeight(), Bitmap.Config.ARGB_8888);
 		 	
 		 	cs.setBitmap(cb); 
 		}
-		//canvas.freeGlCaches();
 		Bitmap tmpBitmap;
-		// if(pmap.scaleFactor!=1){
-		//Matrix matr = new Matrix();
-		//matr.postScale((float) pmap.scaleFactor, (float) pmap.scaleFactor,
-		//		scalePoint.x, scalePoint.y);
-		//canvas.setMatrix(matr);
-		// }
 			for (int i = 0; i < 7; i++) {
 				for (int j = 0; j < 7; j++) {
 					if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
@@ -461,9 +454,7 @@ public class MapControl extends RelativeLayout {
 
 		@Override
 		protected void onDraw(Canvas canvas) {
-			
-			super.onDraw(canvas);
-	
+			//super.onDraw(canvas);
 			doDraw(canvas, paint);
 			
 		}
