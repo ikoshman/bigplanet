@@ -1,7 +1,6 @@
 package com.nevilon.moow.core;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -71,13 +70,13 @@ public class TileLoader implements Runnable{
 		}
 		
 		private  byte[] load() throws Exception {
-	        URL u = new URL("http://mt1.google.com/mt?v=w2.99&x="+tile.getX()+
-	        		"&y="+tile.getY()+"&zoom="+tile.getZ());
+	        URL u = new URL("http://mt1.google.com/mt?v=w2.99&x="+tile.x+
+	        		"&y="+tile.y+"&zoom="+tile.z);
 	        URLConnection uc = u.openConnection();
 	        String contentType = uc.getContentType();
 	        int contentLength = uc.getContentLength();
 	        if (contentType.startsWith("text/") || contentLength == -1) {
-	        	Log.e("LOADER","Can't load tile "+ tile.getX()+" "+ tile.getY()+" "+ tile.getZ());
+	        	Log.e("LOADER","Can't load tile "+ tile.x+" "+ tile.y+" "+ tile.z);
 	        	return null;
 	        }
 	        InputStream raw = uc.getInputStream();

@@ -1,7 +1,5 @@
 package com.nevilon.moow;
 
-import org.junit.Test;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,9 +16,6 @@ import android.widget.ZoomControls;
 
 import com.nevilon.moow.core.PhysicMap;
 import com.nevilon.moow.core.RawTile;
-import com.nevilon.moow.core.utils.TileUtils;
-import com.nevilon.moow.core.utils.TileUtils.GeoLocation;
-import com.nevilon.moow.core.utils.TileUtils.GeoPoint;
 
 public class MoowMap extends Activity {
 	public static final int DIRECTION_RIGHT = 0, DIRECTION_LEFT = 1;
@@ -33,11 +28,13 @@ public class MoowMap extends Activity {
 	private Point nextMovePoint = new Point();
 	private Point globalOffset = new Point();
 
-		int zoom = 12; // whole world
+	private  int zoom = 12; // whole world
 
 	PhysicMap pmap = new PhysicMap(new RawTile(9, 7, zoom));
 
 	boolean moving = false;
+	
+	boolean canDraw = true;
 
 	Bitmap[][] tiles = new Bitmap[4][4];
 
@@ -51,8 +48,6 @@ public class MoowMap extends Activity {
 
 		class ZoomPanel extends RelativeLayout {
 
-			
-						
 			public ZoomPanel(Context context) {
 				super(context);
 				ZoomControls zc = new ZoomControls(getContext());
@@ -60,14 +55,11 @@ public class MoowMap extends Activity {
 					public void onClick(View v) {
 						zoomOut();
 					}
-					
 				});
 				zc.setOnZoomInClickListener(new OnClickListener() {
-
 					public void onClick(View v) {
 						zoomIn();
 					}
-
 				});
 				addView(zc);
 				setPadding(80, 368, 0, 0);
@@ -87,22 +79,25 @@ public class MoowMap extends Activity {
 			moveCoordinates(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_UP:
+			canDraw = false;
 			moveCoordinates(event.getX(), event.getY());
 		    quickHack();
 		    quickHack();
+		    canDraw = true;
 		    break;
 		}
 
 		return super.onTouchEvent(event);
 	}
 
-	private void quickHack(){
+	private  void  quickHack(){
 		int dx = 0,dy = 0;
 	    if(globalOffset.x>0){
 	    	dx = Math.round((globalOffset.x+320)/256);
 	    } else {
 	    	dx = Math.round((globalOffset.x)/256);
 	    }
+	    
 	    
 	    if(globalOffset.y>0){
 	    	dy = (int)Math.floor((globalOffset.y+480)/256);  
@@ -113,13 +108,16 @@ public class MoowMap extends Activity {
 	    
 	    globalOffset.x = globalOffset.x - dx*256 ;
 	    globalOffset.y = globalOffset.y - dy*256;
-	    pmap.reload(dx, dy);
+	    
+	    pmap.move(dx, dy);
 	   
 	}
 	
 	private void zoomIn(){
-		int currentZoomX = pmap.getDefaultTile().getX()*256-globalOffset.x+160;
-		int currentZoomY = pmap.getDefaultTile().getY()*256-globalOffset.y+240;
+		//получение отступа он начала координат
+		int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+160;
+		int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+240;
+		// получение координат углового тайла
 		int tileX = (currentZoomX*2)/256;
 		int tileY = (currentZoomY*2)/256;
 		zoom-=1;
@@ -128,8 +126,8 @@ public class MoowMap extends Activity {
 	
 	private void zoomOut(){
 		if((zoom)<16){
-			int currentZoomX = pmap.getDefaultTile().getX()*256-globalOffset.x+160;
-			int currentZoomY = pmap.getDefaultTile().getY()*256-globalOffset.y+240;
+			int currentZoomX = pmap.getDefaultTile().x*256-globalOffset.x+160;
+			int currentZoomY = pmap.getDefaultTile().y*256-globalOffset.y+240;
 			int tileX = (currentZoomX/2)/256;
 			int tileY = (currentZoomY/2)/256;
 			zoom+=1;
@@ -153,6 +151,7 @@ public class MoowMap extends Activity {
 	
 	
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
+		if(!canDraw){return;}
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {

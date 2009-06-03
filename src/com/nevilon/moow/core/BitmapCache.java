@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -28,7 +27,7 @@ public class BitmapCache {
 		
 		private int maxSize;
 			
-		private Map<ExpRawTile, Bitmap> expCacheMap = new HashMap<ExpRawTile, Bitmap>();
+		private HashMap<ExpRawTile, Bitmap> expCacheMap = new HashMap<ExpRawTile, Bitmap>();
 		
 		public ExpiredHashMap(int maxSize){
 			this.maxSize = maxSize;
@@ -66,7 +65,7 @@ public class BitmapCache {
 			private long addedOn =-1;
 			
 			public ExpRawTile(RawTile tile,long addedOn) {
-				super(tile.getX(), tile.getY(), tile.getZ());
+				super(tile.x, tile.y, tile.z);
 				this.addedOn = addedOn;
 			}
 

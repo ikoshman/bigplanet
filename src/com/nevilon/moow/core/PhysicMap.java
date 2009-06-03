@@ -21,15 +21,14 @@ public class PhysicMap {
 	}
 
 	/**
-	 * Callback method
-	 * 
+	 * Callback method 
 	 * @param bitmap
 	 * @param tile
 	 */
-	public void update(Bitmap bitmap, RawTile tile) {
-		int dx = tile.getX() - defTile.getX();
-		int dy = tile.getY() - defTile.getY();
-		if (dx <= 2 && dy <= 2 && tile.getZ()==defTile.getZ()) {
+	public synchronized  void update(Bitmap bitmap, RawTile tile) {
+		int dx = tile.x - defTile.x;
+		int dy = tile.y - defTile.y;
+		if (dx <= 2 && dy <= 2 && tile.z==defTile.z) {
 			if (dx >= 0 && dy >= 0) {
 				try {
 					cells[dx][dy] = bitmap;
@@ -41,9 +40,15 @@ public class PhysicMap {
 
 	}
 
-	public void reload(int dx, int dy){
-		defTile = new RawTile(defTile.getX()-dx, defTile.getY()-dy, defTile.getZ());
-		loadCells(defTile);
+	public void move(int dx, int dy){
+		//System.out.println(dx);
+		//if(defTile.x-dx<=0){
+		//	dx = (int) (Math.pow(2, 17-defTile.z) - Math.abs(dx))-1;
+		//	reload(dx, defTile.y-dy, defTile.z);
+		//} else {
+			reload(defTile.x -dx,defTile.y - dy, defTile.z);
+
+		//}
 	}
 	
 	public Bitmap[][] getCells() {
@@ -51,10 +56,25 @@ public class PhysicMap {
 	}
 
 	public void zoom(int x, int y, int z) {
-		defTile = new RawTile(x-1, y-1, z);
-		loadCells(defTile);
+		reload(x-1,y-1,z);
 	}
 
+	
+	private void reload(int x, int y, int z){
+		/**
+		 * использование загруженных битмапов
+		 * 
+		 */
+		if(defTile.z == z){
+			//for(int i=)
+		}
+		defTile.x = x;
+		defTile.y = y;
+		defTile.z = z;
+		loadCells(defTile);
+	}
+	
+	
 	
 	/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
@@ -62,16 +82,23 @@ public class PhysicMap {
 	 * 
 	 * @param tile
 	 */
-	private void loadCells(RawTile tile) {
+	private synchronized void loadCells(RawTile tile) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
-				x = (tile.getX() + i);
-				y = (tile.getY() + j);
-				cells[i][j] = null;
-				tileProvider.getTile(new RawTile(x, y, tile.getZ()));
+				x = (tile.x + i);
+				y = (tile.y + j);
+				Bitmap tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,y,tile.z));
+				if(tmpBitmap!=null){
+					cells[i][j] = tmpBitmap;
+				} else {
+					System.out.println("null");
+					cells[i][j] = null;
+					tileProvider.getTile(new RawTile(x, y, tile.z));
+				}
 			}
 		}
 	}
+	
 
 }
