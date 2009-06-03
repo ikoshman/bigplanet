@@ -70,7 +70,7 @@ public class TileLoader implements Runnable {
 		while (true) {
 			try {
 				Thread.sleep(200);
-				if (counter <= MAX_THREADS && loadQueue.size() > 0) {
+				if (counter < MAX_THREADS && loadQueue.size() > 0) {
 					RawTile rt = getFromQueue();
 					Log.i("LOADER", "Tile " + rt + " start loading");
 					if (null != rt) {
