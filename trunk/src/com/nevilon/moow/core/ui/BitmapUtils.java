@@ -28,11 +28,11 @@ public class BitmapUtils {
 		Canvas cv = new Canvas(bitmap);
 		// прорисовка фона
 		Paint background = new Paint();
-		background.setARGB(255, 128, 128, 128);
+		background.setARGB(255, 240, 248, 255);
 		cv.drawRect(0, 0, 320, height, background);
 		background.setAntiAlias(true);
 		// установка цвета линий
-		background.setColor(Color.WHITE);
+		background.setARGB(255, 122,139,139);
 		// продольные линии
 		for (int i = 0; i < 320 / cellSize; i++) {
 			cv.drawLine(cellSize * i, 0, cellSize * i, height, background);
