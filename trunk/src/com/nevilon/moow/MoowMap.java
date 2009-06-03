@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Bitmap.Config;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -37,7 +36,7 @@ public class MoowMap extends Activity {
 
 	private volatile boolean running = true;
 
-		private PhysicMap pmap = new PhysicMap(
+	private PhysicMap pmap = new PhysicMap(
 			new RawTile(0, 0, MoowMap.START_ZOOM));
 
 	boolean inMove = false;
@@ -57,9 +56,6 @@ public class MoowMap extends Activity {
 		addContentView(zoomPanel, new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT));
 	}
-
-	
-	
 
 	/**
 	 * Устанавливает состояние zoomIn/zoomOut контролов в зависимости от уровня
@@ -100,8 +96,7 @@ public class MoowMap extends Activity {
 
 		tdx = dx;
 		tdy = dy;
-		
-		
+
 		if (pmap.globalOffset.x > 0) {
 			dx = Math.round((pmap.globalOffset.x + 320) / 256);
 		} else {
@@ -118,14 +113,11 @@ public class MoowMap extends Activity {
 		pmap.globalOffset.x = pmap.globalOffset.x - dx * 256;
 		pmap.globalOffset.y = pmap.globalOffset.y - dy * 256;
 
-		tdx+=dx;
-		tdy+=dy;
+		tdx += dx;
+		tdy += dy;
 		pmap.move(tdx, tdy);
 
-		
 	}
-
-
 
 	/**
 	 * Рисует фон для карты( в клетку )
@@ -157,18 +149,15 @@ public class MoowMap extends Activity {
 	}
 
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
-		if(pmap.canDraw){
-			Bitmap tmpBitmap;
-			canvas.drawBitmap(mapBg, 0, 0, paint);
-			
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					tmpBitmap = pmap.getCells()[i][j];
-					if (tmpBitmap != null) {
-						canvas.drawBitmap(tmpBitmap, (i) * 256
-								+ pmap.globalOffset.x, (j) * 256
-								+ pmap.globalOffset.y, paint);
-					}
+		Bitmap tmpBitmap;
+		canvas.drawBitmap(mapBg, 0, 0, paint);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				tmpBitmap = pmap.getCells()[i][j];
+				if (tmpBitmap != null) {
+					canvas.drawBitmap(tmpBitmap, (i) * 256
+							+ pmap.globalOffset.x, (j) * 256
+							+ pmap.globalOffset.y, paint);
 				}
 			}
 		}
@@ -180,7 +169,7 @@ public class MoowMap extends Activity {
 		public Panel(Context context) {
 			super(context);
 			paint = new Paint();
-			//setDrawingCacheEnabled(true);
+			// setDrawingCacheEnabled(true);
 		}
 
 		@Override
@@ -188,8 +177,7 @@ public class MoowMap extends Activity {
 			super.onDraw(canvas);
 			doDraw(canvas, paint);
 		}
-		
-		
+
 		/**
 		 * Обработка касаний
 		 */
@@ -214,15 +202,12 @@ public class MoowMap extends Activity {
 						updateZoomControls();
 					}
 				}
-				pmap.gc();
 				break;
 			}
 
 			return true;
 		}
-		
 
-		
 	}
 
 	class CanvasUpdater implements Runnable {
@@ -238,7 +223,6 @@ public class MoowMap extends Activity {
 		}
 
 	}
-	
 
 	class ZoomPanel extends RelativeLayout {
 

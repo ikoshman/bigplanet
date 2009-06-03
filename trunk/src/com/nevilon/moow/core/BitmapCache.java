@@ -1,92 +1,31 @@
 package com.nevilon.moow.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
 import android.graphics.Bitmap;
-import android.util.Log;
 
+/**
+ * Кеш bitmap
+ * 
+ * @author hudvin
+ * 
+ */
 public class BitmapCache {
-	
-	private ExpiredHashMap cacheMap = new ExpiredHashMap(40);
 
-	
-	public void put(RawTile tile, Bitmap bitmap){
+	private ExpiredHashMap cacheMap;
+
+	public BitmapCache(int size) {
+		cacheMap = new ExpiredHashMap(40);
+	}
+
+	public void put(RawTile tile, Bitmap bitmap) {
 		cacheMap.put(tile, bitmap);
 	}
-	
-	public Bitmap get(RawTile tile){
+
+	public Bitmap get(RawTile tile) {
 		return cacheMap.get(tile);
 	}
-	
-	public Bitmap get(int x, int y, int z){
-		return cacheMap.get(new RawTile(x,y,z));
-	}
-	
-	/**
-	 * Очистка кеша
-	 */
-	public void gc(){
-		cacheMap.clear();
-	}
-	
-	
-	private static class ExpiredHashMap{
-		
-		private int maxSize;
-			
-		private HashMap<ExpRawTile, Bitmap> expCacheMap = new HashMap<ExpRawTile, Bitmap>();
-		
-		public ExpiredHashMap(int maxSize){
-			this.maxSize = maxSize;
-		}
-		
-		public synchronized void put(RawTile tile, Bitmap bitmap){
-			if (expCacheMap.size()>maxSize){
-				clear();
-			}
-			expCacheMap.put(new ExpRawTile(tile,System.currentTimeMillis()), bitmap);
-		}
-		
-		public Bitmap get(RawTile tile){
-			System.out.println("size "+ expCacheMap.size());
-			return expCacheMap.get(tile);
-		}
-		
-		/**
-		 * Удаляет определенную часть самых старых элементов в кеше
-		 */
-		public void clear(){
-				Iterator<ExpRawTile> it = expCacheMap.keySet().iterator();
-				List<ExpRawTile> listToSort = new ArrayList<ExpRawTile>();
-				while(it.hasNext()){
-					listToSort.add(it.next());
-				}
-				Collections.sort(listToSort);
-				for(int i=0;i<expCacheMap.size()/2;i++){
-					expCacheMap.remove(listToSort.get(i));
-				}
-				Log.i("CACHE", "clean");
-		}
-		
-		private class ExpRawTile extends RawTile implements Comparable<ExpRawTile>{
 
-			private long addedOn =-1;
-			
-			public ExpRawTile(RawTile tile,long addedOn) {
-				super(tile.x, tile.y, tile.z);
-				this.addedOn = addedOn;
-			}
-
-			public int compareTo(ExpRawTile another) {
-				return (int) (addedOn-another.addedOn);
-			}
-			
-		}
-		
+	public Bitmap get(int x, int y, int z) {
+		return cacheMap.get(new RawTile(x, y, z));
 	}
-	
+
 }

@@ -1,11 +1,7 @@
 package com.nevilon.moow.core;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Bitmap.Config;
 
 public class PhysicMap {
 
@@ -17,16 +13,12 @@ public class PhysicMap {
 
 	private int zoom;
 
-	public boolean canDraw = true;
-
 	public Point globalOffset = new Point();
 
 	private Point previousMovePoint = new Point();
 
 	public Point nextMovePoint = new Point();
-	
-	boolean block  = false;
-	
+
 	public PhysicMap(RawTile defTile) {
 		this.defTile = defTile;
 		this.zoom = defTile.z;
@@ -76,14 +68,15 @@ public class PhysicMap {
 		reload(x, y, z);
 	}
 
-
 	/**
 	 * Уменьшение уровня детализации
 	 */
 	public void zoomOut() {
 		if ((zoom) < 16) {
-			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x + 320/2;
-			int currentZoomY = getDefaultTile().y * 256 - globalOffset.y + 480/2;
+			int currentZoomX = getDefaultTile().x * 256 - globalOffset.x + 320
+					/ 2;
+			int currentZoomY = getDefaultTile().y * 256 - globalOffset.y + 480
+					/ 2;
 
 			// получение координат точки предудущем уровне
 			int nextZoomX = currentZoomX / 2;
@@ -154,38 +147,30 @@ public class PhysicMap {
 		}
 	}
 
-	
-	
 	/**
 	 * Установка текущего отступа
+	 * 
 	 * @param x
 	 * @param y
 	 */
 	public void moveCoordinates(float x, float y) {
-		int newGlobalOffsetY = globalOffset.y
-		+ (nextMovePoint.y - previousMovePoint.y);
-		
-		int bottomOffset = defTile.y*256 + newGlobalOffsetY;
-		//System.out.println(defTile.y);
-		if(defTile.x ==0 && newGlobalOffsetY>=100 ){
-			//System.out.println("lock");
-		}
-		
-			previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
-			nextMovePoint.set((int) x, (int) y);
-			globalOffset.set(globalOffset.x
-					+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
-					+ (nextMovePoint.y - previousMovePoint.y));
-		
-		
-		
+				previousMovePoint.set(nextMovePoint.x, nextMovePoint.y);
+		nextMovePoint.set((int) x, (int) y);
+		globalOffset.set(globalOffset.x
+				+ (nextMovePoint.x - previousMovePoint.x), globalOffset.y
+				+ (nextMovePoint.y - previousMovePoint.y));
+
 	}
-	
+
 	private void reload(int x, int y, int z) {
-		defTile.x = x;
-		defTile.y = y;
-		defTile.z = z;
-		loadCells(defTile);
+		if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
+			defTile.x = x;
+			defTile.y = y;
+			defTile.z = z;
+			loadCells(defTile);
+		} else {
+			System.out.println("fuck");
+		}
 	}
 
 	/**
@@ -209,22 +194,12 @@ public class PhysicMap {
 	}
 
 	/**
-	 * Очистка in-memory кеша
-	 */
-	public void gc() {
-		System.out.println("gc");
-		tileProvider.inMemoryCache.gc();
-	}
-
-	/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
 	 * крайней левой верхней)
 	 * 
 	 * @param tile
 	 */
 	private synchronized void loadCells(RawTile tile) {
-		canDraw = false;
-		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
@@ -233,18 +208,12 @@ public class PhysicMap {
 				if (!checkTileXY(x, y, tile.z)) {
 					cells[i][j] = null;
 				} else {
-					tmpBitmap = tileProvider.inMemoryCache.get(new RawTile(x,
-							y, tile.z));
-					if (tmpBitmap != null) {
-						cells[i][j] = tmpBitmap;
-					} else {
-						 cells[i][j] = null;
-						tileProvider.getTile(new RawTile(x, y, tile.z));
-					}
+					cells[i][j] = null;
+					cells[i][j] = tileProvider.getTile(
+							new RawTile(x, y, tile.z), true);
 				}
 
 			}
 		}
-		canDraw = true;
 	}
 }

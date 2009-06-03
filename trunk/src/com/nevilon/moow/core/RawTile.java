@@ -2,22 +2,20 @@ package com.nevilon.moow.core;
 
 /**
  * Представляет параметры тайла
+ * 
  * @author hudvin
- *
+ * 
  */
 public class RawTile {
-	
-	public int x,y,z;
-	
-   	
-	public RawTile(int x, int y, int z){
+
+	public int x, y, z;
+
+	public RawTile(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
-	
-		
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -45,11 +43,10 @@ public class RawTile {
 			return false;
 		return true;
 	}
-	
+
 	@Override
-	public String toString(){
-		return x+" : " + y+" : "+z;
+	public String toString() {
+		return x + " : " + y + " : " + z;
 	}
-	
-	
+
 }
