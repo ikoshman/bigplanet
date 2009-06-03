@@ -16,6 +16,8 @@ public class PhysicMap {
 	private RawTile defTile;
 
 	private int zoom;
+	
+	public boolean canDraw = true;
 
 	public Point globalOffset = new Point();
 
@@ -111,7 +113,7 @@ public class PhysicMap {
 
 			// получение координат угла экрана на новом уровне
 			nextZoomX = nextZoomX - 320 / 2;
-			nextZoomY = nextZoomY - 480 / 2 -80;
+			nextZoomY = nextZoomY - 480 / 2;
 
 			// получение углового тайла
 			int tileX = (nextZoomX / 256);
@@ -153,6 +155,13 @@ public class PhysicMap {
 		return true;
 
 	}
+	
+	/**
+	 * Очистка in-memory кеша
+	 */
+	public void gc(){
+		tileProvider.inMemoryCache.gc();
+	}
 
 	/**
 	 * Запрос на загрузку тайлов для данной группы ячеек (определяется по
@@ -161,6 +170,7 @@ public class PhysicMap {
 	 * @param tile
 	 */
 	private synchronized void loadCells(RawTile tile) {
+		canDraw = false;
 		Bitmap tmpBitmap;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -174,13 +184,13 @@ public class PhysicMap {
 					if(tmpBitmap!=null){
 						cells[i][j] = tmpBitmap;
 					} else {
-						cells[i][j] = null;
+						//cells[i][j] = null;
 						tileProvider.getTile(new RawTile(x, y, tile.z));
 					}
 				}
 
 			}
 		}
+		canDraw = true;
 	}
-
 }
