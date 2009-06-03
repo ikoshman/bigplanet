@@ -454,7 +454,7 @@ public class MapControl extends RelativeLayout {
 
 		@Override
 		protected void onDraw(Canvas canvas) {
-			super.onDraw(canvas);
+			//super.onDraw(canvas);
 			doDraw(canvas, paint);
 			
 		}
