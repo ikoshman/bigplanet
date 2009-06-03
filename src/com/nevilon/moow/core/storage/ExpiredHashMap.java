@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.nevilon.moow.core.RawTile;
-
 import android.graphics.Bitmap;
 import android.util.Log;
+
+import com.nevilon.moow.core.RawTile;
 
 /**
  * Предоставляет возможность хранения заданного количества Bitmap Автоматически
@@ -38,7 +38,7 @@ public class ExpiredHashMap {
 
 	public synchronized Bitmap get(RawTile tile) {
 		Bitmap bmp = expCacheMap.get(tile);
-		if (bmp!=null){
+		if (bmp != null) {
 			expCacheMap.put(new ExpRawTile(tile, System.currentTimeMillis()),
 					bmp);
 		}

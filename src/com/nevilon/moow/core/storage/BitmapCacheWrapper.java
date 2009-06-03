@@ -1,8 +1,8 @@
 package com.nevilon.moow.core.storage;
 
-import com.nevilon.moow.core.RawTile;
-
 import android.graphics.Bitmap;
+
+import com.nevilon.moow.core.RawTile;
 
 /**
  * Кеш скалированнных и обычных тайлов
@@ -16,10 +16,11 @@ public class BitmapCacheWrapper {
 	 * размер кеша (для каждого обоих типов)
 	 */
 	public final static int CACHE_SIZE = 20;
-	
+
 	private BitmapCache cache = new BitmapCache(BitmapCacheWrapper.CACHE_SIZE);
 
-	private BitmapCache scaledCache = new BitmapCache(BitmapCacheWrapper.CACHE_SIZE);
+	private BitmapCache scaledCache = new BitmapCache(
+			BitmapCacheWrapper.CACHE_SIZE);
 
 	/**
 	 * Поиск в кеше скалированых тайлов
