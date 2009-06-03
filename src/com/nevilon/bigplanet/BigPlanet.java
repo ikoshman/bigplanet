@@ -142,7 +142,8 @@ public class BigPlanet extends Activity {
 		SubMenu sub = menu.addSubMenu(0, 1, 0, R.string.TOOLS_MENU).setIcon(
 				R.drawable.tools);
 		sub.add(2, 11, 1, R.string.CACHE_MAP_MENU);
-		sub.add(2, 12, 1, R.string.ABOUT_MENU);
+		sub.add(2, 12, 1, R.string.SEARCH_MENU);
+		sub.add(2, 13, 1, R.string.ABOUT_MENU);
 
 		// add network mode menu
 		menu.add(0, 3, 0, R.string.NETWORK_MODE_MENU).setIcon(R.drawable.mode);
@@ -257,6 +258,9 @@ public class BigPlanet extends Activity {
 			break;
 
 		case 12:
+			showSearch();
+			break;
+		case 13:
 			showAbout();
 			break;
 		case 62:
@@ -270,6 +274,13 @@ public class BigPlanet extends Activity {
 
 	}
 
+	
+	private void showSearch(){
+		Intent intent = new Intent();
+		intent.setClass(this, FindLocation.class);
+		startActivity(intent);
+	}
+	
 	private void showAbout() {
 		TextView tv = new TextView(this);
 		tv.setGravity(Gravity.CENTER);

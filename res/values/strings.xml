@@ -13,6 +13,7 @@
     <string name="REMOVE_BOOKMARK_TITLE">Remove bookmark</string>
     <string name="REMOVE_BOOKMARK_MESSAGE">Are you sure?</string>
     
+    <string name="SEARCH_MENU">Search</string>
     <string name="ABOUT_MENU">About</string>
     <string name="MAP_SOURCE_MENU">Map source</string>
     <string name="TOOLS_MENU">More</string>

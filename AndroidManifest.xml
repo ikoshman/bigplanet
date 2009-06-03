@@ -16,12 +16,14 @@
 			</intent-filter>
 		</activity>
 
-
-
-
 		<activity android:configChanges="keyboardHidden|orientation"
 			android:name=".AllGeoBookmarks">
 		</activity>
+
+       <activity android:configChanges="keyboardHidden|orientation"
+			android:name=".FindLocation">
+		</activity>
+
 
 
 	</application>
