@@ -49,6 +49,6 @@
     
     <string name="DOWNLOAD_PROGRESS_MESSAGE_PATTERN">{0} km, {1} tile(s) / {2} KB</string>
     
-    <string name="ABOUT_MESSAGE">Developed by Vadim Bartko. All questions, proposals and bug reports  send to hudvin@gmail.com</string>
-    <string name="ABOUT_TITLE">About</string>
+    <string name="ABOUT_MESSAGE">Copyright © 2008-2009 Vadim Bartko \n All rights reserved \n All questions, proposals and bug reports  send to hudvin@gmail.com</string>
+    <string name="ABOUT_TITLE">BigPlanet v1.2</string>
 </resources>
