@@ -52,11 +52,11 @@ public class BigPlanet extends Activity {
 	public static final int GO_TO_LOCATION = 20;
 
 	private static final String BOOKMARK_DATA = "bookmark";
-	
+
 	private static int MY_LOCATION_ZOOM = 1;
 
 	private static int SEARCH_ZOOM = 7;
-	
+
 	private Toast textMessage;
 
 	/*
@@ -78,20 +78,19 @@ public class BigPlanet extends Activity {
 		super.onCreate(savedInstanceState);
 		Date now = new Date(System.currentTimeMillis());
 		now.getMonth();
-		if(now.getMonth()==2){
-			
-			new AlertDialog.Builder(this)
-			.setTitle("Sorry").setNegativeButton("Ok", new OnClickListener(){
+		if (now.getMonth() == 2) {
 
-				public void onClick(DialogInterface arg0, int arg1) {
-					finish();
-					
-				}
-				
-			})
-			.setMessage("Demo version is expired").show();
+			new AlertDialog.Builder(this).setTitle("Sorry").setNegativeButton(
+					"Ok", new OnClickListener() {
+
+						public void onClick(DialogInterface arg0, int arg1) {
+							finish();
+
+						}
+
+					}).setMessage("Demo version is expired").show();
 		}
-		
+
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		// создание карты
 		mm = new MarkerManager(getResources());
@@ -138,7 +137,7 @@ public class BigPlanet extends Activity {
 		case GO_TO_LOCATION:
 			int z = SEARCH_ZOOM;
 			Place place = (Place) data.getSerializableExtra("place");
-			mm.addMarker(place, z,false, MarkerManager.SEARCH_MARKER);
+			mm.addMarker(place, z, false, MarkerManager.SEARCH_MARKER);
 			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(
 					place.getLat(), place.getLon(), z);
 			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils
@@ -324,37 +323,44 @@ public class BigPlanet extends Activity {
 	private void showMyLocation() {
 		inHome = false;
 		List<String> providers = locationManager.getProviders(true);
-		String provider = providers.get(0);
-		locationManager.requestLocationUpdates(provider, 10000, 1,
-				new LocationListener() {
+		if (providers.size() > 0) {
+			String provider = providers.get(0);
+			locationManager.requestLocationUpdates(provider, 10000, 1,
+					new LocationListener() {
 
-					public void onLocationChanged(Location location) {
-						locationManager.removeUpdates(this);
-						if (!inHome) {
-							inHome = true;
-							goToMyLocation(location,MY_LOCATION_ZOOM);
+						public void onLocationChanged(Location location) {
+							locationManager.removeUpdates(this);
+							if (!inHome) {
+								inHome = true;
+								goToMyLocation(location, MY_LOCATION_ZOOM);
+							}
 						}
-					}
 
-					public void onProviderDisabled(String arg0) {
-					}
+						public void onProviderDisabled(String arg0) {
+						}
 
-					public void onProviderEnabled(String arg0) {
-					}
+						public void onProviderEnabled(String arg0) {
+						}
 
-					public void onStatusChanged(String arg0, int arg1,
-							Bundle arg2) {
-					}
+						public void onStatusChanged(String arg0, int arg1,
+								Bundle arg2) {
+						}
 
-				});
-		if (!inHome) {
-			Location tmpLocation = locationManager.getLastKnownLocation(provider);
-			if(tmpLocation!=null){
-				goToMyLocation(tmpLocation,MY_LOCATION_ZOOM);
-			} else{
-				Toast.makeText(this, "Unable to get current location",3000 ).show();
+					});
+			if (!inHome) {
+				Location tmpLocation = locationManager
+						.getLastKnownLocation(provider);
+				if (tmpLocation != null) {
+					goToMyLocation(tmpLocation, MY_LOCATION_ZOOM);
+				} else {
+					Toast
+							.makeText(this, "Unable to get current location",
+									3000).show();
+				}
+				inHome = true;
 			}
-			inHome = true;
+		} else {
+			Toast.makeText(this, "Unable to get current location", 3000).show();
 		}
 	}
 
@@ -370,7 +376,7 @@ public class BigPlanet extends Activity {
 		Place place = new Place();
 		place.setLat(lat);
 		place.setLon(lon);
-		mm.addMarker(place, zoom,true,MarkerManager.MY_LOCATION_MARKER);
+		mm.addMarker(place, zoom, true, MarkerManager.MY_LOCATION_MARKER);
 	}
 
 	private void showSearch() {
@@ -383,10 +389,10 @@ public class BigPlanet extends Activity {
 		TextView tv = new TextView(this);
 		tv.setGravity(Gravity.CENTER);
 		tv.setText(R.string.ABOUT_MESSAGE);
-		tv.setTextSize(16f);
+		tv.setTextSize(12f);
 		new AlertDialog.Builder(this).setTitle(R.string.ABOUT_TITLE)
-				.setView(tv).setIcon(R.drawable.comment).setPositiveButton(
-						"Yes", new DialogInterface.OnClickListener() {
+				.setView(tv).setIcon(R.drawable.globe).setPositiveButton(R.string.OK_LABEL,
+						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
