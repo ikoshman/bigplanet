@@ -79,6 +79,8 @@ public class MapControl extends RelativeLayout {
 
 	public static Bitmap CELL_BACKGROUND = BitmapUtils.drawBackground(
 			BCG_CELL_SIZE, TILE_SIZE, TILE_SIZE);
+	
+	public static Bitmap EMPTY_BACKGROUND = BitmapUtils.drawEmptyBackground(TILE_SIZE);
 
 	public Bitmap PLACE_MARKER = BitmapFactory.decodeResource(getResources(),
 			R.drawable.marker);
@@ -250,7 +252,6 @@ public class MapControl extends RelativeLayout {
 	}
 
 	private synchronized void updateScreen() {
-		//scaleFactor=1;
 		if (main != null) {
 			main.postInvalidate();
 		}
@@ -336,14 +337,23 @@ public class MapControl extends RelativeLayout {
 								+ pmap.getGlobalOffset().y, paint);
 					} 
 				} else {
+					if(pmap.scaleFactor==1){
 					canvas.drawBitmap(CELL_BACKGROUND, (i - 2) * TILE_SIZE
 							+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
 							+ pmap.getGlobalOffset().y, paint);
+					} else {
+						canvas.drawBitmap(EMPTY_BACKGROUND, (i - 2) * TILE_SIZE
+								+ pmap.getGlobalOffset().x, (j - 2) * TILE_SIZE
+								+ pmap.getGlobalOffset().y, paint);
+				
+					}
 				}
 			}
 		}
+		
+		if(pmap.scaleFactor==1){
 		// отрисовка маркеров
-	/*	for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
 					RawTile tile = pmap.getDefaultTile();
@@ -363,7 +373,7 @@ public class MapControl extends RelativeLayout {
 				}
 			}
 		}
-		*/
+		}
 		canvas.restore();
 	}
 	@Override
