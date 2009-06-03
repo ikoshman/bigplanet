@@ -22,8 +22,6 @@ public class TileResolver {
 
 	private int strategyId = MapStrategyFactory.GOOGLE_VECTOR;
 	
-	//private MapStrategy mapStrategy;
-	
 	public int count = 0;
 
 	public TileResolver(final PhysicMap physicMap) {

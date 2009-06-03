@@ -39,13 +39,7 @@ public class MoowMap extends Activity {
 		return true;
 	}
 
-	/*
-	 * @Override public boolean onPrepareOptionsMenu(Menu menu) { boolean
-	 * isSelected = this.getSelectedItemId() >= 0;
-	 * menu.findItem(1).setEnabled(isSelected);
-	 * menu.findItem(2).setEnabled(isSelected); return true; }
-	 */
-
+	
 	private RadioButton buildRadioButton(String label, int id) {
 		RadioButton mapSource = new RadioButton(this);
 		mapSource.setText(label);
@@ -56,7 +50,6 @@ public class MoowMap extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-
 		case 11:
 			MapSaverUI mapSaverUI = new MapSaverUI(this, mapControl.getPhysicalMap()
 					.getZoomLevel() , mapControl.getPhysicalMap()
@@ -74,11 +67,11 @@ public class MoowMap extends Activity {
 	}
 
 	private void selectMapSource() {
-		final Dialog dl;
-		dl = new Dialog(this);
-		dl.setCanceledOnTouchOutside(true);
-		dl.setCancelable(true);
-		dl.setTitle("Select map source");
+		final Dialog mapSourceDialog;
+		mapSourceDialog = new Dialog(this);
+		mapSourceDialog.setCanceledOnTouchOutside(true);
+		mapSourceDialog.setCancelable(true);
+		mapSourceDialog.setTitle("Select map source");
 
 		final LinearLayout mainPanel = new LinearLayout(this);
 		mainPanel.setLayoutParams(new LayoutParams(
@@ -104,14 +97,14 @@ public class MoowMap extends Activity {
 					public void onCheckedChanged(RadioGroup group,
 							int checkedId) {
 						mapControl.changeMapSource(checkedId);
-						dl.hide();
+						mapSourceDialog.hide();
 					}
 
 				});
 
 		mainPanel.addView(sourcesRadioGroup);
-		dl.setContentView(mainPanel);
-		dl.show();
+		mapSourceDialog.setContentView(mainPanel);
+		mapSourceDialog.show();
 	}
 
 	

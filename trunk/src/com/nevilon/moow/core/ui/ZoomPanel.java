@@ -5,7 +5,7 @@ import android.widget.RelativeLayout;
 import android.widget.ZoomControls;
 
 /**
- * 
+ * Панель с контролами для управления уровнем детализации
  * @author hudvin
  * 
  */
