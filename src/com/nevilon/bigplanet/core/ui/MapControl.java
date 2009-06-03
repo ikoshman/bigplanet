@@ -14,7 +14,6 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.ScaleAnimation;
 import android.widget.RelativeLayout;
 
 import com.nevilon.bigplanet.R;
@@ -85,6 +84,10 @@ public class MapControl extends RelativeLayout {
 	public Bitmap PLACE_MARKER = BitmapFactory.decodeResource(getResources(),
 			R.drawable.marker);
 
+	private Point scalePoint = new Point();
+	
+	public  Handler h;
+	
 	/**
 	 * Конструктор
 	 * 
@@ -96,6 +99,7 @@ public class MapControl extends RelativeLayout {
 	public MapControl(Context context, int width, int height,
 			RawTile startTile, MarkerManager markerManager) {
 		super(context);
+		scalePoint.set(width/2,height/2);
 		this.markerManager = markerManager;
 		buildView(width, height, startTile);
 	}
@@ -154,7 +158,7 @@ public class MapControl extends RelativeLayout {
 	 * @param startTile
 	 */
 	private void buildView(int width, int height, RawTile startTile) {
-		final Handler h = new Handler(){
+		h = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                updateZoomControls();
@@ -171,6 +175,7 @@ public class MapControl extends RelativeLayout {
 			// обработчик уменьшения
 			zoomPanel.setOnZoomOutClickListener(new OnClickListener() {
 				public void onClick(View v) {
+					scalePoint.set(getWidth()/2, getHeight()/2);
                        new Thread(){
 						
 						@Override
@@ -180,7 +185,7 @@ public class MapControl extends RelativeLayout {
 									Thread.sleep(20);
 									pmap.scaleFactor-=0.05f;
 									postInvalidate();
-								//	quickHack();
+									//quickHack();
 								} catch (InterruptedException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -203,6 +208,7 @@ public class MapControl extends RelativeLayout {
 			// обработчик увеличения
 			zoomPanel.setOnZoomInClickListener(new OnClickListener() {
 				public void onClick(View v) {
+					scalePoint.set(getWidth()/2, getHeight()/2);
 					new Thread(){
 						
 						@Override
@@ -313,7 +319,7 @@ public class MapControl extends RelativeLayout {
 			}
 		}
 	}
-
+	
 	/**
 	 * Перерисовывает карту
 	 * 
@@ -322,10 +328,11 @@ public class MapControl extends RelativeLayout {
 	 */
 	private synchronized void doDraw(Canvas canvas, Paint paint) {
 		Bitmap tmpBitmap;
-		Matrix matr = new Matrix();
-		
-		matr.postScale((float)pmap.scaleFactor, (float)pmap.scaleFactor,getWidth()/2,getHeight()/2);
-		canvas.setMatrix(matr);
+		//if(pmap.scaleFactor!=1){
+			Matrix matr = new Matrix();
+			matr.postScale((float)pmap.scaleFactor, (float)pmap.scaleFactor,scalePoint.x, scalePoint.y);
+			canvas.setMatrix(matr);
+		//}
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				if ((i > 1 && i < 5) && ((j > 1 && j < 5))) {
@@ -421,7 +428,7 @@ public class MapControl extends RelativeLayout {
 		 * Обработка касаний
 		 */
 		@Override
-		public boolean onTouchEvent(MotionEvent event) {
+		public boolean onTouchEvent(final MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				inMove = false;
@@ -435,8 +442,53 @@ public class MapControl extends RelativeLayout {
 			case MotionEvent.ACTION_UP:
 				if (dcDetector.process(event)) {
 					if (mapMode == MapControl.ZOOM_MODE) {
-						pmap.zoomIn((int) event.getX(), (int) event.getY());
-						updateZoomControls();
+						scalePoint.set((int)event.getX(), (int)event.getY());
+						double sx = (int) (getWidth()/2 - event.getX());
+						double sy = (int) (getHeight()/2 - event.getY());
+						final double dx = (sx/(1d/0.1d));
+						final double dy = (sy/(1d/0.1d));
+						new Thread(){
+							
+							@Override
+							public void run(){
+								double tx = 0;
+								double ty = 0;
+								int scaleX = scalePoint.x;
+								int scaleY = scalePoint.y;
+								double ox = pmap.getGlobalOffset().x;
+								double oy = pmap.getGlobalOffset().y;
+								
+								while(pmap.scaleFactor<=2){
+									try {
+										Thread.sleep(40);
+										postInvalidate();
+										
+										pmap.scaleFactor+=0.1f;
+										
+										
+										tx+=dx;
+										ty+=dy;
+										scalePoint.set((int)(scaleX + tx),(int)(scaleY + ty));
+										ox+=dx;
+										oy+=dy;
+										pmap.getGlobalOffset().x=(int)ox;
+										pmap.getGlobalOffset().y=(int)oy;
+										
+										//quickHack();
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+								
+								//pmap.zoomIn((int) event.getX(), (int) event.getY());
+								
+								pmap.zoomInCenter();
+								//quickHack();
+								h.sendEmptyMessage(0);
+							}
+							
+						}.start();
 					} else {
 						if (onMapLongClickListener != null) {
 							onMapLongClickListener.onMapLongClick(0, 0);
