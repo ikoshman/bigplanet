@@ -240,19 +240,18 @@ public class MoowMap extends Activity {
 				addPointToHistory(event.getX(), event.getY());
 				break;
 			case MotionEvent.ACTION_UP:
-				if(startInertion){
-					stopInertion();
-				}
-				long interval = System.currentTimeMillis() - lastMoveTime;
-				if (interval < 100 && !startInertion) {
-					lastMoveTime = 0;
-					startInertion(moveHistory, interval);				
-					return false;
-				}
+				//if(startInertion){
+				//	stopInertion();
+				//}
+				//long interval = System.currentTimeMillis() - lastMoveTime;
+				//if (interval < 100 && !startInertion) {
+				//	lastMoveTime = 0;
+				//	startInertion(moveHistory, interval);				
+				//	return false;
+				//}
 
 				if (inMove) {
-					quickHack();
-					
+					quickHack();					
 					pmap.moveCoordinates(event.getX(), event.getY());
 				} else {
 					if (dcDispatcher.process(event)) {
