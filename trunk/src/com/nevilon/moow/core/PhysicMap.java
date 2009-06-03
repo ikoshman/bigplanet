@@ -163,15 +163,10 @@ public class PhysicMap {
 	}
 
 	private void reload(int x, int y, int z) {
-		
-		//if ((x != defTile.x || y != defTile.y) || z != defTile.z) {
 			defTile.x = x;
 			defTile.y = y;
 			defTile.z = z;
 			loadCells(defTile);
-		//} else {
-		//	System.out.println("fuck");
-	//	}
 	}
 
 	/**
