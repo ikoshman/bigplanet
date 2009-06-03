@@ -1,8 +1,6 @@
 package com.nevilon.bigplanet.core;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Bitmap.Config;
 
 import com.nevilon.bigplanet.core.storage.BitmapCacheWrapper;
@@ -26,10 +24,8 @@ public class TileScaler implements Runnable {
 	}
 
 	public void run() {
-		long start = System.currentTimeMillis();
 		Bitmap bmp4scale = findTile(tile.x, tile.y, tile.z);
 		handler.handle(tile, bmp4scale, true);
-		System.out.println(System.currentTimeMillis() - start);
 	}
 
 	/**

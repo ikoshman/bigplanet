@@ -120,7 +120,7 @@ public class MapSaverUI {
 		int tilesCount = getTiles(radius, true);
 		String message = MessageFormat.format(
 				getText(R.string.DOWNLOAD_PROGRESS_MESSAGE_PATTERN), radius,
-				tilesCount, (int) (tilesCount * 1100 / 1024));
+				tilesCount,  Math.round(tilesCount * 1100l / 1024l));
 		downloadInfo.setText(message);
 	}
 

@@ -21,8 +21,9 @@ public class TileResolver {
 	private Handler localLoaderHandler;
 
 	private int strategyId = -1;
-
 	
+	//public int loaded = 0;
+
 	public TileResolver(final PhysicMap physicMap) {
 		this.physicMap = physicMap;
 		tileLoader = new TileLoader(
@@ -30,12 +31,10 @@ public class TileResolver {
 				new Handler() {
 					@Override
 					public void handle(RawTile tile, byte[] data) {
-						if (tile.s == strategyId) {
-							LocalStorageWrapper.put(tile, data);
-							Bitmap bmp = LocalStorageWrapper.get(tile);
-							cacheProvider.putToCache(tile, bmp);
-							updateMap(tile, bmp);
-						}
+						LocalStorageWrapper.put(tile, data);
+						Bitmap bmp = LocalStorageWrapper.get(tile);
+						cacheProvider.putToCache(tile, bmp);
+						updateMap(tile, bmp);
 					}
 				});
 		new Thread(tileLoader).start();
@@ -46,36 +45,35 @@ public class TileResolver {
 			@Override
 			public synchronized void handle(RawTile tile, Bitmap bitmap,
 					boolean isScaled) {
-				if (bitmap != null && tile.s == strategyId) {
+				if (bitmap != null) {
+					//loaded++;
 					updateMap(tile, bitmap);
 					if (isScaled) {
 						cacheProvider.putToScaledCache(tile, bitmap);
 					}
 				}
-						}
+			}
 
 		};
 		// обработчик загрузки с дискового кеша
 		this.localLoaderHandler = new Handler() {
 
 			@Override
-			public synchronized void handle(RawTile tile, Bitmap bitmap,
+			public  void handle(RawTile tile, Bitmap bitmap,
 					boolean isScaled) {
-				if (tile.s != strategyId) { // если не текущий провайдер
-					return;
-				} 
 				if (bitmap != null) { // если тайл есть в файловом кеше
+					if(tile.s == strategyId && tile.z == physicMap.getZoomLevel()){
+						//loaded++;
+					}
 					updateMap(tile, bitmap);
 					cacheProvider.putToCache(tile, bitmap);
-				} else {  // если тайла нет в файловом кеше
-					
+				} else { // если тайла нет в файловом кеше
 					bitmap = cacheProvider.getScaledTile(tile);
 					if (bitmap == null) {
 						new Thread(new TileScaler(tile, scaledHandler)).start();
-
 					} else { // скалированый тайл из кеша
+						//loaded++;
 						updateMap(tile, bitmap);
-
 					}
 					load(tile);
 				}
@@ -85,6 +83,11 @@ public class TileResolver {
 
 	}
 
+	/**
+	 * Добавляет в очередь на загрузку с сервера
+	 * 
+	 * @param tile
+	 */
 	private void load(RawTile tile) {
 		if (tile.s != -1) {
 			tileLoader.load(tile);
@@ -92,7 +95,9 @@ public class TileResolver {
 	}
 
 	private void updateMap(RawTile tile, Bitmap bitmap) {
-		physicMap.update(bitmap, tile);
+		if (tile.s == strategyId) {
+			physicMap.update(bitmap, tile);
+		}
 	}
 
 	/**
@@ -101,17 +106,12 @@ public class TileResolver {
 	 * @param tile
 	 * @return
 	 */
-	public void getTile(final RawTile tile, boolean useCache) {
-		Bitmap bitmap = null;
-		if (useCache) {
-			bitmap = cacheProvider.getTile(tile);
-			if (bitmap != null) {
-				// возврат тайла
-				updateMap(tile, bitmap);
-				return;
-			} else {
-				LocalStorageWrapper.get(tile, localLoaderHandler);
-			}
+	public void getTile(final RawTile tile) {
+		Bitmap bitmap = cacheProvider.getTile(tile);
+		if (bitmap != null) {
+			// возврат тайла
+			//loaded++;
+			updateMap(tile, bitmap);
 		} else {
 			LocalStorageWrapper.get(tile, localLoaderHandler);
 		}
@@ -119,10 +119,10 @@ public class TileResolver {
 
 	public synchronized void setMapSource(int sourceId) {
 		cacheProvider.clear();
-		System.gc();
 		MapStrategy mapStrategy = MapStrategyFactory.getStrategy(sourceId);
 		this.strategyId = sourceId;
 		tileLoader.setMapStrategy(mapStrategy);
+		System.gc();
 	}
 
 	public int getMapSourceId() {

@@ -3,6 +3,7 @@ package com.nevilon.bigplanet.core;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
+import com.nevilon.bigplanet.core.loader.TileLoader;
 import com.nevilon.bigplanet.core.ui.MapControl;
 
 public class PhysicMap {
@@ -26,9 +27,6 @@ public class PhysicMap {
 	private int width;
 
 	private int height;
-	
-	private boolean inZoom = false;
-	
 	
 	private AbstractCommand updateScreenCommand;
 
@@ -93,8 +91,6 @@ public class PhysicMap {
 	}
 
 	public void zoom(int x, int y, int z) {
-		inZoom = true;
-		System.gc();
 		reload(x, y, z);
 	}
 
@@ -204,7 +200,9 @@ public class PhysicMap {
 
 	
 	private void updateMap(){
-		updateScreenCommand.execute();
+		//if(tileResolver.loaded ==9){
+			updateScreenCommand.execute();
+		//}
 	}
 	
 	private int getDistance(int tileCount) {
@@ -252,7 +250,8 @@ public class PhysicMap {
 	 * 
 	 * @param tile
 	 */
-	private void loadCells(RawTile tile) {
+	private synchronized void  loadCells(RawTile tile) {
+		//tileResolver.loaded = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				int x, y;
@@ -263,7 +262,7 @@ public class PhysicMap {
 				y = normalizeY(y, tile.z);
 				cells[i][j] = MapControl.bp;
 				tileResolver.getTile(new RawTile(x, y, tile.z, tileResolver
-						.getMapSourceId()), true);
+						.getMapSourceId()));
 			}
 		}
 	}
