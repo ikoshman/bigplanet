@@ -278,6 +278,7 @@ public class BigPlanet extends Activity {
 		new AlertDialog.Builder(this)
 		.setTitle(R.string.ABOUT_TITLE)
 		.setView(tv)
+		.setIcon(R.drawable.comment)
 		.setPositiveButton("Yes",
 						new DialogInterface.OnClickListener() {
 
