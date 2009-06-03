@@ -23,12 +23,14 @@ public final class R {
         public static final int home=0x7f020009;
         public static final int icon=0x7f02000a;
         public static final int info=0x7f02000b;
-        public static final int mode=0x7f02000c;
-        public static final int notification_done=0x7f02000d;
-        public static final int ok=0x7f02000e;
-        public static final int search=0x7f02000f;
-        public static final int small=0x7f020010;
-        public static final int tools=0x7f020011;
+        public static final int marker=0x7f02000c;
+        public static final int marker2=0x7f02000d;
+        public static final int mode=0x7f02000e;
+        public static final int notification_done=0x7f02000f;
+        public static final int ok=0x7f020010;
+        public static final int search=0x7f020011;
+        public static final int small=0x7f020012;
+        public static final int tools=0x7f020013;
     }
     public static final class id {
         public static final int addBtn=0x7f050005;

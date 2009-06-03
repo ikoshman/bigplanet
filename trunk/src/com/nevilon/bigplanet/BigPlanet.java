@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.nevilon.bigplanet.core.MarkerManager;
 import com.nevilon.bigplanet.core.Place;
 import com.nevilon.bigplanet.core.Preferences;
 import com.nevilon.bigplanet.core.RawTile;
@@ -50,6 +51,9 @@ public class BigPlanet extends Activity {
 	 * Графический движок, реализующий карту
 	 */
 	private MapControl mapControl;
+	
+	private MarkerManager mm;
+	
 
 	/**
 	 * Конструктор
@@ -58,6 +62,7 @@ public class BigPlanet extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// создание карты
+	 	mm = new MarkerManager();
 		RawTile savedTile = Preferences.getTile();
 		configMapControl(savedTile);
 		// использовать ли сеть
@@ -101,6 +106,7 @@ public class BigPlanet extends Activity {
 		case GO_TO_LOCATION:
 			int z = 5;
 			Place place = (Place)data.getSerializableExtra("place");
+			mm.addMarker(place,z);
 			com.nevilon.bigplanet.core.geoutils.Point p = GeoUtils.toTileXY(place.getLat(), place.getLon(), z);
 			com.nevilon.bigplanet.core.geoutils.Point off = GeoUtils.getPixelOffsetInTile(place.getLat(), place.getLon(), z);
 			mapControl.goTo((int)p.x, (int)p.y, z, (int)off.x, (int)off.y);
@@ -186,7 +192,7 @@ public class BigPlanet extends Activity {
 		int height = display.getHeight();
 		int width = display.getWidth();
 		if (mapControl == null) {
-			mapControl = new MapControl(this, width, height, tile);
+			mapControl = new MapControl(this, width, height, tile, mm);
 			mapControl.setOnMapLongClickListener(new OnMapLongClickListener() {
 
 				@Override
