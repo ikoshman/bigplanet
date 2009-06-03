@@ -443,21 +443,21 @@ public class MapControl extends RelativeLayout {
 				if (dcDetector.process(event)) {
 					if (mapMode == MapControl.ZOOM_MODE) {
 						scalePoint.set((int)event.getX(), (int)event.getY());
-						double sx = (int) (getWidth()/2 - event.getX());
-						double sy = (int) (getHeight()/2 - event.getY());
-						final double dx = (sx/(1d/0.1d));
-						final double dy = (sy/(1d/0.1d));
+						float sx =  (getWidth()/2 - event.getX());
+						float sy =  (getHeight()/2 - event.getY());
+						final float dx = (sx/(1f/0.1f));
+						final float dy = (sy/(1f/0.1f));
 						new Thread(){
 							
 							@Override
 							public void run(){
-								double tx = 0;
-								double ty = 0;
+								float tx = 0;
+								float ty = 0;
 								int scaleX = scalePoint.x;
 								int scaleY = scalePoint.y;
-								double ox = pmap.getGlobalOffset().x;
-								double oy = pmap.getGlobalOffset().y;
-								
+								float ox = pmap.getGlobalOffset().x;
+								float oy = pmap.getGlobalOffset().y;
+								double i=1;
 								while(pmap.scaleFactor<=2){
 									try {
 										Thread.sleep(40);
