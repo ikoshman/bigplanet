@@ -326,7 +326,7 @@ public class BigPlanet extends Activity {
 		List<String> providers = locationManager.getProviders(true);
 		if (providers.size() > 0) {
 			String provider = providers.get(0);
-			locationManager.requestLocationUpdates(provider, 10000, 1,
+			locationManager.requestLocationUpdates(provider, 1, 1,
 					new LocationListener() {
 
 						public void onLocationChanged(Location location) {
